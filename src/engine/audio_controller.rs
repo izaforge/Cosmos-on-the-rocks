@@ -13,7 +13,7 @@ impl Plugin for AudioControllerPlugin {
 
 pub fn play_bg_sound(mut commands: Commands, audio_assets: Res<AudioAssets>) {
     // Play a sound!
-    commands.spawn(SamplePlayer::new(audio_assets.background.clone()));
+    //commands.spawn(SamplePlayer::new(audio_assets.background.clone()));
 
     // Play a sound... with effects :O
     commands.spawn((

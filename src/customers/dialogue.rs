@@ -8,13 +8,15 @@ pub struct DialogPlugin;
 
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((YarnSpinnerPlugin::new(),
-            ExampleYarnSpinnerDialogueViewPlugin::new(),))
-            .add_systems(
+        app.add_plugins((
+            YarnSpinnerPlugin::new(),
+            ExampleYarnSpinnerDialogueViewPlugin::new(),
+        ))
+        .add_systems(
             Update,
             spawn_dialogue_runner
-            .run_if(in_state(GameState::CustomerInteraction))
-            .run_if(resource_added::<YarnProject>),
+                .run_if(resource_added::<YarnProject>)
+                .run_if(in_state(GameState::CustomerInteraction)),
         );
     }
 }

@@ -13,5 +13,5 @@ pub struct AudioAssets {
     #[asset(path = "audio/Ketsa - Drifting Space Jazz.ogg")]
     pub background: Handle<Sample>,
     #[asset(path = "audio/HoliznaCC0 - Space!.ogg")]
-    pub background2: Handle<Sample>
+    pub background2: Handle<Sample>,
 }

@@ -115,18 +115,16 @@ pub fn button_interaction_system(
 ) {
     for (interaction, mut color, button) in interaction_query.iter_mut() {
         match *interaction {
-            Interaction::Pressed => {
-                match button {
-                    MenuButtons::Play => {
-                        println!("Play Game Button Clicked");
-                        game_state.set(GameState::Loading);
-                    }
-                    MenuButtons::Settings => {
-                        println!("Settings Button Clicked");
-                        game_state.set(GameState::Settings);
-                    }
+            Interaction::Pressed => match button {
+                MenuButtons::Play => {
+                    println!("Play Game Button Clicked");
+                    game_state.set(GameState::Loading);
                 }
-            }
+                MenuButtons::Settings => {
+                    println!("Settings Button Clicked");
+                    game_state.set(GameState::Settings);
+                }
+            },
             Interaction::Hovered => {
                 *color = HOVERED_BUTTON.into();
             }

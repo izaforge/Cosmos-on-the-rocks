@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 use crate::engine::{GameState, game_runner::GameRunnerPlugin};
 
+pub mod animation;
 pub mod bar;
 pub mod constants;
 pub mod customers;
-pub mod animation;
 pub mod engine;
 pub mod ui;
 

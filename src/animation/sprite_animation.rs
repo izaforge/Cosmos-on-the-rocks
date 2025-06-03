@@ -1,8 +1,22 @@
+use bevy::prelude::*;
+
+use crate::animation::{AnimationEvent, AnimationEventKind};
+
 #[derive(Component)]
 pub struct SpriteAnimState {
     pub start_index: usize,
     pub end_index: usize,
     pub timer: Timer,
+}
+
+impl Default for SpriteAnimState {
+    fn default() -> Self {
+        Self {
+            start_index: Default::default(),
+            end_index: Default::default(),
+            timer: Default::default(),
+        }
+    }
 }
 
 pub fn animate_spite(
@@ -14,6 +28,10 @@ pub fn animate_spite(
         anim_state.timer.tick(time.delta());
         if anim_state.timer.finished() {
             if let Some(texture_atlas) = &mut sprite.texture_atlas {
+                println!(
+                    "Current index: {}, Start index: {}, End index: {}",
+                    texture_atlas.index, anim_state.start_index, anim_state.end_index
+                );
                 texture_atlas.index += 1;
                 if texture_atlas.index > anim_state.end_index {
                     texture_atlas.index = anim_state.start_index;
