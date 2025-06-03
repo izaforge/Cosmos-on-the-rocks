@@ -3,8 +3,7 @@ use bevy_asset_loader::prelude::*;
 use bevy_seedling::prelude::*;
 
 use crate::{
-    engine::{asset_loader::{AudioAssets, ImageAssets}, audio_controller::play_sound, GameState},
-    ui::GameUiPlugin,
+    customers::CustomerPlugin, engine::{asset_loader::{AudioAssets, ImageAssets}, audio_controller::play_bg_sound, GameState}, ui::GameUiPlugin
 };
 
 pub struct GameRunnerPlugin;
@@ -14,6 +13,7 @@ impl Plugin for GameRunnerPlugin {
         app.add_plugins((
             SeedlingPlugin::default(),
             GameUiPlugin,
+            CustomerPlugin,
         ))
         .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
         .add_loading_state(
@@ -22,7 +22,7 @@ impl Plugin for GameRunnerPlugin {
                 .load_collection::<ImageAssets>()
                 .continue_to_state(GameState::CustomerInteraction),
         )
-        .add_systems(Startup, (setup_camera, play_sound))
+        .add_systems(Startup, setup_camera)
         ;
     }
 }

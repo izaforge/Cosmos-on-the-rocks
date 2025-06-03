@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+use bevy_seedling::sample::Sample;
 
 #[derive(AssetCollection, Resource)]
 pub struct ImageAssets {
@@ -9,8 +10,8 @@ pub struct ImageAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct AudioAssets {
-    #[asset(path = "audio/Ketsa - Drifting Space Jazz.mp3")]
-    pub background: Handle<AudioSource>,
-    #[asset(path = "audio/HoliznaCC0 - Space!.mp3")]
-    pub background2: Handle<AudioSource>
+    #[asset(path = "audio/Ketsa - Drifting Space Jazz.ogg")]
+    pub background: Handle<Sample>,
+    #[asset(path = "audio/HoliznaCC0 - Space!.ogg")]
+    pub background2: Handle<Sample>
 }
