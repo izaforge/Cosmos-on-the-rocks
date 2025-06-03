@@ -24,10 +24,9 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 justify_self: JustifySelf::Center,
                 position_type: PositionType::Relative,
                 flex_wrap: FlexWrap::NoWrap,
-                flex_direction: FlexDirection::Column, // Stack items vertically
-                justify_content: JustifyContent::FlexStart, // Align from top
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::FlexStart,
                 align_items: AlignItems::Center,
-                // Add spacing between items
                 row_gap: Val::Px(10.0),
                 ..Default::default()
             },
@@ -55,9 +54,7 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         width: Val::Px(250.0),
                         height: Val::Px(65.0),
                         border: UiRect::all(Val::Px(5.0)),
-                        // horizontally center child text
                         justify_content: JustifyContent::Center,
-                        // vertically center child text
                         align_items: AlignItems::Center,
                         ..default()
                     },
@@ -85,9 +82,7 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         width: Val::Px(250.0),
                         height: Val::Px(65.0),
                         border: UiRect::all(Val::Px(5.0)),
-                        // horizontally center child text
                         justify_content: JustifyContent::Center,
-                        // vertically center child text
                         align_items: AlignItems::Center,
                         ..default()
                     },
@@ -123,11 +118,11 @@ pub fn button_interaction_system(
             Interaction::Pressed => {
                 match button {
                     MenuButtons::Play => {
-                        println!("Play Game Button Clicked"); // Switch to Lobby state
-                        game_state.set(GameState::AssetLoading);
+                        println!("Play Game Button Clicked");
+                        game_state.set(GameState::Loading);
                     }
                     MenuButtons::Settings => {
-                        println!("Settings Button Clicked"); // Switch to Lobby state
+                        println!("Settings Button Clicked");
                         game_state.set(GameState::Settings);
                     }
                 }
