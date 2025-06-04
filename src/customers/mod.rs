@@ -3,19 +3,24 @@ use bevy::prelude::*;
 use crate::{
     animation::sprite_animation::SpriteAnimState,
     customers::dialogue::DialogPlugin,
-    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_bg_sound},
+    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg_sound},
 };
 
 pub mod dialogue;
+
+#[derive(Component)]
+pub struct OnCustomerScreen;
 
 pub struct CustomerPlugin;
 
 impl Plugin for CustomerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(DialogPlugin).add_systems(
+        app
+        .add_plugins(DialogPlugin)
+        .add_systems(
             OnEnter(GameState::CustomerInteraction),
-            (spawn_customer, play_bg_sound),
-        );
+            (spawn_customer, play_customer_bg_sound),
+        ).add_systems(OnExit(GameState::MainMenu), cleanup_customer);
     }
 }
 
@@ -79,5 +84,13 @@ fn spawn_customer(
             end_index: 2,
             timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
         },
+        OnCustomerScreen,
     ));
+}
+
+// System to cleanup menu when exiting MainMenu state
+pub fn cleanup_customer(mut commands: Commands, query: Query<Entity, With<OnCustomerScreen>>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn();
+    }
 }

@@ -122,7 +122,7 @@ pub fn button_interaction_system(
                 }
                 MenuButtons::Settings => {
                     println!("Settings Button Clicked");
-                    game_state.set(GameState::Settings);
+                    game_state.set(GameState::Crafting);
                 }
             },
             Interaction::Hovered => {
