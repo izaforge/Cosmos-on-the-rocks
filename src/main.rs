@@ -1,7 +1,18 @@
 use bevy::prelude::*;
 
+<<<<<<< HEAD
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
+=======
+use crate::engine::{GameState, game_runner::GameRunnerPlugin};
+
+pub mod animation;
+pub mod bar;
+pub mod constants;
+pub mod customers;
+pub mod engine;
+pub mod ui;
+>>>>>>> main
 
 // Asset structs
 #[derive(Resource)]
@@ -11,6 +22,7 @@ struct GameAssets {
 
 fn main() {
     let mut app = App::new();
+<<<<<<< HEAD
     app.add_plugins((
         DefaultPlugins,
         // Register the Yarn Spinner plugin using its default settings, which will look for Yarn files in the "dialogue" folder.
@@ -88,13 +100,20 @@ fn ensure_background_fills_screen(
                 transform.scale = Vec3::new(scale, scale, 1.0);
             }
         }
-    }
+=======
+    app.add_plugins((DefaultPlugins.set(create_window_plugin()), GameRunnerPlugin))
+        .init_state::<GameState>()
+        .insert_resource(ClearColor(Color::srgb(0.05, 0.05, 0.1)))
+        .run();
 }
 
-fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) {
-    // Create a dialogue runner from the project.
-    let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
-    // Immediately start showing the dialogue to the player
-    dialogue_runner.start_node("HelloWorld");
-    commands.spawn(dialogue_runner);
+fn create_window_plugin() -> WindowPlugin {
+    WindowPlugin {
+        primary_window: Some(Window {
+            title: "Cosmos on the Rocks".to_string(),
+            ..default()
+        }),
+        ..default()
+>>>>>>> main
+    }
 }
