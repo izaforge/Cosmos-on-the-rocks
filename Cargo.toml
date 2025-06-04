@@ -11,3 +11,12 @@ bevy_lunex = "0.4.1"
 bevy_seedling = "0.4.0"
 bevy_yarnspinner = "0.5.0"
 bevy_yarnspinner_example_dialogue_view = "0.5.0"
+
+
+# Enable a small amount of optimization in the dev profile.
+[profile.dev]
+opt-level = 1
+
+# Enable a large amount of optimization in the dev profile for dependencies.
+[profile.dev.package."*"]
+opt-level = 3
