@@ -13,6 +13,7 @@ dependencies = [
  "bevy_seedling",
  "bevy_yarnspinner",
  "bevy_yarnspinner_example_dialogue_view",
+ "uuid 1.17.0",
 ]
 
 [[package]]

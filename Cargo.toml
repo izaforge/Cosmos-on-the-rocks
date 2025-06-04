@@ -11,6 +11,7 @@ bevy_lunex = "0.4.1"
 bevy_seedling = "0.4.0"
 bevy_yarnspinner = "0.5.0"
 bevy_yarnspinner_example_dialogue_view = "0.5.0"
+uuid = "1.17.0"
 
 
 # Enable a small amount of optimization in the dev profile.
