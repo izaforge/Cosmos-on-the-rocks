@@ -10,9 +10,44 @@ use crate::{
             SecondaryEffect,
         },
     },
-    constants::WHITE,
     engine::asset_loader::ImageAssets,
 };
+
+pub fn spawn_ingredients(
+    mut commands: Commands,
+    image_assets: Res<ImageAssets>,
+    texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    let icegels = get_ice_gels(image_assets, texture_atlases);
+    let icegel_anim_state = SpriteAnimState {
+        start_index: 0,
+        end_index: 7,
+        timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
+    };
+    for (ingredient, sprite, transform) in icegels {
+        commands.spawn((ingredient, sprite, transform, icegel_anim_state.clone()));
+    }
+}
+
+pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
+
+    let glass_sprite = Sprite {
+        image: image_assets.wine_glass.clone(),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
+
+    let crafting_glass = Glass {
+        capacity: 100.0,
+        shape: GlassShape::Wine,
+    };
+    commands.spawn((
+        crafting_glass,
+        glass_sprite,
+        Transform::from_translation(Vec3::new(200., 0., 1.)),
+    ));
+}
+
 
 pub fn get_ice_gels(
     image_assets: Res<ImageAssets>,
@@ -33,7 +68,7 @@ pub fn get_ice_gels(
             layout: icegel_layout_handle.clone(),
             index: 0,
         }),
-        custom_size: Some(Vec2::new(96., 128.)),
+        custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
     let red_icegel_sprite = Sprite {
@@ -42,7 +77,7 @@ pub fn get_ice_gels(
             layout: icegel_layout_handle.clone(),
             index: 0,
         }),
-        custom_size: Some(Vec2::new(96., 128.)),
+        custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
     let green_icegel_sprite = Sprite {
@@ -51,7 +86,7 @@ pub fn get_ice_gels(
             layout: icegel_layout_handle,
             index: 0,
         }),
-        custom_size: Some(Vec2::new(96., 128.)),
+        custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
 
@@ -121,38 +156,4 @@ pub fn get_ice_gels(
             Transform::from_xyz(-128.0, 0.0, 1.0),
         ),
     ]
-}
-
-pub fn spawn_ingredients(
-    mut commands: Commands,
-    image_assets: Res<ImageAssets>,
-    texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
-) {
-    let icegels = get_ice_gels(image_assets, texture_atlases);
-    let icegel_anim_state = SpriteAnimState {
-        start_index: 0,
-        end_index: 7,
-        timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
-    };
-    for (ingredient, sprite, transform) in icegels {
-        commands.spawn((ingredient, sprite, transform, icegel_anim_state.clone()));
-    }
-}
-
-pub fn spawn_glass(mut commands: Commands) {
-    let glass_sprite = Sprite {
-        color: WHITE,
-        custom_size: Some(Vec2::new(64., 64.)),
-        ..default()
-    };
-
-    let crafting_glass = Glass {
-        capacity: 100.0,
-        shape: GlassShape::Whiskey,
-    };
-    commands.spawn((
-        crafting_glass.clone(),
-        glass_sprite.clone(),
-        Transform::from_translation(Vec3::new(200., 0., 1.)),
-    ));
 }
