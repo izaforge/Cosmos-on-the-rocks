@@ -1,18 +1,10 @@
 use bevy::prelude::*;
 
-<<<<<<< HEAD
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
-=======
-use crate::engine::{GameState, game_runner::GameRunnerPlugin};
 
-pub mod animation;
-pub mod bar;
-pub mod constants;
-pub mod customers;
-pub mod engine;
-pub mod ui;
->>>>>>> main
+// Import our game plugin
+use cosmos_on_the_rocks::CosmosOnTheRocksPlugin;
 
 // Asset structs
 #[derive(Resource)]
@@ -22,13 +14,14 @@ struct GameAssets {
 
 fn main() {
     let mut app = App::new();
-<<<<<<< HEAD
     app.add_plugins((
         DefaultPlugins,
         // Register the Yarn Spinner plugin using its default settings, which will look for Yarn files in the "dialogue" folder.
         YarnSpinnerPlugin::new(),
         // Initialize the bundled example UI
         ExampleYarnSpinnerDialogueViewPlugin::new(),
+        // Add our custom game plugin
+        CosmosOnTheRocksPlugin,
     ))
         .add_systems(Startup, (setup_camera, load_assets))
         .add_systems(Update, setup_game.run_if(resource_exists::<GameAssets>))
@@ -58,7 +51,7 @@ fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn setup_game(
     mut commands: Commands,
     game_assets: Res<GameAssets>,
-    windows: Query<&Window>,
+    _windows: Query<&Window>,
 ) {
     // Add background as a full-screen sprite with smooth scaling
     commands.spawn((
@@ -84,7 +77,7 @@ fn ensure_background_fills_screen(
     images: Res<Assets<Image>>,
     game_assets: Res<GameAssets>,
 ) {
-    if let Ok(window) = windows.get_single() {
+    if let Ok(window) = windows.single() {
         // Get image dimensions
         if let Some(image) = images.get(&game_assets.background) {
             let image_width = image.width() as f32;
@@ -95,25 +88,16 @@ fn ensure_background_fills_screen(
             let scale_y = window.resolution.height() / image_height;
             let scale = scale_x.max(scale_y); // Use max to ensure full coverage
             
-            if let Ok(mut transform) = background_query.get_single_mut() {
+            if let Ok(mut transform) = background_query.single_mut() {
                 // Apply smooth scaling with interpolation
                 transform.scale = Vec3::new(scale, scale, 1.0);
             }
         }
-=======
-    app.add_plugins((DefaultPlugins.set(create_window_plugin()), GameRunnerPlugin))
-        .init_state::<GameState>()
-        .insert_resource(ClearColor(Color::srgb(0.05, 0.05, 0.1)))
-        .run();
+    }
 }
 
-fn create_window_plugin() -> WindowPlugin {
-    WindowPlugin {
-        primary_window: Some(Window {
-            title: "Cosmos on the Rocks".to_string(),
-            ..default()
-        }),
-        ..default()
->>>>>>> main
-    }
+fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) {
+    let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
+    // Start the dialogue from the "Start" node
+    dialogue_runner.start_node("Start");
 }

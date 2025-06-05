@@ -22,6 +22,12 @@ target/
 
 
 # Added by cargo
+Assests.md
 
 /target
 workflow.md
+
+# Ignore all .md files except README.md
+*.md
+!README.md
+*.pdf

@@ -1,0 +1,95 @@
+(
+    starting_node: "zara_intro",
+    nodes: {
+        "zara_intro": (
+            id: "zara_intro",
+            text: "Hey there, bartender. I could use a drink.",
+            options: [
+                (
+                    text: "What can I get you?",
+                    next_node_id: "zara_order",
+                    conditions: [],
+                    effects: []
+                ),
+                (
+                    text: "You look like you've had a rough day.",
+                    next_node_id: "zara_day",
+                    conditions: [],
+                    effects: []
+                )
+            ]
+        ),
+        "zara_order": (
+            id: "zara_order",
+            text: "Something strong. Surprise me.",
+            options: [
+                (
+                    text: "Coming right up.",
+                    next_node_id: "zara_wait",
+                    conditions: [],
+                    effects: [
+                        SetIntel("Zara_Likes_Strong_Drinks")
+                    ]
+                ),
+                (
+                    text: "Maybe something lighter would be better?",
+                    next_node_id: "zara_annoyance",
+                    conditions: [],
+                    effects: []
+                )
+            ]
+        ),
+        "zara_day": (
+            id: "zara_day",
+            text: "Let's just say I've seen things I shouldn't have. Working security for Galactic Corp has its downsides.",
+            options: [
+                (
+                    text: "Want to talk about it?",
+                    next_node_id: "zara_secret",
+                    conditions: [],
+                    effects: []
+                ),
+                (
+                    text: "Let me get you that drink.",
+                    next_node_id: "zara_order",
+                    conditions: [],
+                    effects: []
+                )
+            ]
+        ),
+        "zara_secret": (
+            id: "zara_secret",
+            text: "Not here. Too many ears. But if you're curious, mix me something with that blue liquid from Proxima B. It might loosen my tongue.",
+            options: [
+                (
+                    text: "I'll see what I can do.",
+                    next_node_id: "zara_wait",
+                    conditions: [],
+                    effects: [
+                        SetIntel("Zara_Hint_Blue_Proxima")
+                    ]
+                )
+            ]
+        ),
+        "zara_wait": (
+            id: "zara_wait",
+            text: "I'll be waiting. No rush.",
+            options: []
+        ),
+        "zara_annoyance": (
+            id: "zara_annoyance",
+            text: "Do I look like someone who wants a light drink? Strong. Now.",
+            options: [
+                (
+                    text: "Of course, coming right up.",
+                    next_node_id: "zara_wait",
+                    conditions: [],
+                    effects: [
+                        SetIntel("Zara_Likes_Strong_Drinks"),
+                        SetIntel("Zara_Is_Impatient")
+                    ]
+                )
+            ]
+        )
+    }
+) 

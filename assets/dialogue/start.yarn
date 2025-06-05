@@ -1,0 +1,34 @@
+title: Start
+---
+// The starting node that gets loaded when the dialogue begins
+<<declare $player_name = "Bartender" as string>>
+
+#speaker: Patron
+Welcome to Cosmos on the Rocks! I'm your first patron.
+
+-> What can I get you?
+    #speaker: Player
+    What can I get you?
+    #speaker: Patron
+    Something strong, please. It's been a long day in space.
+-> You look like you've had a rough day.
+    #speaker: Player
+    You look like you've had a rough day.
+    #speaker: Patron
+    You have no idea. The outer rim is getting more dangerous every cycle.
+
+#speaker: Patron
+Anyway, I hear you're good at mixing drinks that match one's mood.
+
+-> I'll see what I can do.
+    #speaker: Player
+    I'll see what I can do.
+-> Tell me more about yourself first.
+    #speaker: Player
+    Tell me more about yourself first.
+    #speaker: Patron
+    Not much to tell. Just a traveler passing through.
+
+#speaker: Patron
+I'll be waiting for that drink.
+=== 

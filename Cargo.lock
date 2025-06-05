@@ -3,19 +3,6 @@
 version = 4
 
 [[package]]
-name = "Cosmos-on-the-rocks"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_asset_loader",
- "bevy_enhanced_input",
- "bevy_lunex",
- "bevy_seedling",
- "bevy_yarnspinner",
- "bevy_yarnspinner_example_dialogue_view",
-]
-
-[[package]]
 name = "accesskit"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1918,6 +1905,21 @@ dependencies = [
  "unicode-linebreak",
  "unicode-script",
  "unicode-segmentation",
+]
+
+[[package]]
+name = "cosmos-on-the-rocks"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_asset_loader",
+ "bevy_enhanced_input",
+ "bevy_lunex",
+ "bevy_seedling",
+ "bevy_yarnspinner",
+ "bevy_yarnspinner_example_dialogue_view",
+ "ron",
+ "serde",
 ]
 
 [[package]]
