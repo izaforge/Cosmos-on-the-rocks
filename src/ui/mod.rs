@@ -1,7 +1,7 @@
 use crate::{
     engine::GameState,
     ui::main_menu::{button_interaction_system, cleanup_menu, setup_main_menu},
-    ui::crafting_menu::{cleanup_crafting_menu, setup_crafting_menu},
+    ui::crafting_menu::{cleanup_crafting_menu, setup_crafting_menu, CraftingPlugin},
     ui::emotion_ui::EmotionUiPlugin,
 };
 use bevy::prelude::*;
@@ -14,7 +14,7 @@ pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(EmotionUiPlugin)
+        app.add_plugins((EmotionUiPlugin, CraftingPlugin))
             .add_systems(OnEnter(GameState::MainMenu), setup_main_menu)
             .add_systems(
                 Update,

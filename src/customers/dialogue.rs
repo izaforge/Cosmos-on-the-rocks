@@ -8,6 +8,10 @@ use crate::{customers::OnCustomerScreen, engine::GameState};
 
 pub struct DialogPlugin;
 
+/// Resource to specify which dialogue node to start next
+#[derive(Resource)]
+pub struct NextDialogueNode(pub String);
+
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
@@ -19,7 +23,22 @@ impl Plugin for DialogPlugin {
     }
 }
 
-pub fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) {
+pub fn spawn_dialogue_runner(
+    mut commands: Commands, 
+    project: Res<YarnProject>,
+    next_node: Option<Res<NextDialogueNode>>,
+    existing_dialogue: Query<Entity, With<DialogueRunner>>,
+    existing_ui: Query<Entity, With<OnCustomerScreen>>,
+) {
+    // Clean up any existing dialogue runners and UI to prevent conflicts
+    for entity in existing_dialogue.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    
+    for entity in existing_ui.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    
     println!("Spawning dialogue runner with project: {:?}", project);
     let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
     
@@ -35,7 +54,19 @@ pub fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) 
     println!("============================================");
     println!("Checking for dialogue nodes");
     
-    // First try to use Zara's dialogue
+    // Check if we have a specific node to start
+    if let Some(next_node) = next_node {
+        let node_exists = project.headers_for_node(&next_node.0).is_some();
+        if node_exists {
+            dialogue_runner.start_node(&next_node.0);
+            println!("✅ Starting specified node: {}", next_node.0);
+            commands.remove_resource::<NextDialogueNode>(); // Remove the resource after use
+            commands.spawn((dialogue_runner, OnCustomerScreen));
+            return;
+        }
+    }
+    
+    // Default flow if no specific node is requested
     let zara_dialogue = project.headers_for_node("ZaraDialogue");
     let patron_dialogue = project.headers_for_node("PatronDialogue");
     let bartender_dialogue = project.headers_for_node("BartenderMonologue");
@@ -97,8 +128,8 @@ pub fn handle_drink_effects(
     mut patrons: Query<(Entity, &Patron, &mut Happiness, &mut Sadness, &mut Anger)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
-    // Just for testing - press D to apply a drink effect to the first patron
-    if keyboard_input.just_pressed(KeyCode::KeyD) {
+    // Just for testing - press T to apply a drink effect to the first patron
+    if keyboard_input.just_pressed(KeyCode::KeyT) {
         // For testing, just find the first patron
         if let Some((entity, _, _, _, _)) = patrons.iter().next() {
             // Create a test drink
@@ -115,6 +146,7 @@ pub fn handle_drink_effects(
     
     // Process all emotion drinks and apply effects
     for (drink_entity, drink) in drinks.iter() {
+        // If target patron is specified, use that
         if let Some(target) = drink.target_patron {
             if let Ok((_, patron, mut happiness, mut sadness, mut anger)) = patrons.get_mut(target) {
                 // Apply emotion changes
@@ -129,6 +161,27 @@ pub fn handle_drink_effects(
                 
                 // Remove the drink entity after it's been applied
                 commands.entity(drink_entity).despawn();
+            }
+        } 
+        // If no target specified, try to find Zara
+        else {
+            // Try to find Zara by name
+            for (_entity, patron, mut happiness, mut sadness, mut anger) in patrons.iter_mut() {
+                if patron.name == "Zara" {
+                    // Apply emotion changes
+                    happiness.value = ((happiness.value as i16) + drink.happiness_effect).clamp(0, 100) as u8;
+                    sadness.value = ((sadness.value as i16) + drink.sadness_effect).clamp(0, 100) as u8;
+                    anger.value = ((anger.value as i16) + drink.anger_effect).clamp(0, 100) as u8;
+                    
+                    info!(
+                        "Applied drink to Zara: Happiness: {}, Sadness: {}, Anger: {}", 
+                        happiness.value, sadness.value, anger.value
+                    );
+                    
+                    // Remove the drink entity after it's been applied
+                    commands.entity(drink_entity).despawn();
+                    break; // Stop after finding Zara
+                }
             }
         }
     }

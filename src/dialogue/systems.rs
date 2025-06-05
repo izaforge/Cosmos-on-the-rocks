@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::nodes::{self, DialogueTree, DialogueCondition, DialogueEffect, EmotionType, Comparison};
+use super::nodes::{DialogueTree, DialogueCondition, DialogueEffect, EmotionType, Comparison};
 use super::intel::*;
 use super::patrons::{Patron as PatronComponent, Happiness, Sadness, Anger};
 

@@ -61,6 +61,39 @@ Zara: I'll be waiting. No rush.
     <<set_game_state Crafting>>
 ===
 
+title: ZaraAfterDrink
+---
+Zara: *takes a sip* This has... quite the kick to it.
+
+-> How do you like it?
+    Player: How do you like it?
+    Zara: *eyes narrowing slightly* It's strong. Just what I needed to take the edge off. 
+    Zara: My superiors at Galactic Corp wouldn't approve of me drinking on leave.
+    Zara: But after what I've seen... rules seem less important these days.
+    <<jump ZaraAfterDrinkContinue>>
+-> Notice anything different?
+    Player: Notice anything different about yourself?
+    Zara: *raises an eyebrow* What did you put in this? I feel... angrier somehow. More focused.
+    Zara: That's... interesting. Maybe that's what I needed to finally confront what's been bothering me.
+    <<jump ZaraAfterDrinkContinue>>
+===
+
+title: ZaraAfterDrinkContinue
+---
+Zara: *leans in closer* Listen, bartender. The security breach at Proxima B wasn't an accident.
+Zara: Someone high up wanted those files leaked. And now they're hunting down anyone who knows too much.
+Zara: *glances around nervously* I shouldn't be telling you this.
+
+-> I can help
+    Player: I can help. What do you need?
+    Zara: Just... keep an eye out for anyone asking about me. And maybe another drink later.
+    Zara: I should go. Thanks for listening, bartender.
+-> Be careful
+    Player: Be careful, Zara. Sounds dangerous.
+    Zara: *smiles grimly* Always am. That's how I've survived this long.
+    Zara: I should go. Thanks for the drink... and the conversation.
+===
+
 title: ZaraAnnoyance
 ---
 Zara: Do I look like someone who wants a light drink? Strong. Now.

@@ -10,15 +10,14 @@ pub struct EmotionUiPlugin;
 
 impl Plugin for EmotionUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (update_emotion_ui, update_selected_patron));
+        app.add_systems(Update, (update_emotion_ui, update_selected_patron, give_zara_drink));
         info!("EmotionUiPlugin initialized!"); // Debug log to confirm plugin loading
         info!("=====================================================");
         info!("Emotion UI Controls:");
         info!("  Press Digit1 (1) to select Zara");
-        info!("  Press Digit2 (2) to select Kael");
-        info!("  Press Digit3 (3) to select Unit 734");
-        info!("  Press Digit4 (4) to select Lyra");
-        info!("  Press KeyD (D) to show the selected patron's emotions");
+        info!("  Press KeyD (D) to show Zara's emotions");
+        info!("  Press KeyG (G) to give Zara a drink (+5 anger)");
+        info!("  Press KeyT (T) to test general drink effects");
         info!("=====================================================");
     }
 }
@@ -30,7 +29,6 @@ fn update_emotion_ui(
 ) {
     // Only show emotions when D key is pressed (to avoid spamming the console)
     if keyboard_input.just_pressed(KeyCode::KeyD) {
-        info!("D key pressed"); // Debug log to confirm key detection
         if let Ok((patron, happiness, sadness, anger)) = selected_patron_query.single() {
             info!("------- PATRON EMOTIONS -------");
             info!("Patron: {}", patron.name);
@@ -39,12 +37,30 @@ fn update_emotion_ui(
             info!("Anger: {}%", anger.value);
             info!("------------------------------");
         } else {
-            info!("No patron selected. Press 1-4 to select a patron.");
+            info!("No patron selected. Press 1 to select Zara.");
         }
     }
 }
 
-/// System to handle selecting a new patron
+/// System to give Zara a drink that increases anger by 5
+fn give_zara_drink(
+    mut patron_query: Query<(&Patron, &mut Happiness, &mut Sadness, &mut Anger), With<SelectedPatron>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::KeyG) {
+        if let Ok((patron, _happiness, _sadness, mut anger)) = patron_query.single_mut() {
+            if patron.name == "Zara" {
+                // Increase anger by 5, clamping to max 100
+                anger.value = (anger.value + 5).min(100);
+                info!("Gave Zara a drink! Anger increased to {}%", anger.value);
+            }
+        } else {
+            info!("Zara not selected. Press 1 to select Zara first.");
+        }
+    }
+}
+
+/// System to handle selecting Zara
 fn update_selected_patron(
     mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -68,73 +84,27 @@ fn update_selected_patron(
         }
     }
 
-    // Debug keyboard input
+    // Debug keyboard input for Digit1 only
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         info!("Key 1 pressed");
     }
-    if keyboard_input.just_pressed(KeyCode::Digit2) {
-        info!("Key 2 pressed");
-    }
-    if keyboard_input.just_pressed(KeyCode::Digit3) {
-        info!("Key 3 pressed");
-    }
-    if keyboard_input.just_pressed(KeyCode::Digit4) {
-        info!("Key 4 pressed");
-    }
-    if keyboard_input.just_pressed(KeyCode::KeyD) {
-        info!("Key D pressed");
-    }
     
-    // Just a simple example - press 1, 2, 3, 4 to select different patrons
-    let mut selection = None;
-    
+    // Just select Zara
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         // Find Zara
         for (entity, patron) in patrons.iter() {
             if patron.name == "Zara" {
-                selection = Some(entity);
+                // Remove old selection
+                for entity in selected.iter() {
+                    commands.entity(entity).remove::<SelectedPatron>();
+                }
+                
+                // Add new selection
+                commands.entity(entity).insert(SelectedPatron);
                 info!("Selected patron: Zara");
+                info!("Selection updated successfully");
                 break;
             }
         }
-    } else if keyboard_input.just_pressed(KeyCode::Digit2) {
-        // Find Kael
-        for (entity, patron) in patrons.iter() {
-            if patron.name == "Kael" {
-                selection = Some(entity);
-                info!("Selected patron: Kael");
-                break;
-            }
-        }
-    } else if keyboard_input.just_pressed(KeyCode::Digit3) {
-        // Find Unit 734
-        for (entity, patron) in patrons.iter() {
-            if patron.name == "Unit 734" {
-                selection = Some(entity);
-                info!("Selected patron: Unit 734");
-                break;
-            }
-        }
-    } else if keyboard_input.just_pressed(KeyCode::Digit4) {
-        // Find Lyra
-        for (entity, patron) in patrons.iter() {
-            if patron.name == "Lyra" {
-                selection = Some(entity);
-                info!("Selected patron: Lyra");
-                break;
-            }
-        }
-    }
-    
-    // Update selection if needed
-    if let Some(selection) = selection {
-        // Remove old selection
-        for entity in selected.iter() {
-            commands.entity(entity).remove::<SelectedPatron>();
-        }
-        
-        // Add new selection
-        commands.entity(selection).insert(SelectedPatron);
-        info!("Selection updated successfully");
     }
 } 
