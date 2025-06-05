@@ -81,7 +81,7 @@ fn spawn_customer(
         Transform::from_translation(Vec3::new(400., 0., 1.)),
         SpriteAnimState {
             start_index: 0,
-            end_index: 2,
+            end_index: 1,
             timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
         },
         OnCustomerScreen,

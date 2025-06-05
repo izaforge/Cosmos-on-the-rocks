@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 use uuid::Uuid;
 
+use crate::animation::sprite_animation::SpriteAnimState;
+
 #[derive(Component, Clone, Debug)]
-#[require(Sprite, Transform)]
+#[require(Sprite, Transform, SpriteAnimState)]
 pub struct Ingredient {
     pub id: uuid::Uuid,
     pub name: String,
