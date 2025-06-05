@@ -12,14 +12,41 @@ pub struct DialogPlugin;
 #[derive(Resource)]
 pub struct NextDialogueNode(pub String);
 
+/// Resource to track if we should auto-press the 1 key
+#[derive(Resource, Default)]
+struct AutoSelectOption(bool);
+
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             YarnSpinnerPlugin::new(),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
+        .init_resource::<AutoSelectOption>()
         .add_systems(OnEnter(GameState::CustomerInteraction), spawn_dialogue_runner)
-        .add_systems(Update, handle_drink_effects);
+        .add_systems(Update, (
+            handle_drink_effects,
+            auto_select_first_option, // Add system to automatically select first option
+        ));
+    }
+}
+
+// System to automatically select the first option by simulating pressing "1"
+fn auto_select_first_option(
+    dialogue_runners: Query<&DialogueRunner>,
+    mut auto_select: ResMut<AutoSelectOption>,
+    mut keyboard: ResMut<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    // Only proceed if there's an active dialogue runner
+    if !dialogue_runners.is_empty() && !auto_select.0 {
+        // Set the flag to true to prevent multiple keypresses
+        auto_select.0 = true;
+        
+        // Add a small delay to ensure UI is ready
+        // Then simulate pressing "1" key
+        info!("Auto-selecting first option");
+        keyboard.press(KeyCode::Digit1);
     }
 }
 
@@ -30,13 +57,16 @@ pub fn spawn_dialogue_runner(
     existing_dialogue: Query<Entity, With<DialogueRunner>>,
     existing_ui: Query<Entity, With<OnCustomerScreen>>,
 ) {
+    // Reset auto-select flag when spawning a new dialogue
+    commands.insert_resource(AutoSelectOption(false));
+    
     // Clean up any existing dialogue runners and UI to prevent conflicts
     for entity in existing_dialogue.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
     
     for entity in existing_ui.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
     
     println!("Spawning dialogue runner with project: {:?}", project);

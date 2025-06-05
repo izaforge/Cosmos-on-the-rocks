@@ -31,3 +31,5 @@ workflow.md
 *.md
 !README.md
 *.pdf
+!workflow.md
+!workflow2.md

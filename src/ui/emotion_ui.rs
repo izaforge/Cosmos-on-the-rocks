@@ -5,20 +5,31 @@ use crate::dialogue::patrons::{Patron, Happiness, Sadness, Anger};
 #[derive(Component)]
 pub struct SelectedPatron;
 
+/// Resource to track if Zara has been auto-selected
+#[derive(Resource)]
+struct ZaraSelected(bool);
+
 /// Plugin for emotion UI systems
 pub struct EmotionUiPlugin;
 
 impl Plugin for EmotionUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (update_emotion_ui, update_selected_patron, give_zara_drink));
+        app.add_systems(Update, (update_emotion_ui, update_selected_patron, give_zara_drink))
+           .init_resource::<ZaraSelected>(); // Initialize the resource
         info!("EmotionUiPlugin initialized!"); // Debug log to confirm plugin loading
         info!("=====================================================");
         info!("Emotion UI Controls:");
-        info!("  Press Digit1 (1) to select Zara");
+        info!("  Zara is now automatically selected");
         info!("  Press KeyD (D) to show Zara's emotions");
         info!("  Press KeyG (G) to give Zara a drink (+5 anger)");
         info!("  Press KeyT (T) to test general drink effects");
         info!("=====================================================");
+    }
+}
+
+impl Default for ZaraSelected {
+    fn default() -> Self {
+        ZaraSelected(false)
     }
 }
 
@@ -37,7 +48,7 @@ fn update_emotion_ui(
             info!("Anger: {}%", anger.value);
             info!("------------------------------");
         } else {
-            info!("No patron selected. Press 1 to select Zara.");
+            info!("No patron selected. Zara should be auto-selected.");
         }
     }
 }
@@ -55,42 +66,42 @@ fn give_zara_drink(
                 info!("Gave Zara a drink! Anger increased to {}%", anger.value);
             }
         } else {
-            info!("Zara not selected. Press 1 to select Zara first.");
+            info!("Zara not selected. Will attempt to auto-select her.");
         }
     }
 }
 
-/// System to handle selecting Zara
+/// System to handle selecting Zara (automatically and when pressing 1)
 fn update_selected_patron(
     mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     patrons: Query<(Entity, &Patron)>,
     selected: Query<Entity, With<SelectedPatron>>,
+    mut zara_selected: ResMut<ZaraSelected>,
 ) {
-    // Log all available patrons at the start
-    if patrons.is_empty() {
-        warn!("No patron entities found in the world!");
-    } else {
-        // Only log once at startup
-        static mut LOGGED: bool = false;
-        unsafe {
-            if !LOGGED {
-                info!("Available patrons:");
-                for (_, patron) in patrons.iter() {
-                    info!("  - {}", patron.name);
+    // Auto-select Zara on startup if not already selected
+    if !zara_selected.0 {
+        // Find Zara and select her
+        for (entity, patron) in patrons.iter() {
+            if patron.name == "Zara" {
+                // Remove old selection if any
+                for entity in selected.iter() {
+                    commands.entity(entity).remove::<SelectedPatron>();
                 }
-                LOGGED = true;
+                
+                // Add new selection
+                commands.entity(entity).insert(SelectedPatron);
+                info!("Auto-selected patron: Zara");
+                zara_selected.0 = true;
+                break;
             }
         }
     }
 
-    // Debug keyboard input for Digit1 only
+    // Still keep manual selection ability with key 1
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         info!("Key 1 pressed");
-    }
-    
-    // Just select Zara
-    if keyboard_input.just_pressed(KeyCode::Digit1) {
+        
         // Find Zara
         for (entity, patron) in patrons.iter() {
             if patron.name == "Zara" {
