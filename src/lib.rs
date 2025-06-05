@@ -1,6 +1,12 @@
 use bevy::prelude::*;
 
 pub mod dialogue;
+pub mod engine;
+pub mod ui;
+pub mod animation;
+pub mod bar;
+pub mod constants;
+pub mod customers;
 
 use dialogue::{DialoguePlugin, IntelPlugin, DialogueInteractionPlugin};
 

@@ -1,10 +1,6 @@
 use bevy::prelude::*;
 
-use bevy_yarnspinner::prelude::*;
-use bevy_yarnspinner_example_dialogue_view::prelude::*;
-
-// Import our game plugin
-use cosmos_on_the_rocks::CosmosOnTheRocksPlugin;
+use cosmos_on_the_rocks::engine::{GameState, game_runner::GameRunnerPlugin};
 
 // Asset structs
 #[derive(Resource)]
@@ -16,25 +12,11 @@ fn main() {
     let mut app = App::new();
     app.add_plugins((
         DefaultPlugins,
-        // Register the Yarn Spinner plugin using its default settings, which will look for Yarn files in the "dialogue" folder.
-        YarnSpinnerPlugin::new(),
-        // Initialize the bundled example UI
-        ExampleYarnSpinnerDialogueViewPlugin::new(),
-        // Add our custom game plugin
-        CosmosOnTheRocksPlugin,
+        // Add our game runner plugin which includes all other game systems
+        GameRunnerPlugin,
     ))
-        .add_systems(Startup, (setup_camera, load_assets))
-        .add_systems(Update, setup_game.run_if(resource_exists::<GameAssets>))
-        .add_systems(
-            Update,
-            (
-                // Spawn the dialogue runner once the Yarn project has finished compiling
-                spawn_dialogue_runner.run_if(resource_added::<YarnProject>),
-                // Keep the background properly scaled
-                ensure_background_fills_screen,
-            ),
-        )
-        .run();
+    .init_state::<GameState>()
+    .run();
 }
 
 fn setup_camera(mut commands: Commands) {
@@ -94,10 +76,4 @@ fn ensure_background_fills_screen(
             }
         }
     }
-}
-
-fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) {
-    let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
-    // Start the dialogue from the "Start" node
-    dialogue_runner.start_node("Start");
 }
