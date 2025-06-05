@@ -8,7 +8,8 @@ pub mod bar;
 pub mod constants;
 pub mod customers;
 
-use dialogue::{DialoguePlugin, IntelPlugin, DialogueInteractionPlugin};
+use dialogue::{NodesPlugin, DialogueInteractionPlugin, PatronPlugin};
+use dialogue::intel::IntelPlugin;
 
 /// Main plugin for Cosmos on the Rocks game
 pub struct CosmosOnTheRocksPlugin;
@@ -16,9 +17,10 @@ pub struct CosmosOnTheRocksPlugin;
 impl Plugin for CosmosOnTheRocksPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_plugins(DialoguePlugin)
+            .add_plugins(NodesPlugin)
             .add_plugins(IntelPlugin)
-            .add_plugins(DialogueInteractionPlugin);
+            .add_plugins(DialogueInteractionPlugin)
+            .add_plugins(PatronPlugin);
     }
 }
 

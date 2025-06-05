@@ -1,6 +1,7 @@
 use bevy::prelude::*;
-use super::nodes::*;
+use super::nodes::{self, DialogueTree, DialogueCondition, DialogueEffect};
 use super::intel::*;
+use super::patrons::{Patron as PatronComponent, Mood as PatronMood};
 
 /// Component that marks an entity as having an active dialogue
 #[derive(Component)]
@@ -81,6 +82,7 @@ fn update_dialogue_ui(
     dialogue_query: Query<&ActiveDialogue>,
     dialogue_assets: Res<Assets<DialogueTree>>,
     intel_registry: Res<IntelRegistry>,
+    patrons_query: Query<(&PatronComponent, &Name)>,
 ) {
     for active_dialogue in dialogue_query.iter() {
         if let Some(dialogue_tree) = dialogue_assets.get(&active_dialogue.tree_handle) {
@@ -97,10 +99,24 @@ fn update_dialogue_ui(
                             DialogueCondition::HasIntel(intel_id) => {
                                 intel_registry.has_intel(intel_id)
                             },
-                            DialogueCondition::PatronMood(_patron_name, _expected_mood) => {
-                                // This would be handled by checking the patron's actual mood
-                                // For now, just return true
-                                true
+                            DialogueCondition::PatronMood(patron_name, expected_mood) => {
+                                // Find the patron with the matching name and check their mood
+                                for (patron, name) in patrons_query.iter() {
+                                    if name.as_str() == patron_name || patron.name == *patron_name {
+                                        // Convert the node::Mood to patron::Mood for comparison
+                                        let patron_expected_mood = match expected_mood {
+                                            nodes::Mood::Neutral => PatronMood::Neutral,
+                                            nodes::Mood::Calm => PatronMood::Calm,
+                                            nodes::Mood::Aggressive => PatronMood::Aggressive,
+                                            nodes::Mood::Truthful => PatronMood::Truthful,
+                                            nodes::Mood::Energized => PatronMood::Energized,
+                                            nodes::Mood::Glitched => PatronMood::Glitched,
+                                        };
+                                        return patron.current_mood == patron_expected_mood;
+                                    }
+                                }
+                                // If patron not found, condition fails
+                                false
                             }
                         }
                     });
