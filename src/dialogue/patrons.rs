@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
+use super::nodes::DialogueTree;
 
 /// Component for tracking a patron's mood and personality state
 #[derive(Component, Debug, Clone)]
@@ -8,6 +9,7 @@ pub struct Patron {
     pub current_mood: Mood,
     pub base_personality: Personality,
     pub current_dialogue_node: String,
+    pub dialogue_asset: Option<Handle<DialogueTree>>,  // Added to store dialogue handle
 }
 
 /// Different mood states that patrons can be in
@@ -84,7 +86,8 @@ pub struct PatronPlugin;
 impl Plugin for PatronPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<RelationshipRegistry>()
-           .add_systems(Startup, setup_initial_patrons);
+           .add_systems(Startup, setup_initial_patrons)
+           .add_systems(Update, load_zara_dialogue);  // Add system to load Zara's dialogue
     }
 }
 
@@ -101,14 +104,18 @@ pub fn apply_mood_effect(
 }
 
 /// System to spawn the four main patrons of the game
-fn setup_initial_patrons(mut commands: Commands) {
+fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Zara - The secretive security officer
+    // Load Zara's dialogue from assets/dialogues/zara.dialogue.ron
+    let zara_dialogue = asset_server.load("dialogues/zara.dialogue.ron");
+    
     commands.spawn((
         Patron {
             name: "Zara".to_string(),
             current_mood: Mood::Neutral,
             base_personality: Personality::Secretive,
             current_dialogue_node: "zara_intro".to_string(),
+            dialogue_asset: Some(zara_dialogue),  // Store the dialogue handle
         },
         Name::new("Zara"),
     ));
@@ -120,6 +127,7 @@ fn setup_initial_patrons(mut commands: Commands) {
             current_mood: Mood::Aggressive,
             base_personality: Personality::Volatile,
             current_dialogue_node: "kael_intro".to_string(),
+            dialogue_asset: None,  // No specific dialogue file yet
         },
         Name::new("Kael"),
     ));
@@ -131,6 +139,7 @@ fn setup_initial_patrons(mut commands: Commands) {
             current_mood: Mood::Neutral,
             base_personality: Personality::Artificial,
             current_dialogue_node: "unit_intro".to_string(),
+            dialogue_asset: None,  // No specific dialogue file yet
         },
         Name::new("Unit 734"),
     ));
@@ -142,7 +151,43 @@ fn setup_initial_patrons(mut commands: Commands) {
             current_mood: Mood::Calm,
             base_personality: Personality::Creative,
             current_dialogue_node: "lyra_intro".to_string(),
+            dialogue_asset: None,  // No specific dialogue file yet
         },
         Name::new("Lyra"),
     ));
+}
+
+/// System to check if Zara's dialogue is properly loaded
+fn load_zara_dialogue(
+    patrons: Query<(Entity, &Patron)>,
+    dialogue_assets: Res<Assets<DialogueTree>>,
+) {
+    for (_entity, patron) in patrons.iter() {
+        if patron.name == "Zara" {
+            if let Some(dialogue_handle) = &patron.dialogue_asset {
+                if let Some(dialogue_tree) = dialogue_assets.get(dialogue_handle) {
+                    // Print more visible debug info
+                    println!("============================================");
+                    println!("✅ SUCCESS: ZARA DIALOGUE LOADED FROM zara.dialogue.ron");
+                    println!("Number of dialogue nodes: {}", dialogue_tree.nodes.len());
+                    println!("Starting node: {}", dialogue_tree.starting_node);
+                    
+                    if let Some(intro_node) = dialogue_tree.nodes.get("zara_intro") {
+                        println!("Zara intro text: {}", intro_node.text);
+                        println!("Available options: {}", intro_node.options.len());
+                        for (i, option) in intro_node.options.iter().enumerate() {
+                            println!("  Option {}: {}", i+1, option.text);
+                        }
+                    } else {
+                        println!("❌ ERROR: 'zara_intro' node not found in dialogue tree!");
+                    }
+                    println!("============================================");
+                } else {
+                    println!("❌ ERROR: Failed to get dialogue tree asset for Zara!");
+                }
+            } else {
+                println!("❌ ERROR: No dialogue asset handle for Zara!");
+            }
+        }
+    }
 } 

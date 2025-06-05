@@ -1,0 +1,73 @@
+title: ZaraDialogue
+---
+// Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format
+// Secretive security officer who has seen things she shouldn't have
+
+// The $player_name variable is already declared in start.yarn
+
+Zara: Hey there, bartender. I could use a drink.
+
+-> What can I get you?
+    Player: What can I get you?
+    <<jump ZaraOrder>>
+-> You look like you've had a rough day.
+    Player: You look like you've had a rough day.
+    <<jump ZaraDay>>
+===
+
+title: ZaraOrder
+---
+Zara: Something strong. Surprise me.
+
+-> Coming right up.
+    Player: Coming right up.
+    <<set $zara_likes_strong_drinks = true>>
+    <<jump ZaraWait>>
+-> Maybe something lighter would be better?
+    Player: Maybe something lighter would be better?
+    <<jump ZaraAnnoyance>>
+===
+
+title: ZaraDay
+---
+Zara: Let's just say I've seen things I shouldn't have. Working security for Galactic Corp has its downsides.
+
+-> Want to talk about it?
+    Player: Want to talk about it?
+    <<jump ZaraSecret>>
+-> Let me get you that drink.
+    Player: Let me get you that drink.
+    <<jump ZaraOrder>>
+===
+
+title: ZaraSecret
+---
+Zara: Not here. Too many ears. But if you're curious, mix me something with that blue liquid from Proxima B. It might loosen my tongue.
+
+-> I'll see what I can do.
+    Player: I'll see what I can do.
+    <<set $zara_hint_blue_proxima = true>>
+    <<jump ZaraWait>>
+-> later.
+    Player: later.
+    <<jump ZaraWait>>
+===
+
+title: ZaraWait
+---
+Zara: I'll be waiting. No rush.
+
+-> [Continue]
+    <<set_game_state Crafting>>
+===
+
+title: ZaraAnnoyance
+---
+Zara: Do I look like someone who wants a light drink? Strong. Now.
+
+-> Of course, coming right up.
+    Player: Of course, coming right up.
+    <<set $zara_likes_strong_drinks = true>>
+    <<set $zara_is_impatient = true>>
+    <<jump ZaraWait>>
+=== 

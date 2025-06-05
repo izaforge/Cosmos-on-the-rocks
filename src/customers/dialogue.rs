@@ -29,16 +29,37 @@ pub fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) 
         .commands_mut()
         .add_command("set_game_state", set_game_state_id);
     
-    // Start with the patron dialogue instead of bartender monologue
-    // Check if nodes exist by looking at their headers
-    if project.headers_for_node("PatronDialogue").is_some() {
+    // Print debug header
+    println!("============================================");
+    println!("Checking for dialogue nodes");
+    
+    // First try to use Zara's dialogue
+    let zara_dialogue = project.headers_for_node("ZaraDialogue");
+    let patron_dialogue = project.headers_for_node("PatronDialogue");
+    let bartender_dialogue = project.headers_for_node("BartenderMonologue");
+    
+    println!("ZaraDialogue: {}", if zara_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
+    println!("PatronDialogue: {}", if patron_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
+    println!("BartenderMonologue: {}", if bartender_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
+    println!("============================================");
+    
+    // First try to use Zara's dialogue
+    if zara_dialogue.is_some() {
+        dialogue_runner.start_node("ZaraDialogue");
+        println!("✅ SUCCESS: Starting ZaraDialogue node from zara.yarn");
+    } 
+    // Fall back to the patron dialogue
+    else if patron_dialogue.is_some() {
         dialogue_runner.start_node("PatronDialogue");
         println!("Starting PatronDialogue node");
-    } else if project.headers_for_node("BartenderMonologue").is_some() {
+    } 
+    // Last resort is the bartender monologue
+    else if bartender_dialogue.is_some() {
         dialogue_runner.start_node("BartenderMonologue");
         println!("Starting BartenderMonologue node");
-    } else {
-        println!("No dialogue node found!");
+    } 
+    else {
+        println!("❌ ERROR: No dialogue node found!");
     }
 
     commands.spawn((dialogue_runner, OnCustomerScreen));
