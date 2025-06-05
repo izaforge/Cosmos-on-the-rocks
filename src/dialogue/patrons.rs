@@ -102,9 +102,25 @@ pub struct PatronPlugin;
 
 impl Plugin for PatronPlugin {
     fn build(&self, app: &mut App) {
+        info!("PatronPlugin initialized!");
+        info!("This plugin will spawn the four main patrons: Zara, Kael, Unit 734, and Lyra");
+        
         app.init_resource::<RelationshipRegistry>()
            .add_systems(Startup, setup_initial_patrons)
-           .add_systems(Update, load_zara_dialogue);  // Add system to load Zara's dialogue
+           .add_systems(Update, load_zara_dialogue.run_if(run_once));  // Only run once
+    }
+}
+
+/// Condition to run a system only once
+fn run_once() -> bool {
+    static mut HAS_RUN: bool = false;
+    unsafe {
+        if !HAS_RUN {
+            HAS_RUN = true;
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -127,11 +143,14 @@ pub fn apply_emotion_effect(
 
 /// System to spawn the four main patrons of the game
 fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>) {
+    info!("============================================");
+    info!("Setting up initial patrons");
+    
     // Zara - The secretive security officer
     // Load Zara's dialogue from assets/dialogues/zara.dialogue.ron
     let zara_dialogue = asset_server.load("dialogues/zara.dialogue.ron");
     
-    commands.spawn((
+    let zara_entity = commands.spawn((
         Patron {
             name: "Zara".to_string(),
             base_personality: Personality::Secretive,
@@ -142,10 +161,11 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
         Sadness { value: 20 },
         Anger { value: 30 },
         Name::new("Zara"),
-    ));
+    )).id();
+    info!("Spawned Zara with entity ID: {:?}", zara_entity);
     
     // Kael - The volatile mercenary
-    commands.spawn((
+    let kael_entity = commands.spawn((
         Patron {
             name: "Kael".to_string(),
             base_personality: Personality::Volatile,
@@ -156,10 +176,11 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
         Sadness { value: 10 },
         Anger { value: 60 },
         Name::new("Kael"),
-    ));
+    )).id();
+    info!("Spawned Kael with entity ID: {:?}", kael_entity);
     
     // Unit 734 - The artificial intelligence
-    commands.spawn((
+    let unit_entity = commands.spawn((
         Patron {
             name: "Unit 734".to_string(),
             base_personality: Personality::Artificial,
@@ -170,10 +191,11 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
         Sadness { value: 50 },
         Anger { value: 0 },
         Name::new("Unit 734"),
-    ));
+    )).id();
+    info!("Spawned Unit 734 with entity ID: {:?}", unit_entity);
     
     // Lyra - The creative artist
-    commands.spawn((
+    let lyra_entity = commands.spawn((
         Patron {
             name: "Lyra".to_string(),
             base_personality: Personality::Creative,
@@ -184,7 +206,11 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
         Sadness { value: 30 },
         Anger { value: 10 },
         Name::new("Lyra"),
-    ));
+    )).id();
+    info!("Spawned Lyra with entity ID: {:?}", lyra_entity);
+    
+    info!("Initial patrons setup complete");
+    info!("============================================");
 }
 
 /// System to check if Zara's dialogue is properly loaded
