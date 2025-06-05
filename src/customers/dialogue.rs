@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::log::warn;
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
+use crate::dialogue::patrons::{Happiness, Sadness, Anger, Patron};
 
 use crate::{customers::OnCustomerScreen, engine::GameState};
 
@@ -13,7 +14,8 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::new(),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
-        .add_systems(OnEnter(GameState::CustomerInteraction), spawn_dialogue_runner);
+        .add_systems(OnEnter(GameState::CustomerInteraction), spawn_dialogue_runner)
+        .add_systems(Update, handle_drink_effects);
     }
 }
 
@@ -76,5 +78,58 @@ fn set_game_state(In(state_name): In<String>, world: &mut World) {
         "Crafting" => next_state.set(GameState::Crafting),
         "EndNight" => next_state.set(GameState::EndNight),
         _ => warn!("Unknown GameState: {}", state_name),
+    }
+}
+
+/// Component for a drink that can affect emotions
+#[derive(Component)]
+pub struct EmotionDrink {
+    pub happiness_effect: i16,
+    pub sadness_effect: i16,
+    pub anger_effect: i16,
+    pub target_patron: Option<Entity>,
+}
+
+/// System to handle drink effects on patron emotions
+pub fn handle_drink_effects(
+    mut commands: Commands,
+    drinks: Query<(Entity, &EmotionDrink)>,
+    mut patrons: Query<(Entity, &Patron, &mut Happiness, &mut Sadness, &mut Anger)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    // Just for testing - press D to apply a drink effect to the first patron
+    if keyboard_input.just_pressed(KeyCode::KeyD) {
+        // For testing, just find the first patron
+        if let Some((entity, _, _, _, _)) = patrons.iter().next() {
+            // Create a test drink
+            commands.spawn(EmotionDrink {
+                happiness_effect: 10,
+                sadness_effect: -5,
+                anger_effect: -15,
+                target_patron: Some(entity),
+            });
+            
+            info!("Serving test drink to patron!");
+        }
+    }
+    
+    // Process all emotion drinks and apply effects
+    for (drink_entity, drink) in drinks.iter() {
+        if let Some(target) = drink.target_patron {
+            if let Ok((_, patron, mut happiness, mut sadness, mut anger)) = patrons.get_mut(target) {
+                // Apply emotion changes
+                happiness.value = ((happiness.value as i16) + drink.happiness_effect).clamp(0, 100) as u8;
+                sadness.value = ((sadness.value as i16) + drink.sadness_effect).clamp(0, 100) as u8;
+                anger.value = ((anger.value as i16) + drink.anger_effect).clamp(0, 100) as u8;
+                
+                info!(
+                    "Applied drink to {}: Happiness: {}, Sadness: {}, Anger: {}", 
+                    patron.name, happiness.value, sadness.value, anger.value
+                );
+                
+                // Remove the drink entity after it's been applied
+                commands.entity(drink_entity).despawn();
+            }
+        }
     }
 }

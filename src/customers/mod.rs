@@ -28,17 +28,25 @@ impl Plugin for CustomerPlugin {
 #[require(Sprite, SpriteAnimState, Transform)]
 pub struct Customer {
     pub name: String,
-    pub emotional_state: EmotionalState,
     pub faction: Factions,
     pub likes: Vec<String>,
     pub dislikes: Vec<String>,
 }
 
-pub enum EmotionalState {
-    Happy,
-    Sad,
-    Angry,
-    Neutral,
+// New emotion components for customers
+#[derive(Component)]
+pub struct CustomerHappiness {
+    pub value: u8, // 0-100 value
+}
+
+#[derive(Component)]
+pub struct CustomerSadness {
+    pub value: u8, // 0-100 value
+}
+
+#[derive(Component)]
+pub struct CustomerAnger {
+    pub value: u8, // 0-100 value
 }
 
 pub enum Factions {
@@ -64,11 +72,13 @@ fn spawn_customer(
     commands.spawn((
         Customer {
             name: "Bartender".to_string(),
-            emotional_state: EmotionalState::Neutral,
             faction: Factions::BountyHunter,
             likes: vec!["Drinks".to_string(), "Money".to_string()],
             dislikes: vec!["Rude Customers".to_string()],
         },
+        CustomerHappiness { value: 50 },
+        CustomerSadness { value: 20 },
+        CustomerAnger { value: 30 },
         Sprite {
             image: image_assets.bartender.clone(),
             texture_atlas: Some(TextureAtlas {

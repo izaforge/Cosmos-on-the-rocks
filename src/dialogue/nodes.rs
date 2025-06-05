@@ -20,11 +20,27 @@ pub struct DialogueOption {
     pub effects: Vec<DialogueEffect>,
 }
 
+/// Types of emotions that can be checked or modified
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum EmotionType {
+    Happiness,
+    Sadness,
+    Anger,
+}
+
+/// Comparison operators for emotion checks
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Comparison {
+    GreaterThan,
+    LessThan,
+    Equal,
+}
+
 /// Conditions that must be met for a dialogue option to be available
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DialogueCondition {
     HasIntel(String),         // e.g., HasIntel("Intel_Zara_Secret")
-    PatronMood(String, Mood), // e.g., PatronMood("Zara", Mood::Truthful)
+    EmotionCheck(String, EmotionType, u8, Comparison), // e.g., EmotionCheck("Zara", EmotionType::Happiness, 70, Comparison::GreaterThan)
 }
 
 /// Effects that occur when a dialogue option is selected
@@ -32,18 +48,7 @@ pub enum DialogueCondition {
 pub enum DialogueEffect {
     SetIntel(String),         // e.g., SetIntel("Intel_Zara_Secret")
     ChangeRelationship(String, String, Relationship), // e.g., ChangeRelationship("Zara", "Kael", Relationship::Hostile)
-}
-
-/// Different mood states that patrons can be in
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum Mood {
-    Neutral,
-    Calm,
-    Aggressive,
-    Truthful,
-    Energized,
-    Glitched,
-    // Additional moods as needed
+    ModifyEmotion(String, EmotionType, i16), // e.g., ModifyEmotion("Zara", EmotionType::Happiness, 15)
 }
 
 /// Base personalities for each patron

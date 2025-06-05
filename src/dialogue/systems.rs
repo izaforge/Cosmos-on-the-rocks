@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use super::nodes::{self, DialogueTree, DialogueCondition, DialogueEffect};
+use super::nodes::{self, DialogueTree, DialogueCondition, DialogueEffect, EmotionType, Comparison};
 use super::intel::*;
-use super::patrons::{Patron as PatronComponent, Mood as PatronMood};
+use super::patrons::{Patron as PatronComponent, Happiness, Sadness, Anger};
 
 /// Component that marks an entity as having an active dialogue
 #[derive(Component)]
@@ -44,6 +44,7 @@ fn handle_dialogue_option_selection(
     mut intel_registry: ResMut<IntelRegistry>,
     mut intel_events: EventWriter<IntelDiscoveredEvent>,
     mut dialogue_events: EventReader<DialogueOptionSelected>,
+    mut patrons_query: Query<(&PatronComponent, &mut Happiness, &mut Sadness, &mut Anger)>,
 ) {
     for event in dialogue_events.read() {
         if let Ok((_entity, mut active_dialogue)) = dialogue_query.get_mut(event.dialogue_entity) {
@@ -64,6 +65,32 @@ fn handle_dialogue_option_selection(
                                 DialogueEffect::ChangeRelationship(from, to, relationship) => {
                                     info!("Relationship changed: {} -> {} = {:?}", from, to, relationship);
                                     // This would be handled by a relationship system
+                                },
+                                DialogueEffect::ModifyEmotion(patron_name, emotion_type, value) => {
+                                    // Find the patron with the matching name
+                                    for (patron, mut happiness, mut sadness, mut anger) in patrons_query.iter_mut() {
+                                        if patron.name == *patron_name {
+                                            // Apply the emotion change
+                                            match emotion_type {
+                                                EmotionType::Happiness => {
+                                                    let new_value = (happiness.value as i16 + value).clamp(0, 100) as u8;
+                                                    happiness.value = new_value;
+                                                    info!("Patron {} happiness changed to {}", patron_name, new_value);
+                                                },
+                                                EmotionType::Sadness => {
+                                                    let new_value = (sadness.value as i16 + value).clamp(0, 100) as u8;
+                                                    sadness.value = new_value;
+                                                    info!("Patron {} sadness changed to {}", patron_name, new_value);
+                                                },
+                                                EmotionType::Anger => {
+                                                    let new_value = (anger.value as i16 + value).clamp(0, 100) as u8;
+                                                    anger.value = new_value;
+                                                    info!("Patron {} anger changed to {}", patron_name, new_value);
+                                                },
+                                            }
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -82,7 +109,7 @@ fn update_dialogue_ui(
     dialogue_query: Query<&ActiveDialogue>,
     dialogue_assets: Res<Assets<DialogueTree>>,
     intel_registry: Res<IntelRegistry>,
-    patrons_query: Query<(&PatronComponent, &Name)>,
+    patrons_query: Query<(&PatronComponent, &Happiness, &Sadness, &Anger)>,
 ) {
     for active_dialogue in dialogue_query.iter() {
         if let Some(dialogue_tree) = dialogue_assets.get(&active_dialogue.tree_handle) {
@@ -99,20 +126,23 @@ fn update_dialogue_ui(
                             DialogueCondition::HasIntel(intel_id) => {
                                 intel_registry.has_intel(intel_id)
                             },
-                            DialogueCondition::PatronMood(patron_name, expected_mood) => {
-                                // Find the patron with the matching name and check their mood
-                                for (patron, name) in patrons_query.iter() {
-                                    if name.as_str() == patron_name || patron.name == *patron_name {
-                                        // Convert the node::Mood to patron::Mood for comparison
-                                        let patron_expected_mood = match expected_mood {
-                                            nodes::Mood::Neutral => PatronMood::Neutral,
-                                            nodes::Mood::Calm => PatronMood::Calm,
-                                            nodes::Mood::Aggressive => PatronMood::Aggressive,
-                                            nodes::Mood::Truthful => PatronMood::Truthful,
-                                            nodes::Mood::Energized => PatronMood::Energized,
-                                            nodes::Mood::Glitched => PatronMood::Glitched,
+                            DialogueCondition::EmotionCheck(patron_name, emotion_type, threshold, comparison) => {
+                                // Find the patron with the matching name and check their emotions
+                                for (patron, happiness, sadness, anger) in patrons_query.iter() {
+                                    if patron.name == *patron_name {
+                                        // Get the relevant emotion value
+                                        let value = match emotion_type {
+                                            EmotionType::Happiness => happiness.value,
+                                            EmotionType::Sadness => sadness.value,
+                                            EmotionType::Anger => anger.value,
                                         };
-                                        return patron.current_mood == patron_expected_mood;
+                                        
+                                        // Compare it to the threshold using the specified comparison
+                                        return match comparison {
+                                            Comparison::GreaterThan => value > *threshold,
+                                            Comparison::LessThan => value < *threshold,
+                                            Comparison::Equal => value == *threshold,
+                                        };
                                     }
                                 }
                                 // If patron not found, condition fails

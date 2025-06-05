@@ -2,31 +2,48 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 use super::nodes::DialogueTree;
 
-/// Component for tracking a patron's mood and personality state
+/// Component for tracking a patron's personality state
 #[derive(Component, Debug, Clone)]
 pub struct Patron {
     pub name: String,
-    pub current_mood: Mood,
     pub base_personality: Personality,
     pub current_dialogue_node: String,
     pub dialogue_asset: Option<Handle<DialogueTree>>,  // Added to store dialogue handle
 }
 
-/// Different mood states that patrons can be in
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Mood {
-    Neutral,
-    Calm,
-    Aggressive,
-    Truthful,
-    Energized,
-    Glitched,
-    // Additional moods as needed
+/// Component for tracking a patron's happiness level (0-100)
+#[derive(Component, Debug, Clone)]
+pub struct Happiness {
+    pub value: u8,
 }
 
-impl Default for Mood {
+impl Default for Happiness {
     fn default() -> Self {
-        Self::Neutral
+        Self { value: 50 }
+    }
+}
+
+/// Component for tracking a patron's sadness level (0-100)
+#[derive(Component, Debug, Clone)]
+pub struct Sadness {
+    pub value: u8,
+}
+
+impl Default for Sadness {
+    fn default() -> Self {
+        Self { value: 20 }
+    }
+}
+
+/// Component for tracking a patron's anger level (0-100)
+#[derive(Component, Debug, Clone)]
+pub struct Anger {
+    pub value: u8,
+}
+
+impl Default for Anger {
+    fn default() -> Self {
+        Self { value: 30 }
     }
 }
 
@@ -91,14 +108,19 @@ impl Plugin for PatronPlugin {
     }
 }
 
-/// System to handle patron mood changes from drink effects
-pub fn apply_mood_effect(
+/// System to handle patron emotion changes from drink effects
+pub fn apply_emotion_effect(
     entity: Entity, 
-    mood: Mood,
-) -> impl FnMut(Query<&mut Patron>) + Send + Sync + 'static {
-    move |mut patron_query: Query<&mut Patron>| {
-        if let Ok(mut patron) = patron_query.get_mut(entity) {
-            patron.current_mood = mood;
+    happiness_delta: i16,
+    sadness_delta: i16,
+    anger_delta: i16,
+) -> impl FnMut(Query<(&mut Happiness, &mut Sadness, &mut Anger)>) + Send + Sync + 'static {
+    move |mut emotion_query: Query<(&mut Happiness, &mut Sadness, &mut Anger)>| {
+        if let Ok((mut happiness, mut sadness, mut anger)) = emotion_query.get_mut(entity) {
+            // Apply changes with clamping between 0-100
+            happiness.value = (happiness.value as i16 + happiness_delta).clamp(0, 100) as u8;
+            sadness.value = (sadness.value as i16 + sadness_delta).clamp(0, 100) as u8;
+            anger.value = (anger.value as i16 + anger_delta).clamp(0, 100) as u8;
         }
     }
 }
@@ -112,11 +134,13 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn((
         Patron {
             name: "Zara".to_string(),
-            current_mood: Mood::Neutral,
             base_personality: Personality::Secretive,
             current_dialogue_node: "zara_intro".to_string(),
             dialogue_asset: Some(zara_dialogue),  // Store the dialogue handle
         },
+        Happiness { value: 50 },
+        Sadness { value: 20 },
+        Anger { value: 30 },
         Name::new("Zara"),
     ));
     
@@ -124,11 +148,13 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn((
         Patron {
             name: "Kael".to_string(),
-            current_mood: Mood::Aggressive,
             base_personality: Personality::Volatile,
             current_dialogue_node: "kael_intro".to_string(),
             dialogue_asset: None,  // No specific dialogue file yet
         },
+        Happiness { value: 40 },
+        Sadness { value: 10 },
+        Anger { value: 60 },
         Name::new("Kael"),
     ));
     
@@ -136,11 +162,13 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn((
         Patron {
             name: "Unit 734".to_string(),
-            current_mood: Mood::Neutral,
             base_personality: Personality::Artificial,
             current_dialogue_node: "unit_intro".to_string(),
             dialogue_asset: None,  // No specific dialogue file yet
         },
+        Happiness { value: 50 },
+        Sadness { value: 50 },
+        Anger { value: 0 },
         Name::new("Unit 734"),
     ));
     
@@ -148,11 +176,13 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     commands.spawn((
         Patron {
             name: "Lyra".to_string(),
-            current_mood: Mood::Calm,
             base_personality: Personality::Creative,
             current_dialogue_node: "lyra_intro".to_string(),
             dialogue_asset: None,  // No specific dialogue file yet
         },
+        Happiness { value: 70 },
+        Sadness { value: 30 },
+        Anger { value: 10 },
         Name::new("Lyra"),
     ));
 }
