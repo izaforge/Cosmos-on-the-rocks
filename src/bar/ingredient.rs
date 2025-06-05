@@ -2,22 +2,26 @@ use bevy::prelude::*;
 use uuid::Uuid;
 
 #[derive(Component, Clone, Debug)]
+#[require(Sprite, Transform)]
 pub struct Ingredient {
     pub id: uuid::Uuid,
     pub name: String,
-    pub ingredient_profile: IngredientProfile
+    pub description: String,
+    pub ingredient_profile: IngredientProfile,
 }
 
 #[derive(Clone, Debug)]
 pub struct IngredientProfile {
+    pub size: f32,
     pub taste: IngredientTaste,
     pub primary_effect: PrimaryEffect,
     pub secondary_effect: SecondaryEffect,
-    pub hazard: String,
+    pub hazard: Option<String>,
 }
 
 #[derive(Clone, Debug)]
 pub enum IngredientTaste {
+    None,
     Sweet,
     Sour,
     Bitter,
@@ -38,16 +42,16 @@ pub enum PrimaryEffect {
 
 #[derive(Clone, Debug)]
 pub enum SecondaryEffect {
-    Euphoric { conditon: EffectCondition },
-    Agitated { conditon: EffectCondition },
-    Hallucinogenic { conditon: EffectCondition },
-    Paranoia { conditon: EffectCondition },
-    Aggresive { conditon: EffectCondition },
-    Sedated { conditon: EffectCondition },
+    Euphoric(EffectCondition),
+    Agitated(EffectCondition),
+    Hallucinogenic(EffectCondition),
+    Paranoia(EffectCondition),
+    Aggresive(EffectCondition),
+    Sedated(EffectCondition),
 }
 
 #[derive(Clone, Debug)]
 pub struct EffectCondition {
-    volume_needed: f32,
-    catalyst: Option<Uuid>,
+    pub volume_needed: f32,
+    pub catalyst: Option<Uuid>,
 }

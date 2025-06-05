@@ -1,3 +1,4 @@
+pub mod bar_counter;
 pub mod crafting;
-pub mod ingredient;
 pub mod glass;
+pub mod ingredient;

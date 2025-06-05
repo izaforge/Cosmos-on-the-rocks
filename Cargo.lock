@@ -1201,9 +1201,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_seedling"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efa042c7964036ab9d5fafdd84d9e5f6378801c4ca90c9afdf02cc73cda54fe3"
+checksum = "9f74fd7b2dad8630ad22955991bc8b84d96dabe88c3b2f268842803e2ec8f8d0"
 dependencies = [
  "bevy",
  "bevy_math",

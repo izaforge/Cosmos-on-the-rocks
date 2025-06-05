@@ -6,7 +6,7 @@ use crate::{customers::OnCustomerScreen, engine::asset_loader::AudioAssets};
 pub struct AudioControllerPlugin;
 
 impl Plugin for AudioControllerPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, _app: &mut App) {
         todo!()
     }
 }

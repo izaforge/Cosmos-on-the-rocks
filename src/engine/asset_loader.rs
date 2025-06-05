@@ -4,8 +4,14 @@ use bevy_seedling::sample::Sample;
 
 #[derive(AssetCollection, Resource)]
 pub struct ImageAssets {
-    #[asset(path = "characters/bartender.png")]
+    #[asset(path = "images/characters/bartender.png")]
     pub bartender: Handle<Image>,
+    #[asset(path = "images/bar/ingredients/blue_icegel.png")]
+    pub blue_icegel: Handle<Image>,
+    #[asset(path = "images/bar/ingredients/red_icegel.png")]
+    pub red_icegel: Handle<Image>,
+    #[asset(path = "images/bar/ingredients/green_icegel.png")]
+    pub green_icegel: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

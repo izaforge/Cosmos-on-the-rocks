@@ -12,7 +12,10 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::new(),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
-        .add_systems(OnEnter(GameState::CustomerInteraction), spawn_dialogue_runner);
+        .add_systems(
+            OnEnter(GameState::CustomerInteraction),
+            spawn_dialogue_runner,
+        );
     }
 }
 

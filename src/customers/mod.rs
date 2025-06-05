@@ -15,12 +15,12 @@ pub struct CustomerPlugin;
 
 impl Plugin for CustomerPlugin {
     fn build(&self, app: &mut App) {
-        app
-        .add_plugins(DialogPlugin)
-        .add_systems(
-            OnEnter(GameState::CustomerInteraction),
-            (spawn_customer, play_customer_bg_sound),
-        ).add_systems(OnExit(GameState::MainMenu), cleanup_customer);
+        app.add_plugins(DialogPlugin)
+            .add_systems(
+                OnEnter(GameState::CustomerInteraction),
+                (spawn_customer, play_customer_bg_sound),
+            )
+            .add_systems(OnExit(GameState::MainMenu), cleanup_customer);
     }
 }
 
