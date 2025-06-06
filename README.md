@@ -1,4 +1,4 @@
-# Cosmos-on-the-rocks
+# Cosmos on the Rocks
 Bartending game made in Bevy for Game Jam 6
 
 **Setting:** A bar orbiting a black hole or floating at a galactic crossroads. Drifters, bounty hunters, AIs, rebels, and aliens pass through.

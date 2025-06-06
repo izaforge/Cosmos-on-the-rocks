@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     animation::sprite_animation::SpriteAnimState,
     customers::dialogue::DialogPlugin,
-    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg_sound},
+    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
 };
 
 pub mod dialogue;
@@ -16,11 +16,8 @@ pub struct CustomerPlugin;
 impl Plugin for CustomerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(DialogPlugin)
-            .add_systems(
-                OnEnter(GameState::CustomerInteraction),
-                (spawn_customer, play_customer_bg_sound),
-            )
-            .add_systems(OnExit(GameState::MainMenu), cleanup_customer);
+            .add_systems(OnEnter(GameState::CustomerInteraction), play_customer_bg)
+            .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }
 
@@ -48,7 +45,7 @@ pub enum Factions {
     Unknown,
 }
 
-fn spawn_customer(
+pub fn spawn_bartender(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
@@ -75,7 +72,7 @@ fn spawn_customer(
                 layout: customer_layout_handle,
                 index: 0,
             }),
-            custom_size: Some(Vec2::new(96., 128.)),
+            custom_size: Some(Vec2::new(192., 256.)),
             ..default()
         },
         Transform::from_translation(Vec3::new(400., 0., 1.)),

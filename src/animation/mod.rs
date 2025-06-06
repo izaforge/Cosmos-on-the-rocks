@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 pub mod sprite_animation;
-pub mod sprite_picking;
 
 #[derive(Event)]
 pub struct AnimationEvent {

@@ -1,8 +1,8 @@
 use bevy::prelude::*;
-use uuid::Uuid;
 
 use crate::{
-    animation::sprite_animation::SpriteAnimState, bar::glass::Glass,
+    animation::sprite_animation::SpriteAnimState,
+    bar::{crafting::OnCraftingScreen, glass::Glass},
     engine::asset_loader::ImageAssets,
 };
 
@@ -57,7 +57,7 @@ pub enum SecondaryEffect {
 #[derive(Clone, Debug)]
 pub struct EffectCondition {
     pub volume_needed: f32,
-    pub catalyst: Option<Uuid>,
+    pub catalyst: Option<Entity>,
 }
 
 pub fn spawn_ingredients(
@@ -79,17 +79,34 @@ pub fn spawn_ingredients(
                 transform,
                 icegel_anim_state.clone(),
                 Pickable::default(),
+                OnCraftingScreen,
             ))
             .observe(
-                |ev: Trigger<Pointer<Click>>, mut query: Query<&mut Glass>| {
+                |ev: Trigger<Pointer<Click>>,
+                 mut glass_query: Query<&mut Glass>,
+                 ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
-                    for mut glass in query.iter_mut() {
-                        glass
-                            .ingredients
-                            .entry(ingredient_entity)
-                            .and_modify(|v| *v += 10.0)
-                            .or_insert(10.0);
-                        info!("Added ingredient {:#?} to glass", glass.ingredients);
+                    for mut glass in glass_query.iter_mut() {
+                        let ingredient_size = match ingredient_query.get(ingredient_entity) {
+                            Ok(ingredient) => ingredient.ingredient_profile.size,
+                            Err(_) => {
+                                warn!("Clicked entity is not an ingredient!");
+                                return;
+                            }
+                        };
+                        if glass.get_current_volume() + ingredient_size < glass.capacity {
+                            glass
+                                .ingredients
+                                .entry(ingredient_entity)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
+                            info!(
+                                "Added ingredient {:#?} to glass with capacity {}",
+                                glass.ingredients, glass.capacity
+                            );
+                        } else {
+                            info!("Glass is full, cannot add more ingredients.");
+                        }
                     }
                 },
             );
@@ -148,7 +165,7 @@ pub fn get_ice_gels(
         hazard: None,
     };
     let red_icegel_profile = IngredientProfile {
-        size: 10.0,
+        size: 11.0,
         taste: IngredientTaste::Spicy,
         primary_effect: PrimaryEffect::Energizing,
         secondary_effect: SecondaryEffect::Agitated(EffectCondition {
@@ -158,7 +175,7 @@ pub fn get_ice_gels(
         hazard: None,
     };
     let green_icegel_profile = IngredientProfile {
-        size: 10.0,
+        size: 12.0,
         taste: IngredientTaste::Sweet,
         primary_effect: PrimaryEffect::Healing,
         secondary_effect: SecondaryEffect::Euphoric(EffectCondition {

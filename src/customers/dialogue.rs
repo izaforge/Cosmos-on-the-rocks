@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
 
-use crate::{customers::OnCustomerScreen, engine::GameState};
+use crate::{
+    customers::{OnCustomerScreen, cleanup_customer},
+    engine::GameState,
+};
 
 pub struct DialogPlugin;
 
@@ -15,7 +18,8 @@ impl Plugin for DialogPlugin {
         .add_systems(
             OnEnter(GameState::CustomerInteraction),
             spawn_dialogue_runner,
-        );
+        )
+        .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }
 
