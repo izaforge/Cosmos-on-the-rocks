@@ -77,7 +77,7 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
                     },
                     BorderColor(BUTTON_BORDER),
                     BorderRadius::MAX,
-                    BackgroundColor(Color::srgb(0.0, 0.0, 0.0)),
+                    BackgroundColor(NORMAL_BUTTON),
                 ))
                 .insert(CraftingButtons::Reset)
                 .with_children(|parent| {
@@ -114,10 +114,10 @@ pub fn crafting_button_interaction_system(
                 }
             },
             Interaction::Hovered => {
-                *color = Color::srgb(0.0, 0.0, 0.0).into();
+                *color = HOVERED_BUTTON.into();
             }
             Interaction::None => {
-                *color = Color::srgb(0.0, 0.0, 0.0).into();
+                *color = NORMAL_BUTTON.into();
             }
         }
     }
@@ -126,6 +126,6 @@ pub fn crafting_button_interaction_system(
 // System to cleanup crafting menu
 pub fn cleanup_crafting_menu(mut commands: Commands, query: Query<Entity, With<OnCraftingScreen>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 } 
