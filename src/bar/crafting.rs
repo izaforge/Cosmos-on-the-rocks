@@ -18,7 +18,6 @@ impl Plugin for CraftingPlugin {
             Update,
             animate_spite.run_if(in_state(GameState::CustomerInteraction)),
         )
-        .add_plugins(SpritePickingPlugin)
         .add_event::<AnimationEvent>();
     }
 }

@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 use uuid::Uuid;
 
-use crate::{animation::sprite_animation::SpriteAnimState, engine::asset_loader::ImageAssets};
+use crate::{
+    animation::sprite_animation::SpriteAnimState, bar::glass::Glass,
+    engine::asset_loader::ImageAssets,
+};
 
 #[derive(Component, Clone, Debug)]
 #[require(Sprite, Transform, SpriteAnimState)]
 pub struct Ingredient {
-    pub id: uuid::Uuid,
     pub name: String,
     pub description: String,
     pub ingredient_profile: IngredientProfile,
@@ -70,7 +72,27 @@ pub fn spawn_ingredients(
         timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
     };
     for (ingredient, sprite, transform) in icegels {
-        commands.spawn((ingredient, sprite, transform, icegel_anim_state.clone()));
+        commands
+            .spawn((
+                ingredient,
+                sprite,
+                transform,
+                icegel_anim_state.clone(),
+                Pickable::default(),
+            ))
+            .observe(
+                |ev: Trigger<Pointer<Click>>, mut query: Query<&mut Glass>| {
+                    let ingredient_entity = ev.target();
+                    for mut glass in query.iter_mut() {
+                        glass
+                            .ingredients
+                            .entry(ingredient_entity)
+                            .and_modify(|v| *v += 10.0)
+                            .or_insert(10.0);
+                        info!("Added ingredient {:#?} to glass", glass.ingredients);
+                    }
+                },
+            );
     }
 }
 
@@ -149,19 +171,16 @@ pub fn get_ice_gels(
     let blue_icegel = Ingredient {
         name: "Blue Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        id: Uuid::new_v4(),
         ingredient_profile: blue_icegel_profile,
     };
     let red_icegel_ingredient = Ingredient {
         name: "Red Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        id: Uuid::new_v4(),
         ingredient_profile: red_icegel_profile,
     };
     let green_icegel_ingredient = Ingredient {
         name: "Green Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        id: Uuid::new_v4(),
         ingredient_profile: green_icegel_profile,
     };
     vec![

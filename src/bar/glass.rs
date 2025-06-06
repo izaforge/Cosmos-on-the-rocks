@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
-use uuid::Uuid;
 
 use crate::engine::asset_loader::ImageAssets;
 
@@ -10,7 +9,13 @@ use crate::engine::asset_loader::ImageAssets;
 pub struct Glass {
     pub capacity: f32,
     pub shape: GlassShape,
-    pub ingredients: HashMap<Uuid, f32>,
+    pub ingredients: HashMap<Entity, f32>,
+}
+
+impl Glass {
+    pub fn get_current_volume(&self) -> f32 {
+        self.ingredients.values().sum()
+    }
 }
 
 #[derive(Clone, Debug)]
