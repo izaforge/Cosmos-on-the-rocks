@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::{
-    bar::{crafting::OnCraftingScreen, ingredient::Ingredient},
-    engine::{GameState, asset_loader::ImageAssets},
+    bar::{crafting::OnCraftingScreen, drinks::Drink, ingredient::Ingredient},
+    engine::{asset_loader::ImageAssets, GameState},
 };
 
 #[derive(Component, Clone, Debug)]
@@ -53,7 +53,8 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
              mut game_state: ResMut<NextState<GameState>>,
              ingredient_query: Query<&Ingredient>| {
                 for mut glass in glass_query.iter_mut() {
-                    info!("Craftind Drink with {:#?}", glass.ingredients);
+                    let drink = Drink::from((glass.clone(), ev.target()));
+                    info!("Crafted {:#?}", drink);
                     game_state.set(GameState::CustomerInteraction);
                 }
             },

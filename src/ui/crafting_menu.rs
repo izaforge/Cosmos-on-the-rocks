@@ -48,7 +48,7 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
                     },
                     BorderColor(BUTTON_BORDER),
                     BorderRadius::MAX,
-                    BackgroundColor(Color::srgb(0.0, 0.0, 0.0)),
+                    BackgroundColor(NORMAL_BUTTON),
                 ))
                 .insert(CraftingButtons::Craft)
                 .with_children(|parent| {
