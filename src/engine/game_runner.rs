@@ -2,6 +2,10 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_lunex::UiSourceCamera;
 use bevy_seedling::prelude::*;
+use bevy::render::camera::ScalingMode;
+
+
+
 
 use crate::{
     bar::crafting::CraftingPlugin,
@@ -12,6 +16,7 @@ use crate::{
     },
     ui::GameUiPlugin,
 };
+
 
 pub struct GameRunnerPlugin;
 
@@ -34,8 +39,22 @@ impl Plugin for GameRunnerPlugin {
     }
 }
 
+#[derive(Component)]
+pub struct MainGameCamera;
+
 fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2d::default());
+    // Main game camera with FixedVertical scaling
+    let mut main_camera = Camera2dBundle::default();
+    // Make the screen/window height correspond to 1600.0 world units
+    // Width will depend on the aspect ratio
+    main_camera.projection.scaling_mode = ScalingMode::FixedVertical(1600.0);
+    
+    commands.spawn((
+        main_camera,
+        MainGameCamera,
+    ));
+    
+    // UI camera stays with the default ScalingMode (1 pixel = 1 world unit)
     commands.spawn((
         // This camera will become the source for all UI paired to index 0.
         Camera2d,
