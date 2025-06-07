@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::bar::ingredient::{Ingredient, IngredientProfile, IngredientTaste, PrimaryEffect, SecondaryEffect, EffectCondition};
+use crate::bar::ingredient::{
+    EffectCondition, Ingredient, IngredientProfile, IngredientTaste, PrimaryEffect, SecondaryEffect,
+};
 
 pub fn get_small_ice_gels(
     blue_icegel_sprite: Sprite,
@@ -88,4 +90,4 @@ pub fn get_small_ice_gels(
             Transform::from_xyz(0.0, 50.0, 1.0),
         ),
     ]
-} 
+}

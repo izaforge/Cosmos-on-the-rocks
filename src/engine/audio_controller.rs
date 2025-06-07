@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 
-use crate::{bar::crafting::OnCraftingScreen, customers::OnCustomerScreen, engine::asset_loader::AudioAssets};
+use crate::{
+    bar::crafting::OnCraftingScreen, customers::OnCustomerScreen, engine::asset_loader::AudioAssets,
+};
 
 pub struct AudioControllerPlugin;
 

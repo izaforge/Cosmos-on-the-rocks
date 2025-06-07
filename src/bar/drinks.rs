@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-use crate::bar::{glass::Glass, ingredient::{PrimaryEffect, SecondaryEffect}};
+use crate::bar::{
+    glass::Glass,
+    ingredient::{PrimaryEffect, SecondaryEffect},
+};
 
 #[derive(Component, Debug)]
 pub struct Drink {
@@ -19,7 +22,6 @@ impl From<(Glass, Entity)> for Drink {
         }
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum HazardEffect {

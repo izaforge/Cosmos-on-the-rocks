@@ -15,7 +15,7 @@ pub struct OnCraftingScreen;
 
 pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu_font = asset_server.load("fonts/Nasa21.ttf");
-    
+
     commands
         .spawn((
             Node {
@@ -62,7 +62,7 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
                         TextColor(TEXT_COLOR),
                     ));
                 });
-            
+
             // Reset Button
             parent
                 .spawn((
@@ -128,4 +128,4 @@ pub fn cleanup_crafting_menu(mut commands: Commands, query: Query<Entity, With<O
     for entity in query.iter() {
         commands.entity(entity).despawn();
     }
-} 
+}

@@ -71,16 +71,11 @@ pub fn spawn_ingredients(
         end_index: 7,
         timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
     };
-    
+
     // Get sprites for small ingredients
     let frame_size = UVec2::new(128, 128);
-    let icegel_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size,
-        8,
-        1,
-        None,
-        None,
-    ));
+    let icegel_layout_handle =
+        texture_atlases.add(TextureAtlasLayout::from_grid(frame_size, 8, 1, None, None));
 
     let blue_icegel_sprite = Sprite {
         image: image_assets.blue_icegel.clone(),
@@ -109,17 +104,17 @@ pub fn spawn_ingredients(
         custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
-    
+
     // Get small ingredients
     let small_icegels = ingredients_extra::get_small_ice_gels(
-        blue_icegel_sprite, 
-        red_icegel_sprite, 
-        green_icegel_sprite
+        blue_icegel_sprite,
+        red_icegel_sprite,
+        green_icegel_sprite,
     );
-    
+
     // Combine both sets of ingredients
     let all_ingredients = [icegels, small_icegels].concat();
-    
+
     for (ingredient, sprite, transform) in all_ingredients {
         commands
             .spawn((
@@ -167,13 +162,8 @@ pub fn get_ice_gels(
     texture_atlases: &mut ResMut<Assets<TextureAtlasLayout>>,
 ) -> Vec<(Ingredient, Sprite, Transform)> {
     let frame_size = UVec2::new(128, 128);
-    let icegel_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size,
-        8,
-        1,
-        None,
-        None,
-    ));
+    let icegel_layout_handle =
+        texture_atlases.add(TextureAtlasLayout::from_grid(frame_size, 8, 1, None, None));
 
     let blue_icegel_sprite = Sprite {
         image: image_assets.blue_icegel.clone(),

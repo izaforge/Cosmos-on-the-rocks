@@ -1,12 +1,14 @@
 use crate::{
     engine::GameState,
+    ui::crafting_menu::{
+        cleanup_crafting_menu, crafting_button_interaction_system, setup_crafting_menu,
+    },
     ui::main_menu::{button_interaction_system, cleanup_menu, setup_main_menu},
-    ui::crafting_menu::{crafting_button_interaction_system, cleanup_crafting_menu, setup_crafting_menu},
 };
 use bevy::prelude::*;
 
-pub mod main_menu;
 pub mod crafting_menu;
+pub mod main_menu;
 
 pub struct GameUiPlugin;
 
