@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use crate::{
     bar::{crafting::OnCraftingScreen, drinks::Drink, ingredient::Ingredient},
-    engine::{asset_loader::ImageAssets, GameState},
+    engine::{GameState, asset_loader::ImageAssets},
 };
 
 #[derive(Component, Clone, Debug)]

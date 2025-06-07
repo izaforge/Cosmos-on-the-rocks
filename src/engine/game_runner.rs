@@ -1,11 +1,7 @@
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
-use bevy_lunex::UiSourceCamera;
-use bevy_seedling::prelude::*;
 use bevy::render::camera::ScalingMode;
-
-
-
+use bevy_asset_loader::prelude::*;
+use bevy_seedling::prelude::*;
 
 use crate::{
     bar::crafting::CraftingPlugin,
@@ -16,7 +12,6 @@ use crate::{
     },
     ui::GameUiPlugin,
 };
-
 
 pub struct GameRunnerPlugin;
 
@@ -43,30 +38,15 @@ impl Plugin for GameRunnerPlugin {
 pub struct MainGameCamera;
 
 fn setup_camera(mut commands: Commands) {
-    // Main game camera with FixedVertical scaling
-    let mut main_camera = Camera2dBundle::default();
-    // Make the screen/window height correspond to 1600.0 world units
-    // Width will depend on the aspect ratio
-    main_camera.projection.scaling_mode = ScalingMode::FixedVertical(1600.0);
-    
-    commands.spawn((
-        main_camera,
-        MainGameCamera,
-    ));
-    
-    // UI camera stays with the default ScalingMode (1 pixel = 1 world unit)
-    commands.spawn((
-        // This camera will become the source for all UI paired to index 0.
-        Camera2d,
-        Camera {
-            order: 1,
-            ..default()
+    let main_camera = Camera2d::default();
+    let projection = Projection::Orthographic(OrthographicProjection {
+        scaling_mode: ScalingMode::FixedVertical {
+            viewport_height: 1080.0,
         },
-        UiSourceCamera::<1>,
-        // Ui nodes start at 0 and move + on the Z axis with each depth layer.
-        // This will ensure you will see up to 1000 nested children.
-        Transform::from_translation(Vec3::Z * 1000.0),
-    ));
+        ..OrthographicProjection::default_2d()
+    });
+
+    commands.spawn((main_camera, MainGameCamera, projection));
 }
 
 // cgekc

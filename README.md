@@ -3,6 +3,7 @@ Bartending game made in Bevy for Game Jam 6
 
 **Setting:** A bar orbiting a black hole or floating at a galactic crossroads. Drifters, bounty hunters, AIs, rebels, and aliens pass through.
 **Player Role:** Bartender who mixes drinks and chats with customers. You're also subtly manipulating events by what you serve and say.
+![concept](https://github.com/user-attachments/assets/a4f64b77-9ba6-4ccb-82e1-49a68d5debe3)
 
 ### 🎮 **Core Gameplay Loops**
 
