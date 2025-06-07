@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
+
 use bevy_asset_loader::prelude::*;
 use bevy_seedling::prelude::*;
 
@@ -23,14 +24,15 @@ impl Plugin for GameRunnerPlugin {
             CustomerPlugin,
             CraftingPlugin,
         ))
-        .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
+        // .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
         .add_loading_state(
             LoadingState::new(GameState::Loading)
                 .load_collection::<AudioAssets>()
                 .load_collection::<ImageAssets>()
                 .continue_to_state(GameState::Crafting),
         )
-        .add_systems(Startup, setup_camera);
+        .add_systems(Startup, setup_camera)
+        .add_systems(OnEnter(GameState::Crafting), spawn_background);
     }
 }
 
@@ -47,6 +49,17 @@ fn setup_camera(mut commands: Commands) {
     });
 
     commands.spawn((main_camera, MainGameCamera, projection));
+}
+
+fn spawn_background(mut commands: Commands, image_assets: Res<ImageAssets>) {
+    commands.spawn((
+        Sprite {
+            image: image_assets.background_image.clone(),
+            custom_size: Some(Vec2::new(1920.0, 1080.0)),
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, -10.0),
+    ));
 }
 
 // cgekc

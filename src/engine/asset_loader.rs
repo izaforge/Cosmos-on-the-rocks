@@ -26,6 +26,8 @@ pub struct ImageAssets {
     pub sweetflux: Handle<Image>,
     #[asset(path = "images/bar/ingredients/Citraplasm.png")]
     pub citraplasm: Handle<Image>,
+    #[asset(path = "images/bar/ingredients/bg.png")]
+    pub background_image: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]
