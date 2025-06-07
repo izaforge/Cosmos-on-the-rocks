@@ -68,3 +68,5 @@ fn setup_camera(mut commands: Commands) {
         Transform::from_translation(Vec3::Z * 1000.0),
     ));
 }
+
+// cgekc
