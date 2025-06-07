@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     animation::sprite_animation::SpriteAnimState,
-    bar::{crafting::OnCraftingScreen, glass::Glass},
+    bar::{crafting::OnCraftingScreen, glass::Glass, ingredients_extra},
     engine::asset_loader::ImageAssets,
 };
 
@@ -63,15 +63,64 @@ pub struct EffectCondition {
 pub fn spawn_ingredients(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
-    texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let icegels = get_ice_gels(image_assets, texture_atlases);
+    let icegels = get_ice_gels(&image_assets, &mut texture_atlases);
     let icegel_anim_state = SpriteAnimState {
         start_index: 0,
         end_index: 7,
         timer: Timer::from_seconds(1.0 / 12.0, TimerMode::Repeating),
     };
-    for (ingredient, sprite, transform) in icegels {
+    
+    // Get sprites for small ingredients
+    let frame_size = UVec2::new(128, 128);
+    let icegel_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
+        frame_size,
+        8,
+        1,
+        None,
+        None,
+    ));
+
+    let blue_icegel_sprite = Sprite {
+        image: image_assets.blue_icegel.clone(),
+        texture_atlas: Some(TextureAtlas {
+            layout: icegel_layout_handle.clone(),
+            index: 0,
+        }),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
+    let red_icegel_sprite = Sprite {
+        image: image_assets.red_icegel.clone(),
+        texture_atlas: Some(TextureAtlas {
+            layout: icegel_layout_handle.clone(),
+            index: 0,
+        }),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
+    let green_icegel_sprite = Sprite {
+        image: image_assets.green_icegel.clone(),
+        texture_atlas: Some(TextureAtlas {
+            layout: icegel_layout_handle,
+            index: 0,
+        }),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
+    
+    // Get small ingredients
+    let small_icegels = ingredients_extra::get_small_ice_gels(
+        blue_icegel_sprite, 
+        red_icegel_sprite, 
+        green_icegel_sprite
+    );
+    
+    // Combine both sets of ingredients
+    let all_ingredients = [icegels, small_icegels].concat();
+    
+    for (ingredient, sprite, transform) in all_ingredients {
         commands
             .spawn((
                 ingredient,
@@ -114,12 +163,12 @@ pub fn spawn_ingredients(
 }
 
 pub fn get_ice_gels(
-    image_assets: Res<ImageAssets>,
-    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
+    image_assets: &Res<ImageAssets>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlasLayout>>,
 ) -> Vec<(Ingredient, Sprite, Transform)> {
     let frame_size = UVec2::new(128, 128);
     let icegel_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size as UVec2,
+        frame_size,
         8,
         1,
         None,
@@ -188,99 +237,20 @@ pub fn get_ice_gels(
     let blue_icegel = Ingredient {
         name: "Blue Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        ingredient_profile: blue_icegel_profile.clone(),
+        ingredient_profile: blue_icegel_profile,
     };
     let red_icegel_ingredient = Ingredient {
         name: "Red Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        ingredient_profile: red_icegel_profile.clone(),
+        ingredient_profile: red_icegel_profile,
     };
     let green_icegel_ingredient = Ingredient {
         name: "Green Icegel".to_string(),
         description: "Cools down drinks".to_string(),
-        ingredient_profile: green_icegel_profile.clone(),
-    };
-
-    // Profiles for smaller ingredients
-    let small_blue_icegel_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::None,
-        primary_effect: PrimaryEffect::Calming,
-        secondary_effect: SecondaryEffect::Sedated(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-    let small_red_icegel_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::Spicy,
-        primary_effect: PrimaryEffect::Energizing,
-        secondary_effect: SecondaryEffect::Agitated(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-    let small_green_icegel_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::Sweet,
-        primary_effect: PrimaryEffect::Healing,
-        secondary_effect: SecondaryEffect::Euphoric(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-
-    // Smaller ingredients
-    let small_blue_icegel = Ingredient {
-        name: "Small Blue Icegel".to_string(),
-        description: "A small blue icegel".to_string(),
-        ingredient_profile: small_blue_icegel_profile,
-    };
-    let small_red_icegel = Ingredient {
-        name: "Small Red Icegel".to_string(),
-        description: "A small red icegel".to_string(),
-        ingredient_profile: small_red_icegel_profile,
-    };
-    let small_green_icegel = Ingredient {
-        name: "Small Green Icegel".to_string(),
-        description: "A small green icegel".to_string(),
-        ingredient_profile: small_green_icegel_profile,
+        ingredient_profile: green_icegel_profile,
     };
 
     vec![
-        (
-            small_blue_icegel.clone(),
-            blue_icegel_sprite.clone(),
-            Transform::from_xyz(-400.0, 150.0, 1.0),
-        ),
-        (
-            small_red_icegel.clone(),
-            red_icegel_sprite.clone(),
-            Transform::from_xyz(-200.0, 150.0, 1.0),
-        ),
-        (
-            small_green_icegel.clone(),
-            green_icegel_sprite.clone(),
-            Transform::from_xyz(0.0, 150.0, 1.0),
-        ),
-        (
-            small_blue_icegel.clone(),
-            blue_icegel_sprite.clone(),
-            Transform::from_xyz(-400.0, 50.0, 1.0),
-        ),
-        (
-            small_red_icegel.clone(),
-            red_icegel_sprite.clone(),
-            Transform::from_xyz(-200.0, 50.0, 1.0),
-        ),
-        (
-            small_green_icegel.clone(),
-            green_icegel_sprite.clone(),
-            Transform::from_xyz(0.0, 50.0, 1.0),
-        ),
         (
             blue_icegel,
             blue_icegel_sprite,
