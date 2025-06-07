@@ -4,7 +4,10 @@ use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
 use crate::dialogue::patrons::{Happiness, Sadness, Anger, Patron};
 
-use crate::{customers::OnCustomerScreen, engine::GameState};
+use crate::{
+    customers::{OnCustomerScreen, cleanup_customer},
+    engine::GameState,
+};
 
 pub struct DialogPlugin;
 
@@ -22,12 +25,11 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::new(),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
-        .init_resource::<AutoSelectOption>()
-        .add_systems(OnEnter(GameState::CustomerInteraction), spawn_dialogue_runner)
-        .add_systems(Update, (
-            handle_drink_effects,
-            auto_select_first_option, // Add system to automatically select first option
-        ));
+        .add_systems(
+            OnEnter(GameState::CustomerInteraction),
+            spawn_dialogue_runner,
+        )
+        .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }
 

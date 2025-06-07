@@ -1,131 +1,130 @@
+use crate::{
+    constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
+    engine::GameState,
+};
 use bevy::prelude::*;
-use crate::constants::TEXT_COLOR;
-use crate::engine::GameState;
+
+#[derive(Component)]
+pub enum CraftingButtons {
+    Craft,
+    Reset,
+}
 
 #[derive(Component)]
 pub struct OnCraftingScreen;
 
-#[derive(Component)]
-pub struct ContinueButton;
-
-pub struct CraftingPlugin;
-
-impl Plugin for CraftingPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_systems(Update, handle_crafting_interaction.run_if(in_state(GameState::Crafting)));
-    }
-}
-
 pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu_font = asset_server.load("fonts/Nasa21.ttf");
-    
-    // First give Zara a drink that increases her anger
-    give_zara_anger_drink(&mut commands);
 
     commands
         .spawn((
-            OnCraftingScreen,
             Node {
-                position_type: PositionType::Absolute,
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
+                align_content: AlignContent::Center,
+                align_self: AlignSelf::End,
+                justify_self: JustifySelf::Center,
+                position_type: PositionType::Relative,
+                flex_wrap: FlexWrap::NoWrap,
+                flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                ..default()
+                column_gap: Val::Px(20.0),
+                margin: UiRect::bottom(Val::Px(50.0)),
+                ..Default::default()
             },
+            OnCraftingScreen,
         ))
         .with_children(|parent| {
-            // Title
-            parent.spawn((
-                Text::new("Crafting a Strong Drink for Zara"),
-                TextFont {
-                    font: menu_font.clone(),
-                    font_size: 60.0,
-                    ..default()
-                },
-                TextColor(TEXT_COLOR),
-            ));
-            
-            // Description
-            parent.spawn((
-                Text::new("You've crafted a potent drink that will increase Zara's anger by 5."),
-                TextFont {
-                    font: menu_font.clone(),
-                    font_size: 30.0,
-                    ..default()
-                },
-                TextColor(TEXT_COLOR),
-                Node {
-                    margin: UiRect::all(Val::Px(20.0)),
-                    ..default()
-                },
-            ));
-            
-            // Continue button
-            parent.spawn((
-                Button,
-                ContinueButton,
-                Node {
-                    width: Val::Px(200.0),
-                    height: Val::Px(50.0),
-                    margin: UiRect::all(Val::Px(20.0)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-                BackgroundColor(Color::srgb(0.2, 0.2, 0.8)),
-            ))
-            .with_children(|parent| {
-                parent.spawn((
-                    Text::new("Continue"),
-                    TextFont {
-                        font: menu_font.clone(),
-                        font_size: 24.0,
+            // Craft Button
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(150.0),
+                        height: Val::Px(50.0),
+                        border: UiRect::all(Val::Px(5.0)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
                         ..default()
                     },
-                    TextColor(Color::WHITE),
-                ));
-            });
+                    BorderColor(BUTTON_BORDER),
+                    BorderRadius::MAX,
+                    BackgroundColor(NORMAL_BUTTON),
+                ))
+                .insert(CraftingButtons::Craft)
+                .with_children(|parent| {
+                    parent.spawn((
+                        Text::from("Craft"),
+                        TextFont {
+                            font: menu_font.clone(),
+                            font_size: 24.0,
+                            ..default()
+                        },
+                        TextColor(TEXT_COLOR),
+                    ));
+                });
+
+            // Reset Button
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(150.0),
+                        height: Val::Px(50.0),
+                        border: UiRect::all(Val::Px(5.0)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    BorderColor(BUTTON_BORDER),
+                    BorderRadius::MAX,
+                    BackgroundColor(NORMAL_BUTTON),
+                ))
+                .insert(CraftingButtons::Reset)
+                .with_children(|parent| {
+                    parent.spawn((
+                        Text::from("Reset"),
+                        TextFont {
+                            font: menu_font,
+                            font_size: 24.0,
+                            ..default()
+                        },
+                        TextColor(TEXT_COLOR),
+                    ));
+                });
         });
 }
 
-/// Function to give Zara a drink that increases her anger
-fn give_zara_anger_drink(commands: &mut Commands) {
-    info!("Crafting a strong drink for Zara (+5 anger)");
-    
-    // Spawn a drink entity that will be processed by the handle_drink_effects system
-    commands.spawn(crate::customers::dialogue::EmotionDrink {
-        happiness_effect: 0,
-        sadness_effect: 0,
-        anger_effect: 5,
-        target_patron: None,  // We'll find Zara by name in the drink system
-    });
-}
-
-/// System to handle button clicks in the crafting menu
-fn handle_crafting_interaction(
-    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<ContinueButton>)>,
-    mut next_state: ResMut<NextState<GameState>>,
-    mut commands: Commands,
+// System to handle crafting button interactions
+pub fn crafting_button_interaction_system(
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor, &CraftingButtons),
+        (Changed<Interaction>, With<Button>),
+    >,
 ) {
-    for interaction in interaction_query.iter_mut() {
-        if *interaction == Interaction::Pressed {
-            info!("Continue button pressed. Returning to customer interaction.");
-            
-            // Add a command to start the ZaraAfterDrink node when dialogue resumes
-            commands.insert_resource(crate::customers::dialogue::NextDialogueNode("ZaraAfterDrink".to_string()));
-            
-            // Transition back to CustomerInteraction state
-            next_state.set(GameState::CustomerInteraction);
+    for (interaction, mut color, button) in interaction_query.iter_mut() {
+        match *interaction {
+            Interaction::Pressed => match button {
+                CraftingButtons::Craft => {
+                    println!("Craft Button Clicked");
+                    // Implement crafting logic here
+                }
+                CraftingButtons::Reset => {
+                    println!("Reset Button Clicked");
+                    // Implement reset logic here
+                }
+            },
+            Interaction::Hovered => {
+                *color = HOVERED_BUTTON.into();
+            }
+            Interaction::None => {
+                *color = NORMAL_BUTTON.into();
+            }
         }
     }
 }
 
-pub fn cleanup_crafting_menu(
-    mut commands: Commands,
-    query: Query<Entity, With<OnCraftingScreen>>,
-) {
+// System to cleanup crafting menu
+pub fn cleanup_crafting_menu(mut commands: Commands, query: Query<Entity, With<OnCraftingScreen>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
     }

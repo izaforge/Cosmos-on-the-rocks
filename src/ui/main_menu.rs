@@ -15,7 +15,7 @@ pub struct OnMainMenuScreen;
 
 pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu_font = asset_server.load("fonts/Nasa21.ttf");
-    let title_img = asset_server.load("images/name.png");
+    let title_img = asset_server.load("images/ui/name.png");
     commands
         .spawn((
             Node {
@@ -122,7 +122,7 @@ pub fn button_interaction_system(
                 }
                 MenuButtons::Settings => {
                     println!("Settings Button Clicked");
-                    game_state.set(GameState::Crafting);
+                    game_state.set(GameState::Settings);
                 }
             },
             Interaction::Hovered => {
