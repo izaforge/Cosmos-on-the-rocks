@@ -31,6 +31,16 @@ pub fn get_other_ingredients(
         custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
+    let sweetflux_sprite = Sprite {
+        image: image_assets.sweetflux.clone(),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
+    let citraplasm_sprite = Sprite {
+        image: image_assets.citraplasm.clone(),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
 
     let fizzion_mist_profile = IngredientProfile {
         size: 0.1,
@@ -76,6 +86,28 @@ pub fn get_other_ingredients(
         hazard: None,
     };
 
+    let sweetflux_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::Sweet,
+        primary_effect: PrimaryEffect::Healing,
+        secondary_effect: SecondaryEffect::Euphoric(EffectCondition {
+            volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
+    let citraplasm_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::Sour,
+        primary_effect: PrimaryEffect::MindEnhancing,
+        secondary_effect: SecondaryEffect::Hallucinogenic(EffectCondition {
+            volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
     let fizzion_mist = Ingredient {
         name: "Fizzion Mist".to_string(),
         description: "Fuzzy Drink".to_string(),
@@ -100,26 +132,48 @@ pub fn get_other_ingredients(
         ingredient_profile: void_reserve_profile,
     };
 
+    let sweetflux = Ingredient {
+        name: "Sweetflux".to_string(),
+        description: "Sweet and glowing liquid".to_string(),
+        ingredient_profile: sweetflux_profile,
+    };
+
+    let citraplasm = Ingredient {
+        name: "Citraplasm".to_string(),
+        description: "Sour, citrus-like liquid".to_string(),
+        ingredient_profile: citraplasm_profile,
+    };
+
     vec![
-        (
-            fizzion_mist,
-            fizzion_mist_sprite,
-            Transform::from_xyz(-480.0, 50.0, 1.0),
-        ),
         (
             synth_vapor,
             synth_vapor_sprite,
             Transform::from_xyz(-480.0, 200.0, 1.0),
         ),
         (
-            circuit_juice,
-            circuit_juice_sprite,
+            void_reserve,
+            void_reserve_sprite,
             Transform::from_xyz(-280.0, 200.0, 1.0),
         ),
         (
-            void_reserve,
-            void_reserve_sprite,
-            Transform::from_xyz(-102.0, 200.0, 1.0),
+            circuit_juice,
+            circuit_juice_sprite,
+            Transform::from_xyz(-80.0, 200.0, 1.0),
+        ),
+        (
+            fizzion_mist,
+            fizzion_mist_sprite,
+            Transform::from_xyz(-480.0, 50.0, 1.0),
+        ),
+        (
+            sweetflux,
+            sweetflux_sprite,
+            Transform::from_xyz(-280.0, 50.0, 1.0),
+        ),
+        (
+            citraplasm,
+            citraplasm_sprite,
+            Transform::from_xyz(-80.0, 50.0, 1.0),
         ),
     ]
 }
