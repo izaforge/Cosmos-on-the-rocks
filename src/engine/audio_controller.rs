@@ -22,5 +22,5 @@ pub fn play_customer_bg(mut commands: Commands, audio_assets: Res<AudioAssets>) 
 }
 
 pub fn play_crafting_bg(mut commands: Commands, audio_assets: Res<AudioAssets>) {
-    commands.spawn((SamplePlayer::new(audio_assets.background2.clone()).looping()));
+    commands.spawn((SamplePlayer::new(audio_assets.background2.clone()).looping(), OnCraftingScreen));
 }
