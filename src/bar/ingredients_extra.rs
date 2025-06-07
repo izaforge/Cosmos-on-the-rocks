@@ -26,6 +26,11 @@ pub fn get_other_ingredients(
         custom_size: Some(Vec2::new(128., 128.)),
         ..default()
     };
+    let void_reserve_sprite = Sprite {
+        image: image_assets.void_reserve.clone(),
+        custom_size: Some(Vec2::new(128., 128.)),
+        ..default()
+    };
 
     let fizzion_mist_profile = IngredientProfile {
         size: 0.1,
@@ -60,6 +65,17 @@ pub fn get_other_ingredients(
         hazard: None,
     };
 
+    let void_reserve_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::None,
+        primary_effect: PrimaryEffect::Calming,
+        secondary_effect: SecondaryEffect::Sedated(EffectCondition {
+            volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
     let fizzion_mist = Ingredient {
         name: "Fizzion Mist".to_string(),
         description: "Fuzzy Drink".to_string(),
@@ -78,6 +94,12 @@ pub fn get_other_ingredients(
         ingredient_profile: circuit_juice_profile,
     };
 
+    let void_reserve = Ingredient {
+        name: "Void Reserve".to_string(),
+        description: "Dark Matter".to_string(),
+        ingredient_profile: void_reserve_profile,
+    };
+
     vec![
         (
             fizzion_mist,
@@ -93,6 +115,11 @@ pub fn get_other_ingredients(
             circuit_juice,
             circuit_juice_sprite,
             Transform::from_xyz(-280.0, 200.0, 1.0),
+        ),
+        (
+            void_reserve,
+            void_reserve_sprite,
+            Transform::from_xyz(-102.0, 200.0, 1.0),
         ),
     ]
 }

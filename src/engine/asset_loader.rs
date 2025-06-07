@@ -20,6 +20,8 @@ pub struct ImageAssets {
     pub synth_vapor: Handle<Image>,
     #[asset(path = "images/bar/ingredients/circuit_juice.png")]
     pub circuit_juice: Handle<Image>,
+    #[asset(path = "images/bar/ingredients/Void Reserve.png")]
+    pub void_reserve: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]
