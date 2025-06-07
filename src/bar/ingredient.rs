@@ -204,47 +204,47 @@ pub fn get_ice_gels(
         (
             blue_icegel.clone(),
             blue_icegel_sprite.clone(),
-            Transform::from_xyz(-400.0, 100.0, 1.0),
+            Transform::from_xyz(-400.0, 150.0, 1.0),
         ),
         (
             red_icegel_ingredient.clone(),
             red_icegel_sprite.clone(),
-            Transform::from_xyz(-200.0, 100.0, 1.0),
+            Transform::from_xyz(-200.0, 150.0, 1.0),
         ),
         (
             green_icegel_ingredient.clone(),
             green_icegel_sprite.clone(),
-            Transform::from_xyz(0.0, 100.0, 1.0),
+            Transform::from_xyz(0.0, 150.0, 1.0),
         ),
         (
             blue_icegel.clone(),
             blue_icegel_sprite.clone(),
-            Transform::from_xyz(-400.0, 0.0, 1.0),
+            Transform::from_xyz(-400.0, 50.0, 1.0),
         ),
         (
             red_icegel_ingredient.clone(),
             red_icegel_sprite.clone(),
-            Transform::from_xyz(-200.0, 0.0, 1.0),
+            Transform::from_xyz(-200.0, 50.0, 1.0),
         ),
         (
             green_icegel_ingredient.clone(),
             green_icegel_sprite.clone(),
-            Transform::from_xyz(0.0, 0.0, 1.0),
+            Transform::from_xyz(0.0, 50.0, 1.0),
         ),
         (
             blue_icegel,
             blue_icegel_sprite,
-            Transform::from_xyz(-400.0, -100.0, 1.0),
+            Transform::from_xyz(-500.0, -100.0, 1.0),
         ),
         (
             red_icegel_ingredient,
             red_icegel_sprite,
-            Transform::from_xyz(-200.0, -100.0, 1.0),
+            Transform::from_xyz(-300.0, -100.0, 1.0),
         ),
         (
             green_icegel_ingredient,
             green_icegel_sprite,
-            Transform::from_xyz(0.0, -100.0, 1.0),
+            Transform::from_xyz(-100.0, -100.0, 1.0),
         ),
     ]
 }
