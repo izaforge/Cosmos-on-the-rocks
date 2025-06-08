@@ -13,6 +13,40 @@ Zara: Hey there, bartender. I could use a drink.
 -> You look like you've had a rough day.
     Player: You look like you've had a rough day.
     <<jump ZaraDay>>
+
+// Always show all dialogue options, including locked ones
+-> [ENERGIZED] You seem really alert tonight.
+    <<if $energizing_effect >= 5>>
+        Player: You seem really alert tonight.
+        Zara: *eyes bright* That's because I've figured out something important. Something about the corporation.
+        <<jump ZaraEnergizedDialogue>>
+    <<else>>
+        Player: You seem really alert tonight.
+        Zara: *yawns* Alert? I'm exhausted. Maybe after I have something to wake me up.
+        <<jump ZaraDialogue>>
+    <<endif>>
+
+-> [TRUTH SERUM] Tell me what's really going on.
+    <<if $truth_effect >= 6>>
+        Player: Tell me what's really going on.
+        Zara: *compelled to speak* I... I can't hold it back anymore. There's a conspiracy at Galactic Corp.
+        <<jump ZaraTruthfulPath>>
+    <<else>>
+        Player: Tell me what's really going on.
+        Zara: *guards her expression* Nothing I can talk about. Not without... loosening up first.
+        <<jump ZaraDialogue>>
+    <<endif>>
+
+-> [MIND ENHANCED] I can see you're connecting dots.
+    <<if $mind_enhancing_effect >= 4>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *nods thoughtfully* Yes... the patterns are becoming clearer. The security breaches weren't random.
+        <<jump ZaraMindEnhancedPath>>
+    <<else>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *looks confused* Dots? I'm not seeing any patterns right now. My mind feels foggy.
+        <<jump ZaraDialogue>>
+    <<endif>>
 ===
 
 title: ZaraOrder
@@ -191,4 +225,46 @@ Zara: Do I look like someone who wants a light drink? Strong. Now.
     <<set $zara_likes_strong_drinks = true>>
     <<set $zara_is_impatient = true>>
     <<jump ZaraWait>>
+===
+
+title: ZaraEnergizedDialogue
+---
+Zara: I've been tracking data patterns all night. Someone high up is selling secrets, and I know who.
+
+-> Who is it?
+    Player: Who is it?
+    Zara: Director Krell. I have proof, but I need to be careful how I expose him.
+    <<jump ZaraAfterDrinkContinue>>
+-> That's dangerous knowledge.
+    Player: That's dangerous knowledge to have.
+    Zara: *grins* Danger is my business. Thanks for the drink that helped me see clearly.
+    <<jump ZaraAfterDrinkContinue>>
+===
+
+title: ZaraTruthfulPath
+---
+Zara: *speaking rapidly* I'm a double agent. I work for Galactic Corp security, but I feed information to the resistance.
+
+-> Your secret is safe with me.
+    Player: Your secret is safe with me.
+    Zara: I believe you. There's something about this place... this drink... that makes me trust you.
+    <<jump ZaraAfterDrinkContinue>>
+-> Why risk everything?
+    Player: Why risk everything for the resistance?
+    Zara: Because Corp destroyed my home world. I won't let them do it to others.
+    <<jump ZaraAfterDrinkContinue>>
+===
+
+title: ZaraMindEnhancedPath
+---
+Zara: The timing of the breaches, the personnel transfers, the "accidents" - it all connects to one person.
+
+-> Tell me more about these connections.
+    Player: Tell me more about these connections.
+    Zara: Every breach happened within 48 hours of Krell authorizing new security protocols. He's the inside man.
+    <<jump ZaraAfterDrinkContinue>>
+-> How do you plan to use this information?
+    Player: How do you plan to use this information?
+    Zara: Carefully. One wrong move and I'm dead. But the truth needs to come out.
+    <<jump ZaraAfterDrinkContinue>>
 === 

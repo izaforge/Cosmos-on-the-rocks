@@ -199,37 +199,50 @@ pub fn handle_drink_effects(
 pub fn convert_drink_to_effects(
     mut commands: Commands,
     drinks: Query<(Entity, &crate::bar::drinks::Drink), Added<crate::bar::drinks::Drink>>,
+    ingredients: Query<&crate::bar::ingredient::Ingredient>,
 ) {
     for (drink_entity, drink) in drinks.iter() {
         let mut effects = HashMap::new();
         
         // Extract primary effects from ingredients
-        for (_ingredient_entity, _amount) in &drink.ingredients {
-            // We would need to query the ingredient to get its effects
-            // For now, this is a simplified implementation
-            // In a full implementation, you would look up each ingredient's primary effect
+        for (ingredient_entity, amount) in &drink.ingredients {
+            if let Ok(ingredient) = ingredients.get(*ingredient_entity) {
+                let effect = ingredient.ingredient_profile.primary_effect.clone();
+                // Calculate effect strength based on amount (normalized to 0-10 scale)
+                let effect_strength = ((amount / 10.0).min(1.0) * 10.0) as u8;
+                
+                // Add or increase the effect value
+                let current_value = effects.get(&effect).unwrap_or(&0);
+                let new_value = (*current_value + effect_strength).min(10);
+                effects.insert(effect.clone(), new_value);
+                
+                info!("Ingredient {} contributes {:?} effect with strength {}", 
+                      ingredient.name, effect, effect_strength);
+            }
         }
         
-        // For now, let's create a test effect based on the drink's primary taste
-        match drink.taste.primary_taste {
-            crate::bar::ingredient::IngredientTaste::Sweet => {
-                effects.insert(PrimaryEffect::Healing, 7);
-                effects.insert(PrimaryEffect::Calming, 3);
-            },
-            crate::bar::ingredient::IngredientTaste::Sour => {
-                effects.insert(PrimaryEffect::Energizing, 8);
-                effects.insert(PrimaryEffect::MindEnhancing, 2);
-            },
-            crate::bar::ingredient::IngredientTaste::Bitter => {
-                effects.insert(PrimaryEffect::TruthInducing, 9);
-            },
-            crate::bar::ingredient::IngredientTaste::Spicy => {
-                effects.insert(PrimaryEffect::CourageBoosting, 8);
-                effects.insert(PrimaryEffect::Energizing, 4);
-            },
-            _ => {
-                // Default effect for other tastes
-                effects.insert(PrimaryEffect::Calming, 5);
+        // Fallback: If no ingredients found, use taste-based effects (for backwards compatibility)
+        if effects.is_empty() {
+            match drink.taste.primary_taste {
+                crate::bar::ingredient::IngredientTaste::Sweet => {
+                    effects.insert(PrimaryEffect::Healing, 7);
+                    effects.insert(PrimaryEffect::Calming, 3);
+                },
+                crate::bar::ingredient::IngredientTaste::Sour => {
+                    effects.insert(PrimaryEffect::Energizing, 8);
+                    effects.insert(PrimaryEffect::MindEnhancing, 2);
+                },
+                crate::bar::ingredient::IngredientTaste::Bitter => {
+                    effects.insert(PrimaryEffect::TruthInducing, 9);
+                },
+                crate::bar::ingredient::IngredientTaste::Spicy => {
+                    effects.insert(PrimaryEffect::CourageBoosting, 8);
+                    effects.insert(PrimaryEffect::Energizing, 4);
+                },
+                _ => {
+                    // Default effect for other tastes
+                    effects.insert(PrimaryEffect::Calming, 5);
+                }
             }
         }
         
