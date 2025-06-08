@@ -13,9 +13,7 @@ Zara: Hey there, bartender. I could use a drink.
 -> You look like you've had a rough day.
     Player: You look like you've had a rough day.
     <<jump ZaraDay>>
-
-// Always show all dialogue options, including locked ones
--> [ENERGIZED] You seem really alert tonight.
+-> You seem really alert tonight. (ENERGIZED - Requires 5+)
     <<if $energizing_effect >= 5>>
         Player: You seem really alert tonight.
         Zara: *eyes bright* That's because I've figured out something important. Something about the corporation.
@@ -25,8 +23,7 @@ Zara: Hey there, bartender. I could use a drink.
         Zara: *yawns* Alert? I'm exhausted. Maybe after I have something to wake me up.
         <<jump ZaraDialogue>>
     <<endif>>
-
--> [TRUTH SERUM] Tell me what's really going on.
+-> Tell me what's really going on. (TRUTH SERUM - Requires 6+)
     <<if $truth_effect >= 6>>
         Player: Tell me what's really going on.
         Zara: *compelled to speak* I... I can't hold it back anymore. There's a conspiracy at Galactic Corp.
@@ -36,8 +33,7 @@ Zara: Hey there, bartender. I could use a drink.
         Zara: *guards her expression* Nothing I can talk about. Not without... loosening up first.
         <<jump ZaraDialogue>>
     <<endif>>
-
--> [MIND ENHANCED] I can see you're connecting dots.
+-> I can see you're connecting dots. (MIND ENHANCED - Requires 4+)
     <<if $mind_enhancing_effect >= 4>>
         Player: I can see you're connecting dots in your head.
         Zara: *nods thoughtfully* Yes... the patterns are becoming clearer. The security breaches weren't random.
@@ -95,37 +91,42 @@ Zara: I'll be waiting. No rush.
 
 title: ZaraAfterDrink
 ---
-Zara: *takes a sip* This has... quite the kick to it.
+Zara: *takes a sip* This is... interesting. 
 
-<<if $energizing_effect >= 6>>
-    Zara: *eyes widen slightly* Wow, that's... energizing. I feel like I could take on a whole squadron of enforcers right now.
-    Zara: My mind is racing. It's like everything is in sharper focus.
-    <<jump ZaraEnergized>>
-<<elseif $calming_effect >= 6>>
-    Zara: *shoulders visibly relax* This is... calming. I haven't felt this relaxed in months.
-    Zara: Working security for Galactic Corp means you're always on edge. Always watching.
-    <<jump ZaraCalmed>>
-<<elseif $truth_effect >= 6>>
-    Zara: *expression shifts to surprise* I... what did you put in this? I feel like I need to... to tell someone...
-    Zara: *leans in closer* There are things I've been keeping hidden. Things I shouldn't talk about...
-    <<jump ZaraTruthful>>
-<<elseif $mind_enhancing_effect >= 6>>
-    Zara: *blinks rapidly* My thoughts are... clearer somehow. Like I can see connections I couldn't before.
-    Zara: The security breach. The missing files. The coincidental transfers... it all makes sense now.
-    <<jump ZaraMindEnhanced>>
-<<else>>
-    -> How do you like it?
-        Player: How do you like it?
-        Zara: *eyes narrowing slightly* It's strong. Just what I needed to take the edge off. 
-        Zara: My superiors at Galactic Corp wouldn't approve of me drinking on leave.
-        Zara: But after what I've seen... rules seem less important these days.
-        <<jump ZaraAfterDrinkContinue>>
-    -> Notice anything different?
-        Player: Notice anything different about yourself?
-        Zara: *raises an eyebrow* What did you put in this? I feel... different somehow. More present.
-        Zara: That's... interesting. Maybe that's what I needed to finally start processing what's been bothering me.
-        <<jump ZaraAfterDrinkContinue>>
-<<endif>>
+-> So how are you feeling? (ENERGIZED 6+)
+    <<if $energizing_effect >= 6>>
+        Player: So how are you feeling?
+        Zara: *vibrant* Like I could stay awake all night! The patterns are so clear now...
+        <<jump ZaraEnergizedHigh>>
+    <<else>>
+        Player: So how are you feeling?
+        Zara: *tired* Still pretty worn out. This isn't quite hitting the spot yet.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> What about that conspiracy? (TRUTH SERUM 6+) 
+    <<if $truth_effect >= 6>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *unable to hold back* The executive orders... they're falsified. Someone's been manipulating the company from the inside.
+        <<jump ZaraConspiracyReveal>>
+    <<else>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *tightlipped* I can't... not yet. Need something stronger to loosen my tongue.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Those security patterns... (MIND ENHANCED 6+)
+    <<if $mind_enhancing_effect >= 6>>
+        Player: Those security patterns you mentioned...
+        Zara: *eyes wide with realization* They're not random at all! Someone's been testing our defenses, probing for weaknesses systematically.
+        <<jump ZaraPatternAnalysis>>
+    <<else>>
+        Player: Those security patterns you mentioned...
+        Zara: *squints* What patterns? My head's still too cloudy to make sense of it all.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Another drink?
+    Player: Want another drink?
+    Zara: *nods* Yes, I think I need something stronger to help me think clearly.
+    <<jump ZaraOrder>>
 ===
 
 title: ZaraEnergized

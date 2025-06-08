@@ -33,7 +33,11 @@ impl Plugin for DialogPlugin {
             OnEnter(GameState::CustomerInteraction),
             spawn_dialogue_runner,
         )
-        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects))
+        .add_systems(Update, (
+            handle_drink_effects, 
+            convert_drink_to_effects,
+            update_dialogue_variables.run_if(in_state(GameState::CustomerInteraction))
+        ))
         .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }
@@ -184,6 +188,17 @@ pub fn handle_drink_effects(
         info!("🧪 TEST: Manually added effects: {:?}", patron_effects.effects);
     }
     
+    // Press Q to add maximum effects (unlock ALL dialogue options)
+    if keyboard_input.just_pressed(KeyCode::KeyQ) {
+        patron_effects.effects.insert(PrimaryEffect::Energizing, 10);
+        patron_effects.effects.insert(PrimaryEffect::TruthInducing, 10);
+        patron_effects.effects.insert(PrimaryEffect::MindEnhancing, 10);
+        patron_effects.effects.insert(PrimaryEffect::Calming, 10);
+        patron_effects.effects.insert(PrimaryEffect::CourageBoosting, 10);
+        patron_effects.effects.insert(PrimaryEffect::Healing, 10);
+        info!("🚀 MAX TEST: All effects set to 10 - ALL OPTIONS UNLOCKED!");
+    }
+    
     // Process all effect drinks
     for (drink_entity, drink) in drinks.iter() {
         // If no specific target, apply to the current patron effects resource
@@ -268,5 +283,38 @@ pub fn convert_drink_to_effects(
         
         // Remove the original drink
         commands.entity(drink_entity).despawn();
+    }
+}
+
+/// System to update dialogue variables when PatronEffects change
+fn update_dialogue_variables(
+    patron_effects: Res<PatronEffects>,
+    mut dialogue_runner_query: Query<&mut DialogueRunner>,
+) {
+    if !patron_effects.is_changed() {
+        return;
+    }
+    
+    for mut dialogue_runner in dialogue_runner_query.iter_mut() {
+        // Get current effect values
+        let calming_value = patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0);
+        let energizing_value = patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0);
+        let mind_enhancing_value = patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0);
+        let courage_value = patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0);
+        let truth_value = patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0);
+        let healing_value = patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0);
+        
+        // Update variables in dialogue
+        let mut storage = dialogue_runner.variable_storage_mut();
+        let mut variables = storage.variables();
+        variables.insert("$calming_effect".to_string(), (*calming_value).into());
+        variables.insert("$energizing_effect".to_string(), (*energizing_value).into());
+        variables.insert("$mind_enhancing_effect".to_string(), (*mind_enhancing_value).into());
+        variables.insert("$courage_effect".to_string(), (*courage_value).into());
+        variables.insert("$truth_effect".to_string(), (*truth_value).into());
+        variables.insert("$healing_effect".to_string(), (*healing_value).into());
+        
+        info!("🔄 Updated dialogue variables: energizing={}, truth={}, mind={}", 
+              energizing_value, truth_value, mind_enhancing_value);
     }
 }
