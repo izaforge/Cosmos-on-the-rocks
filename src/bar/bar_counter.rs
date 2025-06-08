@@ -17,7 +17,7 @@ pub fn spawn_crafting_area(mut commands: Commands, image_assets: Res<ImageAssets
             custom_size: Some(Vec2::new(1536.0, 1024.0)),
             ..default()
         },
-        Transform::from_xyz(-80.0, 50.0, -9.0),
+        Transform::from_xyz(-190.0, 50.0, -9.0),
         OnCraftingScreen,
     ));
     commands.spawn((
@@ -26,7 +26,7 @@ pub fn spawn_crafting_area(mut commands: Commands, image_assets: Res<ImageAssets
             custom_size: Some(Vec2::new(1536.0, 1024.0)),
             ..default()
         },
-        Transform::from_xyz(-150.0, -600.0, -8.0),
+        Transform::from_xyz(-200.0, -400.0, -8.0),
         OnCraftingScreen,
     ));
 }
