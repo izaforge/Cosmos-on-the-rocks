@@ -3,6 +3,14 @@ title: ZaraDialogue
 // Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format
 // Secretive security officer who has seen things she shouldn't have
 
+// Variable declarations for effect system
+<<declare $calming_effect = 0 as number>>
+<<declare $energizing_effect = 0 as number>>
+<<declare $mind_enhancing_effect = 0 as number>>
+<<declare $courage_effect = 0 as number>>
+<<declare $truth_effect = 0 as number>>
+<<declare $healing_effect = 0 as number>>
+
 // The $player_name variable is already declared in start.yarn
 
 Zara: Hey there, bartender. I could use a drink.

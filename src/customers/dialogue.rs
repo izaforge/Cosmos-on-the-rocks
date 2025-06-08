@@ -36,7 +36,8 @@ impl Plugin for DialogPlugin {
         .add_systems(Update, (
             handle_drink_effects, 
             convert_drink_to_effects,
-            update_dialogue_variables.run_if(in_state(GameState::CustomerInteraction))
+            update_dialogue_variables.run_if(in_state(GameState::CustomerInteraction)),
+            debug_yarn_variables.run_if(in_state(GameState::CustomerInteraction))
         ))
         .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
@@ -65,75 +66,51 @@ pub fn spawn_dialogue_runner(
     // Register the system and get its SystemId
     let set_game_state_id = commands.register_system(set_game_state);
     
-    // Set variables for effect values in dialogue
-    let calming_value = patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0);
-    let energizing_value = patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0);
-    let mind_enhancing_value = patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0);
-    let courage_value = patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0);
-    let truth_value = patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0);
-    let healing_value = patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0);
-    
     // Register the custom command that allows changing the game state from dialogue
     dialogue_runner
         .commands_mut()
         .add_command("set_game_state", set_game_state_id);
     
-    // Set variables for dialogue to use
+    // Start the dialogue FIRST
+    let start_node = if let Some(next_node) = next_node {
+        if project.headers_for_node(&next_node.0).is_some() {
+            commands.remove_resource::<NextDialogueNode>();
+            next_node.0.clone()
+        } else {
+            "ZaraDialogue".to_string()
+        }
+    } else if project.headers_for_node("ZaraDialogue").is_some() {
+        "ZaraDialogue".to_string()
+    } else if project.headers_for_node("PatronDialogue").is_some() {
+        "PatronDialogue".to_string()
+    } else {
+        "BartenderMonologue".to_string()
+    };
+    
+    dialogue_runner.start_node(&start_node);
+    println!("✅ Started dialogue node: {}", start_node);
+    
+    // NOW set the variables AFTER starting the dialogue
     let mut storage = dialogue_runner.variable_storage_mut();
     let mut variables = storage.variables();
-    variables.insert("$calming_effect".to_string(), (*calming_value).into());
-    variables.insert("$energizing_effect".to_string(), (*energizing_value).into());
-    variables.insert("$mind_enhancing_effect".to_string(), (*mind_enhancing_value).into());
-    variables.insert("$courage_effect".to_string(), (*courage_value).into());
-    variables.insert("$truth_effect".to_string(), (*truth_value).into());
-    variables.insert("$healing_effect".to_string(), (*healing_value).into());
     
-    // Print debug header
-    println!("============================================");
-    println!("Current drink effects: {:?}", patron_effects.effects);
-    println!("Checking for dialogue nodes");
+    let calming_value = *patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0) as f32;
+    let energizing_value = *patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0) as f32;
+    let mind_enhancing_value = *patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0) as f32;
+    let courage_value = *patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0) as f32;
+    let truth_value = *patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0) as f32;
+    let healing_value = *patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0) as f32;
     
-    // Check if we have a specific node to start
-    if let Some(next_node) = next_node {
-        let node_exists = project.headers_for_node(&next_node.0).is_some();
-        if node_exists {
-            dialogue_runner.start_node(&next_node.0);
-            println!("✅ Starting specified node: {}", next_node.0);
-            commands.remove_resource::<NextDialogueNode>(); // Remove the resource after use
-            commands.spawn((dialogue_runner, OnCustomerScreen));
-            return;
-        }
-    }
+    variables.insert("$calming_effect".to_string(), calming_value.into());
+    variables.insert("$energizing_effect".to_string(), energizing_value.into());
+    variables.insert("$mind_enhancing_effect".to_string(), mind_enhancing_value.into());
+    variables.insert("$courage_effect".to_string(), courage_value.into());
+    variables.insert("$truth_effect".to_string(), truth_value.into());
+    variables.insert("$healing_effect".to_string(), healing_value.into());
     
-    // Default flow if no specific node is requested
-    let zara_dialogue = project.headers_for_node("ZaraDialogue");
-    let patron_dialogue = project.headers_for_node("PatronDialogue");
-    let bartender_dialogue = project.headers_for_node("BartenderMonologue");
+    println!("🎯 Set initial variables - energizing: {}, truth: {}, mind: {}", 
+             energizing_value, truth_value, mind_enhancing_value);
     
-    println!("ZaraDialogue: {}", if zara_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
-    println!("PatronDialogue: {}", if patron_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
-    println!("BartenderMonologue: {}", if bartender_dialogue.is_some() { "Found ✅" } else { "Not found ❌" });
-    println!("============================================");
-    
-    // First try to use Zara's dialogue
-    if zara_dialogue.is_some() {
-        dialogue_runner.start_node("ZaraDialogue");
-        println!("✅ SUCCESS: Starting ZaraDialogue node from zara.yarn");
-    } 
-    // Fall back to the patron dialogue
-    else if patron_dialogue.is_some() {
-        dialogue_runner.start_node("PatronDialogue");
-        println!("Starting PatronDialogue node");
-    } 
-    // Last resort is the bartender monologue
-    else if bartender_dialogue.is_some() {
-        dialogue_runner.start_node("BartenderMonologue");
-        println!("Starting BartenderMonologue node");
-    } 
-    else {
-        println!("❌ ERROR: No dialogue node found!");
-    }
-
     commands.spawn((dialogue_runner, OnCustomerScreen));
 }
 
@@ -186,6 +163,8 @@ pub fn handle_drink_effects(
         patron_effects.effects.insert(PrimaryEffect::TruthInducing, 6);
         patron_effects.effects.insert(PrimaryEffect::MindEnhancing, 4);
         info!("🧪 TEST: Manually added effects: {:?}", patron_effects.effects);
+        info!("🔍 E PRESSED - Effects should now be: Energizing=8, Truth=6, Mind=4");
+        info!("💡 TIP: Press F to restart dialogue or go to crafting and come back to see new options!");
     }
     
     // Press Q to add maximum effects (unlock ALL dialogue options)
@@ -197,6 +176,27 @@ pub fn handle_drink_effects(
         patron_effects.effects.insert(PrimaryEffect::CourageBoosting, 10);
         patron_effects.effects.insert(PrimaryEffect::Healing, 10);
         info!("🚀 MAX TEST: All effects set to 10 - ALL OPTIONS UNLOCKED!");
+        info!("🔍 Q PRESSED - All effects should now be 10. Effects: {:?}", patron_effects.effects);
+        info!("💡 TIP: Press F to restart dialogue or go to crafting and come back to see ALL new options!");
+    }
+    
+    // Press R to print current state for debugging
+    if keyboard_input.just_pressed(KeyCode::KeyR) {
+        info!("🔍 CURRENT PATRON EFFECTS DEBUG:");
+        info!("  Energizing: {}", patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0));
+        info!("  Truth: {}", patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0));
+        info!("  Mind: {}", patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0));
+        info!("  Calming: {}", patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0));
+        info!("  Courage: {}", patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0));
+        info!("  Healing: {}", patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0));
+        info!("🔍 Full effects map: {:?}", patron_effects.effects);
+    }
+    
+    // Press F to force navigation back to main dialogue (useful after changing effects)
+    if keyboard_input.just_pressed(KeyCode::KeyF) {
+        commands.insert_resource(NextDialogueNode("ZaraDialogue".to_string()));
+        info!("🔄 F PRESSED - Will restart ZaraDialogue on next customer interaction");
+        info!("💡 TIP: Exit to crafting and come back to see updated dialogue options");
     }
     
     // Process all effect drinks
@@ -291,30 +291,94 @@ fn update_dialogue_variables(
     patron_effects: Res<PatronEffects>,
     mut dialogue_runner_query: Query<&mut DialogueRunner>,
 ) {
-    if !patron_effects.is_changed() {
+    // Only update if PatronEffects has actually changed
+    if !patron_effects.is_changed() && !dialogue_runner_query.is_empty() {
         return;
     }
     
     for mut dialogue_runner in dialogue_runner_query.iter_mut() {
         // Get current effect values
-        let calming_value = patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0);
-        let energizing_value = patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0);
-        let mind_enhancing_value = patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0);
-        let courage_value = patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0);
-        let truth_value = patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0);
-        let healing_value = patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0);
+        let calming_value = *patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0) as f32;
+        let energizing_value = *patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0) as f32;
+        let mind_enhancing_value = *patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0) as f32;
+        let courage_value = *patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0) as f32;
+        let truth_value = *patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0) as f32;
+        let healing_value = *patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0) as f32;
         
-        // Update variables in dialogue
+        // Update variables in dialogue - DON'T clear them first
         let mut storage = dialogue_runner.variable_storage_mut();
         let mut variables = storage.variables();
-        variables.insert("$calming_effect".to_string(), (*calming_value).into());
-        variables.insert("$energizing_effect".to_string(), (*energizing_value).into());
-        variables.insert("$mind_enhancing_effect".to_string(), (*mind_enhancing_value).into());
-        variables.insert("$courage_effect".to_string(), (*courage_value).into());
-        variables.insert("$truth_effect".to_string(), (*truth_value).into());
-        variables.insert("$healing_effect".to_string(), (*healing_value).into());
         
-        info!("🔄 Updated dialogue variables: energizing={}, truth={}, mind={}", 
+        // Just update/insert the values without clearing
+        variables.insert("$calming_effect".to_string(), calming_value.into());
+        variables.insert("$energizing_effect".to_string(), energizing_value.into());
+        variables.insert("$mind_enhancing_effect".to_string(), mind_enhancing_value.into());
+        variables.insert("$courage_effect".to_string(), courage_value.into());
+        variables.insert("$truth_effect".to_string(), truth_value.into());
+        
+        
+        info!("🔄 Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
               energizing_value, truth_value, mind_enhancing_value);
+    }
+}
+/// System to debug YarnSpinner variables directly with a key press
+pub fn debug_yarn_variables(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut dialogue_runner_query: Query<&mut DialogueRunner>,
+) {
+    // Press D to debug YarnSpinner variables
+    if keyboard_input.just_pressed(KeyCode::KeyD) {
+        info!("🔍 D PRESSED - Reading YarnSpinner variables directly:");
+        
+        for dialogue_runner in dialogue_runner_query.iter() {
+            let storage = dialogue_runner.variable_storage();
+            let variables = storage.variables();
+            
+            info!("📋 All YarnSpinner variables:");
+            for (key, value) in variables.iter() {
+                info!("  {} = {:?}", key, value);
+            }
+            
+            // Check specific effect variables
+            info!("🎯 Effect variables specifically:");
+            if let Some(val) = variables.get("$energizing_effect") {
+                info!("  $energizing_effect = {:?}", val);
+            } else {
+                info!("  ❌ $energizing_effect NOT FOUND");
+            }
+            
+            if let Some(val) = variables.get("$truth_effect") {
+                info!("  $truth_effect = {:?}", val);
+            } else {
+                info!("  ❌ $truth_effect NOT FOUND");
+            }
+            
+            if let Some(val) = variables.get("$mind_enhancing_effect") {
+                info!("  $mind_enhancing_effect = {:?}", val);
+            } else {
+                info!("  ❌ $mind_enhancing_effect NOT FOUND");
+            }
+        }
+    }
+    
+    // Press X to force set test values directly in YarnSpinner
+    if keyboard_input.just_pressed(KeyCode::KeyX) {
+        info!("🧪 X PRESSED - Force setting test values in YarnSpinner:");
+        
+        for mut dialogue_runner in dialogue_runner_query.iter_mut() {
+            let mut storage = dialogue_runner.variable_storage_mut();
+            let mut variables = storage.variables();
+            
+            // Force set high values
+            variables.insert("$energizing_effect".to_string(), 10.0.into());
+            variables.insert("$truth_effect".to_string(), 10.0.into());
+            variables.insert("$mind_enhancing_effect".to_string(), 10.0.into());
+            variables.insert("$calming_effect".to_string(), 10.0.into());
+            variables.insert("$courage_effect".to_string(), 10.0.into());
+            variables.insert("$healing_effect".to_string(), 10.0.into());
+            
+            info!("✅ Force set all effect variables to 10.0");
+            info!("💡 TIP: These should now make all dialogue options available!");
+        }
     }
 }
