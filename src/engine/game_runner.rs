@@ -31,8 +31,7 @@ impl Plugin for GameRunnerPlugin {
                 .load_collection::<ImageAssets>()
                 .continue_to_state(GameState::Crafting),
         )
-        .add_systems(Startup, setup_camera)
-        .add_systems(OnEnter(GameState::Crafting), spawn_background);
+        .add_systems(Startup, setup_camera);
     }
 }
 
@@ -50,16 +49,3 @@ fn setup_camera(mut commands: Commands) {
 
     commands.spawn((main_camera, MainGameCamera, projection));
 }
-
-fn spawn_background(mut commands: Commands, image_assets: Res<ImageAssets>) {
-    commands.spawn((
-        Sprite {
-            image: image_assets.background_image.clone(),
-            custom_size: Some(Vec2::new(1920.0, 1080.0)),
-            ..default()
-        },
-        Transform::from_xyz(0.0, 0.0, -10.0),
-    ));
-}
-
-// cgekc
