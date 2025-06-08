@@ -38,7 +38,6 @@ impl Plugin for CraftingPlugin {
             Update, 
             (
                 animate_spite,
-                // handle_ingredient_hover,
             ).run_if(in_state(GameState::Crafting))
         )
         .add_systems(OnExit(GameState::Crafting), cleanup_crafting)

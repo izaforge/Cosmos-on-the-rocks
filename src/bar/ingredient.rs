@@ -1,4 +1,10 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    picking::{
+        events::{Pointer, Pressed, Over, Out},
+        prelude::Pickable,
+    },
+};
 
 use crate::{
     animation::sprite_animation::SpriteAnimState,
@@ -77,7 +83,6 @@ pub fn spawn_ingredients(
                 transform,
                 anim_state,
                 Pickable::default(),
-                Interaction::None,
                 OnCraftingScreen,
             ))
             .observe(
@@ -93,28 +98,36 @@ pub fn spawn_ingredients(
                                 return;
                             }
                         };
-                        if glass.get_current_volume() + ingredient_size < glass.capacity {
-                            glass
-                                .ingredients
-                                .entry(ingredient_entity)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            info!(
-                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                                glass.ingredients, glass.capacity, glass.taste
-                            );
-                            glass
-                                .taste
-                                .entry(ingredient_taste)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
+
+                        glass.ingredients.insert(ingredient_entity, ingredient_size);
+                        if let Some(existing_taste) = glass.taste.get_mut(&ingredient_taste) {
+                            *existing_taste += ingredient_size;
                         } else {
-                            info!("Glass is full, cannot add more ingredients.");
+                            glass.taste.insert(ingredient_taste, ingredient_size);
                         }
+
+                        info!("Added ingredient to glass! Current volume: {}", glass.get_current_volume());
+                        info!("Glass contents: {:?}", glass.ingredients);
+                        info!("Glass taste profile: {:?}", glass.taste);
+
+                        break;
                     }
+                },
+            )
+            .observe(
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
+                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
+                        info!("Hovering over: {} - {}", ingredient.name, ingredient.description);
+                    }
+                },
+            )
+            .observe(
+                |_: Trigger<Pointer<Out>>| {
+                    // Hover end - tooltip will be handled by the UI system
                 },
             );
     }
+
     for (ingredient, sprite, transform) in other_ingredients {
         commands
             .spawn((
@@ -122,7 +135,6 @@ pub fn spawn_ingredients(
                 sprite,
                 transform,
                 Pickable::default(),
-                Interaction::None,
                 OnCraftingScreen,
             ))
             .observe(
@@ -138,25 +150,32 @@ pub fn spawn_ingredients(
                                 return;
                             }
                         };
-                        if glass.get_current_volume() + ingredient_size < glass.capacity {
-                            glass
-                                .ingredients
-                                .entry(ingredient_entity)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            glass
-                                .taste
-                                .entry(ingredient_taste)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            info!(
-                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                                glass.ingredients, glass.capacity, glass.taste
-                            );
+
+                        glass.ingredients.insert(ingredient_entity, ingredient_size);
+                        if let Some(existing_taste) = glass.taste.get_mut(&ingredient_taste) {
+                            *existing_taste += ingredient_size;
                         } else {
-                            info!("Glass is full, cannot add more ingredients.");
+                            glass.taste.insert(ingredient_taste, ingredient_size);
                         }
+
+                        info!("Added ingredient to glass! Current volume: {}", glass.get_current_volume());
+                        info!("Glass contents: {:?}", glass.ingredients);
+                        info!("Glass taste profile: {:?}", glass.taste);
+
+                        break;
                     }
+                },
+            )
+            .observe(
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
+                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
+                        info!("Hovering over: {} - {}", ingredient.name, ingredient.description);
+                    }
+                },
+            )
+            .observe(
+                |_: Trigger<Pointer<Out>>| {
+                    // Hover end - tooltip will be handled by the UI system
                 },
             );
     }

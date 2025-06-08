@@ -253,7 +253,9 @@ fn update_dialogue_variables(
     mut dialogue_runner_query: Query<&mut DialogueRunner>,
 ) {
     // Only update if PatronEffects has actually changed
-    
+    if !patron_effects.is_changed() {
+        return;
+    }
     
     for mut dialogue_runner in dialogue_runner_query.iter_mut() {
         // Get current effect values
@@ -276,8 +278,8 @@ fn update_dialogue_variables(
         variables.insert("$truth_effect".to_string(), truth_value.into());
         variables.insert("$healing_effect".to_string(), healing_value.into());
         
-        
-        info!("🔄 Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
+        // Only log when values actually change, and use debug instead of info
+        debug!("🔄 Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
               energizing_value, truth_value, mind_enhancing_value);
     }
 }

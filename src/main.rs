@@ -22,7 +22,7 @@ fn main() {
         LoadingState::new(GameState::Loading)
             .load_collection::<AudioAssets>()
             .load_collection::<ImageAssets>()
-            .continue_to_state(GameState::CustomerInteraction),
+            .continue_to_state(GameState::Crafting),
     )
     .add_systems(OnEnter(GameState::CustomerInteraction), set_zara_dialogue_start_node)
     .run();
