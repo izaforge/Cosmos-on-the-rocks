@@ -16,12 +16,8 @@ pub struct DialogPlugin;
 #[derive(Resource)]
 pub struct NextDialogueNode(pub String);
 
-/// Resource to track if we should auto-press the 1 key
-#[derive(Resource, Default)]
-struct AutoSelectOption(bool);
-
 /// Resource to store effect values for dialogue branching
-#[derive(Resource, Default, Debug)]
+#[derive(Resource, Default)]
 pub struct PatronEffects {
     pub effects: HashMap<PrimaryEffect, u8>, // Values range from 0-10
 }
@@ -33,32 +29,12 @@ impl Plugin for DialogPlugin {
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
         .init_resource::<PatronEffects>()
-        .init_resource::<AutoSelectOption>()
         .add_systems(
             OnEnter(GameState::CustomerInteraction),
             spawn_dialogue_runner,
         )
-        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects, auto_select_first_option))
+        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects))
         .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
-    }
-}
-
-// System to automatically select the first option by simulating pressing "1"
-fn auto_select_first_option(
-    dialogue_runners: Query<&DialogueRunner>,
-    mut auto_select: ResMut<AutoSelectOption>,
-    mut keyboard: ResMut<ButtonInput<KeyCode>>,
-    _time: Res<Time>,
-) {
-    // Only proceed if there's an active dialogue runner
-    if !dialogue_runners.is_empty() && !auto_select.0 {
-        // Set the flag to true to prevent multiple keypresses
-        auto_select.0 = true;
-        
-        // Add a small delay to ensure UI is ready
-        // Then simulate pressing "1" key
-        info!("Auto-selecting first option");
-        keyboard.press(KeyCode::Digit1);
     }
 }
 
@@ -70,9 +46,6 @@ pub fn spawn_dialogue_runner(
     existing_ui: Query<Entity, With<OnCustomerScreen>>,
     patron_effects: Res<PatronEffects>,
 ) {
-    // Reset auto-select flag when spawning a new dialogue
-    commands.insert_resource(AutoSelectOption(false));
-    
     // Clean up any existing dialogue runners and UI to prevent conflicts
     for entity in existing_dialogue.iter() {
         commands.entity(entity).despawn();
