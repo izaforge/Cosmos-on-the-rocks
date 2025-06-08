@@ -18,6 +18,7 @@ pub struct Drink {
 pub enum CreatedDrink {
     ZeroPhase,
     CryoDrop,
+    StellarLumen,
     Cosmopolitan,
     SynthCascade,
     OldMemory,
@@ -51,7 +52,7 @@ impl From<Glass> for Drink {
                 (IngredientTaste::Sour, _) => CreatedDrink::BinaryBarrel,
                 (IngredientTaste::Umami, _) => CreatedDrink::BotanicalSurge,
                 (IngredientTaste::Sweet, IngredientTaste::Spicy) => CreatedDrink::EventHorizon,
-                _ => CreatedDrink::ZeroPhase,
+                _ => CreatedDrink::StellarLumen,
             },
             GlassShape::Whiskey => match (primary, secondary) {
                 (IngredientTaste::Umami, _) => CreatedDrink::EchoBloom,
