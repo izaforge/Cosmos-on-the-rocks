@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{AnimationEvent, sprite_animation::animate_spite},
-    bar::{glass::spawn_glass, ingredient::spawn_ingredients},
+    animation::{sprite_animation::animate_spite, AnimationEvent},
+    bar::{bar_counter::spawn_crafting_area, glass::spawn_glass, ingredient::spawn_ingredients},
     customers::spawn_bartender,
-    engine::{GameState, audio_controller::play_crafting_bg},
+    engine::{audio_controller::play_crafting_bg, GameState},
 };
 
 #[derive(Component)]
@@ -27,7 +27,7 @@ impl Plugin for CraftingPlugin {
                 spawn_glass,
                 spawn_bartender,
                 play_crafting_bg,
-                //spawn_craft_buttons,
+                spawn_crafting_area,
             ),
         )
         .add_systems(Update, animate_spite.run_if(in_state(GameState::Crafting)))

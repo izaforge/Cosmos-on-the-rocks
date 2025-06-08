@@ -28,6 +28,10 @@ pub struct ImageAssets {
     pub citraplasm: Handle<Image>,
     #[asset(path = "images/bar/bg.png")]
     pub background_image: Handle<Image>,
+    #[asset(path = "images/bar/bar_counter.png")]
+    pub bar_counter: Handle<Image>,
+    #[asset(path = "images/bar/bar_shelf.png")]
+    pub bar_shelf: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

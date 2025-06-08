@@ -1,6 +1,5 @@
 use crate::{
-    constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
-    engine::GameState,
+    bar::crafting::OnCraftingScreen, constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR}, engine::GameState
 };
 use bevy::prelude::*;
 
@@ -9,9 +8,6 @@ pub enum CraftingButtons {
     Craft,
     Reset,
 }
-
-#[derive(Component)]
-pub struct OnCraftingScreen;
 
 pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu_font = asset_server.load("fonts/Nasa21.ttf");
@@ -120,12 +116,5 @@ pub fn crafting_button_interaction_system(
                 *color = NORMAL_BUTTON.into();
             }
         }
-    }
-}
-
-// System to cleanup crafting menu
-pub fn cleanup_crafting_menu(mut commands: Commands, query: Query<Entity, With<OnCraftingScreen>>) {
-    for entity in query.iter() {
-        commands.entity(entity).despawn();
     }
 }
