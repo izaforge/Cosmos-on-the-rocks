@@ -3,24 +3,40 @@ use std::collections::HashMap;
 
 use crate::bar::{
     glass::Glass,
-    ingredient::{PrimaryEffect, SecondaryEffect},
+    ingredient::{IngredientTaste, PrimaryEffect, SecondaryEffect},
 };
 
 #[derive(Component, Debug)]
 pub struct Drink {
     pub name: String,
     pub ingredients: HashMap<Entity, f32>,
-    pub glass: Entity,
+    pub taste: DrinkTaste,
 }
 
-impl From<(Glass, Entity)> for Drink {
-    fn from((glass, glass_entity): (Glass, Entity)) -> Self {
+impl From<Glass> for Drink {
+    fn from(glass: Glass) -> Self {
+    let mut taste_vec: Vec<(IngredientTaste, f32)> = glass.taste.into_iter().collect();
+    taste_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+    let primary = taste_vec.get(0).map(|(t, _)| *t).unwrap_or(IngredientTaste::None);
+    let secondary = taste_vec.get(1).map(|(t, _)| *t).unwrap_or(IngredientTaste::None);
+
+    let tastes = DrinkTaste {
+        primary_taste: primary,
+        secondary_taste: secondary,
+    };
         Drink {
             name: format!("{:#?}", glass.shape),
             ingredients: glass.ingredients,
-            glass: glass_entity,
+            taste: tastes,
         }
     }
+}
+
+#[derive(Debug)]
+pub struct DrinkTaste {
+    pub primary_taste: IngredientTaste,
+    pub secondary_taste: IngredientTaste,
 }
 
 #[derive(Debug, Clone, PartialEq)]

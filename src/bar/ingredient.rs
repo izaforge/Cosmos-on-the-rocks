@@ -23,7 +23,7 @@ pub struct IngredientProfile {
     pub hazard: Option<String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
 pub enum IngredientTaste {
     None,
     Sweet,
@@ -95,8 +95,8 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let ingredient_size = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => ingredient.ingredient_profile.size,
+                        let (ingredient_size, ingredient_taste) = match ingredient_query.get(ingredient_entity) {
+                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste),
                             Err(_) => {
                                 warn!("Clicked entity is not an ingredient!");
                                 return;
@@ -109,9 +109,14 @@ pub fn spawn_ingredients(
                                 .and_modify(|v| *v += ingredient_size)
                                 .or_insert(ingredient_size);
                             info!(
-                                "Added ingredient {:#?} to glass with capacity {}",
-                                glass.ingredients, glass.capacity
+                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
+                                glass.ingredients, glass.capacity, glass.taste
                             );
+                            glass
+                                .taste
+                                .entry(ingredient_taste)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
                         } else {
                             info!("Glass is full, cannot add more ingredients.");
                         }
