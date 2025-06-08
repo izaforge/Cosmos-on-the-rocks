@@ -58,13 +58,19 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
             Pickable::default(),
         ))
         .observe(
-            |_: Trigger<Pointer<Click>>,
-             mut glass_query: Query<(&mut Glass, &mut Sprite)>,
-             image_assets: Res<ImageAssets>| {
-                for (mut glass, mut sprite) in glass_query.iter_mut() {
-                    glass.shape = GlassShape::Whiskey;
-                    sprite.image = image_assets.whiskey_glass.clone();
-                }
-            },
-        );
+        |event: Trigger<Pointer<Click>>,
+         mut query: Query<(&mut Glass, &mut Sprite)>,
+         image_assets: Res<ImageAssets>| {
+            if let Ok((mut glass, mut sprite)) = query.get_mut(event.target) {
+                let (next_shape, new_image) = match glass.shape {
+                    GlassShape::Wine => (GlassShape::Whiskey, image_assets.whiskey_glass.clone()),
+                    GlassShape::Whiskey => (GlassShape::Cocktail, image_assets.cocktail_glass.clone()),
+                    GlassShape::Cocktail => (GlassShape::Wine, image_assets.wine_glass.clone()),
+                };
+                info!("Switched glass shape from {:?} to {:?}", glass.shape, next_shape);
+                glass.shape = next_shape;
+                sprite.image = new_image;
+            }
+        },
+    );
 }

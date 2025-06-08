@@ -1,7 +1,7 @@
 use crate::{
-    bar::{crafting::OnCraftingScreen, drinks::Drink, glass::Glass},
+    bar::{crafting::OnCraftingScreen, drinks::{CreatedDrink, Drink}, glass::Glass},
     constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
-    engine::GameState,
+    engine::{asset_loader::ImageAssets, GameState},
 };
 use bevy::prelude::*;
 
@@ -94,12 +94,13 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
 
 // System to handle crafting button interactions
 pub fn crafting_button_interaction_system(
+    mut commands: Commands,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &CraftingButtons),
         (Changed<Interaction>, With<Button>),
     >,
     mut glass_query: Query<&mut Glass>,
-    mut game_state: ResMut<NextState<GameState>>,
+    image_assets: Res<ImageAssets>,
 ) {
     for (interaction, mut color, button) in interaction_query.iter_mut() {
         match *interaction {
@@ -108,7 +109,36 @@ pub fn crafting_button_interaction_system(
                     for glass in glass_query.iter_mut() {
                         let drink = Drink::from(glass.clone());
                         info!("Crafted {:#?}", drink);
-                        game_state.set(GameState::Dialogues);
+                        // Choose the correct image for the drink
+                        let drink_image = match drink.created_drink {
+                            CreatedDrink::ZeroPhase => image_assets.zero_phase.clone(),
+                            CreatedDrink::CryoDrop => image_assets.cryo_drop.clone(),
+                            CreatedDrink::Cosmopolitan => image_assets.cosmopolitan.clone(),
+                            CreatedDrink::SynthCascade => image_assets.synth_cascade.clone(),
+                            CreatedDrink::OldMemory => image_assets.old_memory.clone(),
+                            CreatedDrink::EchoBloom => image_assets.echo_bloom.clone(),
+                            CreatedDrink::BotanicalSurge => image_assets.botanica_surge.clone(),
+                            CreatedDrink::BinaryBarrel => image_assets.binary_barrel.clone(),
+                            CreatedDrink::EventHorizon => image_assets.event_horizon.clone(),
+                        };
+
+                        // Spawn the crafted drink as a Sprite with the Drink component
+                        commands.spawn((
+                            drink,
+                            Sprite {
+                                image: drink_image,
+                                custom_size: Some(Vec2::new(256., 256.)),
+                                ..Default::default()
+                            },
+                            Transform::from_xyz(0.0, 0.0, 2.0),
+                            Pickable::default(),
+                        )).observe(
+            |_: Trigger<Pointer<Click>>,
+             mut game_state: ResMut<NextState<GameState>>,
+             | {
+                game_state.set(GameState::Dialogues);
+            },
+        );
                     }
                 }
                 CraftingButtons::Reset => {

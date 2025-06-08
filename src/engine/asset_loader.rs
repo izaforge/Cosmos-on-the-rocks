@@ -52,6 +52,8 @@ pub struct ImageAssets {
     pub synth_cascade: Handle<Image>,
     #[asset(path = "images/bar/drinks/cryo_drop.png")]
     pub cryo_drop: Handle<Image>,
+    #[asset(path = "images/bar/drinks/stellar_lumen.png")]
+    pub stellar_lumen: Handle<Image>,
     #[asset(path = "images/bar/drinks/zero_phase.png")]
     pub zero_phase: Handle<Image>,
 }

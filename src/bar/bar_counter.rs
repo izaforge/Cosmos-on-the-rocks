@@ -10,7 +10,6 @@ pub fn spawn_crafting_area(mut commands: Commands, image_assets: Res<ImageAssets
             ..default()
         },
         Transform::from_xyz(0.0, 0.0, -10.0),
-        OnCraftingScreen,
     ));
     commands.spawn((
         Sprite {

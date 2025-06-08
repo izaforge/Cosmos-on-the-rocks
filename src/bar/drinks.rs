@@ -48,19 +48,19 @@ impl From<Glass> for Drink {
 
         let created_drink = match glass.shape {
             GlassShape::Wine => match (primary, secondary) {
-                (IngredientTaste::Bitter, IngredientTaste::Umami) => CreatedDrink::BinaryBarrel,
-                (IngredientTaste::Sweet, IngredientTaste::Citrus) => CreatedDrink::BotanicalSurge,
-                (IngredientTaste::Spicy, IngredientTaste::Sour) => CreatedDrink::EventHorizon,
+                (IngredientTaste::Sour, _) => CreatedDrink::BinaryBarrel,
+                (IngredientTaste::Umami, _) => CreatedDrink::BotanicalSurge,
+                (IngredientTaste::Sweet, IngredientTaste::Spicy) => CreatedDrink::EventHorizon,
                 _ => CreatedDrink::ZeroPhase,
             },
             GlassShape::Whiskey => match (primary, secondary) {
-                (IngredientTaste::Sour, IngredientTaste::Bitter) => CreatedDrink::EchoBloom,
-                (IngredientTaste::Umami, IngredientTaste::Sweet) => CreatedDrink::OldMemory,
+                (IngredientTaste::Umami, _) => CreatedDrink::EchoBloom,
+                (IngredientTaste::Bitter, _) => CreatedDrink::OldMemory,
                 _ => CreatedDrink::CryoDrop,
             },
             GlassShape::Cocktail => match (primary, secondary) {
-                (IngredientTaste::Citrus, IngredientTaste::Sweet) => CreatedDrink::Cosmopolitan,
-                (IngredientTaste::Bitter, IngredientTaste::Spicy) => CreatedDrink::SynthCascade,
+                (IngredientTaste::Citrus, _) => CreatedDrink::Cosmopolitan,
+                (IngredientTaste::Spicy, _) => CreatedDrink::SynthCascade,
                 _ => CreatedDrink::ZeroPhase,
             },
         };
