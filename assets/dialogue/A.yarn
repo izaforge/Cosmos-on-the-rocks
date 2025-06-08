@@ -1,0 +1,274 @@
+title: ADialogue
+---
+// Customer A's dialogue - mysterious visitor with secrets
+// Appears calm but has hidden depths
+
+// Variable declarations for effect system
+<<declare $calming_effect = 0 as number>>
+<<declare $energizing_effect = 0 as number>>
+<<declare $mind_enhancing_effect = 0 as number>>
+<<declare $courage_effect = 0 as number>>
+<<declare $truth_effect = 0 as number>>
+<<declare $healing_effect = 0 as number>>
+
+A: *adjusts hood slightly* Evening, bartender. Quiet night, isn't it?
+
+-> What can I get you?
+    Player: What can I get you?
+    <<jump AOrder>>
+-> You're new around here.
+    Player: You're new around here.
+    <<jump ANewcomer>>
+-> You seem like you're hiding something. (TRUTH SERUM - Requires 5+)
+    <<if $truth_effect >= 5>>
+        Player: You seem like you're hiding something.
+        A: *tenses visibly* I... perhaps I am. It's difficult to trust anyone these days.
+        <<jump ATruthfulPath>>
+    <<else>>
+        Player: You seem like you're hiding something.
+        A: *chuckles softly* Aren't we all hiding something? Some truths are better left buried.
+        <<jump ADialogue>>
+    <<endif>>
+-> You look tired. Need something to perk you up? (ENERGIZING - Requires 4+)
+    <<if $energizing_effect >= 4>>
+        Player: You look tired. Need something to perk you up?
+        A: *straightens up* Actually, yes. I've been traveling for days. Something with a kick would be perfect.
+        <<jump AEnergizedPath>>
+    <<else>>
+        Player: You look tired. Need something to perk you up?
+        A: *yawns* Tired doesn't begin to cover it. But I'm not sure anything will help right now.
+        <<jump ADialogue>>
+    <<endif>>
+-> You seem to be thinking deeply about something. (MIND ENHANCED - Requires 3+)
+    <<if $mind_enhancing_effect >= 3>>
+        Player: You seem to be thinking deeply about something.
+        A: *nods slowly* Yes... pieces of a puzzle I've been trying to solve for months. The clarity is starting to come.
+        <<jump AMindEnhancedPath>>
+    <<else>>
+        Player: You seem to be thinking deeply about something.
+        A: *rubs temples* Trying to, but my thoughts are scattered. Too many sleepless nights.
+        <<jump ADialogue>>
+    <<endif>>
+===
+
+title: AOrder
+---
+A: Something smooth, but with character. I'm not in a rush - I have nowhere urgent to be.
+
+-> Coming right up.
+    Player: Coming right up.
+    <<set $a_appreciates_quality = true>>
+    <<jump AWait>>
+-> Any particular preference?
+    Player: Any particular preference for ingredients?
+    A: *considers* Something from the outer colonies, if you have it. I have... fond memories of those places.
+    <<jump AWait>>
+===
+
+title: ANewcomer
+---
+A: *pauses before answering* Let's say I'm between destinations. This seemed like a good place to... reflect.
+
+-> Traveling for business or pleasure?
+    Player: Traveling for business or pleasure?
+    <<jump ABusiness>>
+-> The Cosmos Bar attracts all types.
+    Player: The Cosmos Bar attracts all types of interesting people.
+    A: *glances around* Indeed. Sometimes the most interesting conversations happen in the most unexpected places.
+    <<jump AOrder>>
+===
+
+title: ABusiness
+---
+A: *hesitates* A bit of both, you could say. I'm settling some old debts and searching for someone who doesn't want to be found.
+
+-> Sounds dangerous.
+    Player: That sounds dangerous.
+    A: *smiles grimly* The most worthwhile things usually are. But I'm careful.
+    <<jump AOrder>>
+-> Good luck with that.
+    Player: Well, good luck with your search.
+    A: *nods gratefully* Thank you. I have a feeling I'll need it.
+    <<jump AOrder>>
+===
+
+title: AWait
+---
+A: *settles back into the shadows* I'll be here. Take your time.
+<<set_game_state Crafting>>
+===
+
+title: AAfterDrink
+---
+A: *takes a careful sip* Interesting blend. You have a skilled hand, bartender.
+
+-> How's it treating you? (CALMING 5+)
+    <<if $calming_effect >= 5>>
+        Player: How's the drink treating you?
+        A: *relaxes visibly* Better than I've felt in weeks. Sometimes you forget how good it feels to truly unwind.
+        <<jump ACalmingPath>>
+    <<else>>
+        Player: How's the drink treating you?
+        A: *still tense* It's good, but I'm still wound pretty tight. Hard to shake old habits.
+        <<jump ADialogue>>
+    <<endif>>
+-> Ready to share what's really on your mind? (TRUTH SERUM 7+)
+    <<if $truth_effect >= 7>>
+        Player: Ready to share what's really on your mind?
+        A: *words spill out* I'm hunting the person who killed my partner. They think they covered their tracks, but I've been following the trail for months.
+        <<jump ATruthfulReveal>>
+    <<else>>
+        Player: Ready to share what's really on your mind?
+        A: *guards expression* Some stories are better left untold. At least for now.
+        <<jump ADialogue>>
+    <<endif>>
+-> You seem more alert now. (ENERGIZING 6+)
+    <<if $energizing_effect >= 6>>
+        Player: You seem more alert now.
+        A: *eyes sharpen* Yes, the fog is lifting. I can see the connections I was missing before.
+        <<jump AEnergizedHigh>>
+    <<else>>
+        Player: You seem more alert now.
+        A: *shakes head* Still feeling sluggish. This journey has taken more out of me than I thought.
+        <<jump ADialogue>>
+    <<endif>>
+-> Another round?
+    Player: Want another round?
+    A: *considers* Yes, I think I do. This conversation is just getting started.
+    <<jump AOrder>>
+-> I should check on my other customers.
+    Player: I should check on my other customers.
+    A: *nods understandingly* Of course. Take your time.
+    <<jump APatronChoice>>
+===
+
+title: APatronChoice
+---
+A: *settles back into the shadows* I'll be here when you're ready to continue our conversation.
+
+Player: *looks around the bar* I notice other patrons who might want some attention too...
+
+-> Talk to Zara
+    Player: Let me see how Zara is doing.
+    <<switch_patron Zara>>
+    <<set_game_state CustomerInteraction>>
+-> Continue with A
+    Player: Actually, let me focus on you for now.
+    <<jump ADialogue>>
+-> Check the other corner booth
+    Player: There's someone else who looks like they could use a drink.
+    A: *glances over* Ah yes, they've been sitting quietly all evening. Probably have their own stories to tell.
+    <<switch_patron Kael>>
+    <<set_game_state CustomerInteraction>>
+===
+
+title: ATruthfulPath
+---
+A: *voice drops to a whisper* I used to work for Galactic Corp Intelligence. Did things I'm not proud of.
+A: Three months ago, my partner discovered something they shouldn't have. Now they're dead, and I'm next.
+A: *looks directly at you* I came here because it's off the grid. But eventually, they'll find me too.
+
+-> What did your partner discover?
+    Player: What did your partner discover?
+    A: Evidence of Corp assassinations disguised as accidents. High-profile targets who opposed expansion.
+    A: We were supposed to be the good guys. Turns out we were just another weapon in their arsenal.
+    <<jump ATruthfulContinue>>
+-> You could disappear completely.
+    Player: You could disappear completely. Start over somewhere they'll never find you.
+    A: *shakes head* Not until I finish what my partner started. They deserve justice.
+    <<jump ATruthfulContinue>>
+===
+
+title: ATruthfulContinue
+---
+A: I should go. I've already stayed in one place too long.
+A: If anyone comes asking about a hooded stranger, you never saw me.
+A: Thank you for the drink. And the conversation.
+===
+
+title: AEnergizedPath
+---
+A: *straightens up with renewed energy* That's exactly what I needed. My mind is clearing already.
+A: I've been tracking leads across three star systems. The trail was going cold, but now I remember something important.
+A: *pulls out a small device* The data chip I recovered... there was a timestamp I overlooked. Sector 7, two weeks ago.
+
+-> What kind of data?
+    Player: What kind of data were you tracking?
+    A: Communication logs between Corp executives and unknown contacts. Coded, but I'm starting to crack the pattern.
+    A: Thank you for this drink, bartender. You've given me exactly the boost I needed.
+    <<jump ALeave>>
+-> Sounds like you're close to a breakthrough.
+    Player: Sounds like you're close to a breakthrough.
+    A: *grins* Closer than I've been in months. Time to follow this lead while the trail is hot.
+    <<jump ALeave>>
+===
+
+title: AMindEnhancedPath
+---
+A: *eyes widen with realization* Of course! The pattern wasn't in the locations - it was in the timing.
+A: My partner wasn't killed because of what they found. They were killed because of when they found it.
+A: *speaks rapidly* Someone tipped off the assassin. Someone close to the investigation.
+
+-> Do you know who?
+    Player: Do you have any idea who the leak might be?
+    A: *nods grimly* Only three people had access to that information. One is dead, one is me...
+    A: That leaves Director Chen. My own handler sold us out.
+    <<jump AMindEnhancedReveal>>
+-> That's a dangerous realization.
+    Player: That's a dangerous realization to have.
+    A: *stands up* Dangerous, but necessary. Now I know who I'm really hunting.
+    <<jump AMindEnhancedReveal>>
+===
+
+title: AMindEnhancedReveal
+---
+A: I need to move quickly now. Chen doesn't know I've figured it out yet.
+A: Thank you, bartender. This conversation helped me see what was right in front of me all along.
+A: If you ever need a favor from someone with my particular skills, leave a message at the Proxima freight depot. Ask for "Ace."
+===
+
+title: ACalmingPath
+---
+A: *sighs deeply* You know what? Maybe I've been pushing too hard. Maybe it's okay to rest for one night.
+A: *removes hood, revealing a tired but determined face* I've been running for so long, I forgot what it felt like to just... breathe.
+A: My partner always said I was too intense. "Learn to live in the moment," they'd say.
+
+-> They sound like they were important to you.
+    Player: Your partner sounds like they were important to you.
+    A: *smiles sadly* More than they knew. We were supposed to retire together after this last mission.
+    A: Now I'm finishing it alone. But tonight... tonight I can remember the good times.
+    <<jump ACalmingContinue>>
+-> Sometimes rest is the best strategy.
+    Player: Sometimes taking time to rest is the best strategy.
+    A: *nods* You're right. I'll be sharper tomorrow if I actually get some sleep tonight.
+    <<jump ACalmingContinue>>
+===
+
+title: ACalmingContinue
+---
+A: I think I'll stay a little longer. This is the first time in months I've felt safe enough to truly relax.
+A: Thank you for the drink, and for listening. Sometimes that's all someone needs.
+===
+
+title: ALeave
+---
+A: *adjusts hood and stands* Time to go. The hunt continues.
+A: This won't be the last you see of me, bartender. I'll be back when I need to disappear again.
+===
+
+title: AEnergizedHigh
+---
+A: *jumps up with sudden energy* That's it! I know exactly where to find them now!
+A: The shipping manifests - they've been using legitimate cargo runs to move their people around.
+A: *checks a device* There's a transport leaving for the Outer Rim in three hours. If I hurry, I can intercept it.
+A: You've been instrumental in this breakthrough, bartender. I won't forget it.
+===
+
+title: ATruthfulReveal
+---
+A: *can't stop the words* My partner was Agent Rivera. We were investigating illegal Corp operations when they were "accidentally" killed in a shuttle crash.
+A: *looks horrified* I shouldn't be telling you this. It puts you in danger too.
+A: The person responsible is Director Chen. They're using their position to eliminate anyone who gets too close to the truth.
+A: *voice breaks* Rivera died because I wasn't fast enough to warn them. I won't make that mistake again.
+A: I have to go. Forget everything I just told you. Please.
+=== 
