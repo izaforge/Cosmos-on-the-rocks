@@ -100,7 +100,7 @@ impl AssetLoader for DialogueAssetLoader {
     }
 
     fn extensions(&self) -> &[&str] {
-        &["dialogue.ron"]
+        &["yarn"]
     }
 }
 

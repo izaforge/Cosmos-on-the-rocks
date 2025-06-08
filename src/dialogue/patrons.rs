@@ -147,8 +147,8 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     info!("Setting up initial patrons");
     
     // Zara - The secretive security officer
-    // Load Zara's dialogue from assets/dialogues/zara.dialogue.ron
-    let zara_dialogue = asset_server.load("dialogues/zara.dialogue.ron");
+    // Load Zara's dialogue from assets/dialogues/zara.yarn
+    let zara_dialogue = asset_server.load("dialogues/zara.yarn");
     
     let zara_entity = commands.spawn((
         Patron {

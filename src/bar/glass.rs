@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use crate::{
     bar::{crafting::OnCraftingScreen, drinks::Drink, ingredient::{Ingredient, IngredientTaste}},
     engine::{GameState, asset_loader::ImageAssets},
+    customers::dialogue::NextDialogueNode,
 };
 
 #[derive(Component, Clone, Debug)]
@@ -51,11 +52,16 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
         ))
         .observe(
             |_: Trigger<Pointer<Click>>,
+             mut commands: Commands,
              mut glass_query: Query<&mut Glass>,
              mut game_state: ResMut<NextState<GameState>>| {
                 for glass in glass_query.iter_mut() {
                     let drink = Drink::from(glass.clone());
                     info!("Crafted {:#?}", drink);
+                    
+                    // Set the next dialogue node to continue after drink completion
+                    commands.insert_resource(NextDialogueNode("ZaraAfterDrink".to_string()));
+                    
                     game_state.set(GameState::CustomerInteraction);
                 }
             },

@@ -33,11 +33,12 @@ impl Plugin for DialogPlugin {
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
         .init_resource::<PatronEffects>()
+        .init_resource::<AutoSelectOption>()
         .add_systems(
             OnEnter(GameState::CustomerInteraction),
             spawn_dialogue_runner,
         )
-        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects))
+        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects, auto_select_first_option))
         .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }

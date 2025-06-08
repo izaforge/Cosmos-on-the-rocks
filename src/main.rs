@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use cosmos_on_the_rocks::engine::{GameState, game_runner::GameRunnerPlugin};
+use cosmos_on_the_rocks::engine::{GameState, game_runner::GameRunnerPlugin, asset_loader::{AudioAssets, ImageAssets}};
+use cosmos_on_the_rocks::customers::dialogue::NextDialogueNode;
+use bevy_asset_loader::prelude::*;
 
 // Asset structs
 #[derive(Resource)]
@@ -16,6 +18,13 @@ fn main() {
         GameRunnerPlugin,
     ))
     .init_state::<GameState>()
+    .add_loading_state(
+        LoadingState::new(GameState::Loading)
+            .load_collection::<AudioAssets>()
+            .load_collection::<ImageAssets>()
+            .continue_to_state(GameState::CustomerInteraction),
+    )
+    .add_systems(OnEnter(GameState::CustomerInteraction), set_zara_dialogue_start_node)
     .run();
 }
 
@@ -76,4 +85,8 @@ fn ensure_background_fills_screen(
             }
         }
     }
+}
+
+fn set_zara_dialogue_start_node(mut commands: Commands) {
+    commands.insert_resource(NextDialogueNode("ZaraDialogue".to_string()));
 }
