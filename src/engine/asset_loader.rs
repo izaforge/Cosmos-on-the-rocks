@@ -50,6 +50,8 @@ pub struct ImageAssets {
     pub old_memory: Handle<Image>,
     #[asset(path = "images/bar/drinks/synth_cascade.png")]
     pub synth_cascade: Handle<Image>,
+    #[asset(path = "images/bar/drinks/cryo_drop.png")]
+    pub cryo_drop: Handle<Image>,
     #[asset(path = "images/bar/drinks/zero_phase.png")]
     pub zero_phase: Handle<Image>,
 }

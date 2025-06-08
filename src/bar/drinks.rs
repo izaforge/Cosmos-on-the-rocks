@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 
 use crate::bar::{
-    glass::Glass,
+    glass::{Glass, GlassShape},
     ingredient::{IngredientTaste, PrimaryEffect, SecondaryEffect},
 };
 
@@ -17,6 +17,7 @@ pub struct Drink {
 #[derive(Debug)]
 pub enum CreatedDrink {
     ZeroPhase,
+    CryoDrop,
     Cosmopolitan,
     SynthCascade,
     OldMemory,
@@ -44,11 +45,30 @@ impl From<Glass> for Drink {
             primary_taste: primary,
             secondary_taste: secondary,
         };
+
+        let created_drink = match glass.shape {
+            GlassShape::Wine => match (primary, secondary) {
+                (IngredientTaste::Bitter, IngredientTaste::Umami) => CreatedDrink::BinaryBarrel,
+                (IngredientTaste::Sweet, IngredientTaste::Citrus) => CreatedDrink::BotanicalSurge,
+                (IngredientTaste::Spicy, IngredientTaste::Sour) => CreatedDrink::EventHorizon,
+                _ => CreatedDrink::ZeroPhase,
+            },
+            GlassShape::Whiskey => match (primary, secondary) {
+                (IngredientTaste::Sour, IngredientTaste::Bitter) => CreatedDrink::EchoBloom,
+                (IngredientTaste::Umami, IngredientTaste::Sweet) => CreatedDrink::OldMemory,
+                _ => CreatedDrink::CryoDrop,
+            },
+            GlassShape::Cocktail => match (primary, secondary) {
+                (IngredientTaste::Citrus, IngredientTaste::Sweet) => CreatedDrink::Cosmopolitan,
+                (IngredientTaste::Bitter, IngredientTaste::Spicy) => CreatedDrink::SynthCascade,
+                _ => CreatedDrink::ZeroPhase,
+            },
+        };
         Drink {
-            name: format!("{:#?}", glass.shape),
+            name: format!("{:#?}", created_drink),
             ingredients: glass.ingredients,
             taste: tastes,
-            created_drink: CreatedDrink::ZeroPhase,
+            created_drink: created_drink,
         }
     }
 }
