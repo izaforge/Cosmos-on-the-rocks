@@ -12,7 +12,7 @@ use crate::{
     bar::{
         crafting::OnCraftingScreen,
         drinks::Drink,
-        ingredient::{Ingredient, IngredientTaste},
+        ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect},
     },
     customers::dialogue::NextDialogueNode,
     engine::{GameState, asset_loader::ImageAssets},
@@ -25,6 +25,7 @@ pub struct Glass {
     pub shape: GlassShape,
     pub ingredients: HashMap<Entity, f32>,
     pub taste: HashMap<IngredientTaste, f32>,
+    pub effect: HashMap<PrimaryEffect, f32>,
 }
 
 impl Glass {
@@ -55,6 +56,7 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
         shape: GlassShape::Wine,
         ingredients: HashMap::new(),
         taste: HashMap::new(),
+        effect: HashMap::new(),
     };
     commands
         .spawn((

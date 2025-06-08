@@ -33,10 +33,7 @@ impl Plugin for CraftingPlugin {
                 spawn_crafting_area,
             ),
         )
-        .add_systems(
-            Update,
-            (animate_spite,).run_if(in_state(GameState::Crafting)),
-        )
+        .add_systems(Update, animate_spite.run_if(in_state(GameState::Crafting)))
         .add_systems(OnExit(GameState::Crafting), cleanup_crafting)
         .add_event::<AnimationEvent>();
     }

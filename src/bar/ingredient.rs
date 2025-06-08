@@ -40,7 +40,7 @@ pub enum IngredientTaste {
     Spicy,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum PrimaryEffect {
     Calming,
     Energizing,
@@ -91,33 +91,37 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste) =
-                            match ingredient_query.get(ingredient_entity) {
-                                Ok(ingredient) => (
-                                    ingredient.ingredient_profile.size,
-                                    ingredient.ingredient_profile.taste,
-                                ),
-                                Err(_) => {
-                                    warn!("Clicked entity is not an ingredient!");
-                                    return;
-                                }
-                            };
+                        let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
+                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste, ingredient.ingredient_profile.primary_effect),
+                            Err(_) => {
+                                warn!("Clicked entity is not an ingredient!");
+                                return;
+                            }
+                        };
 
-                        glass.ingredients.insert(ingredient_entity, ingredient_size);
-                        if let Some(existing_taste) = glass.taste.get_mut(&ingredient_taste) {
-                            *existing_taste += ingredient_size;
+                        if glass.get_current_volume() + ingredient_size < glass.capacity {
+                            glass
+                                .ingredients
+                                .entry(ingredient_entity)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
+                            info!(
+                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
+                                glass.ingredients, glass.capacity, glass.taste
+                            );
+                            glass
+                                .taste
+                                .entry(ingredient_taste)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
+                            glass
+                                .effect
+                                .entry(ingredient_effect)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
                         } else {
-                            glass.taste.insert(ingredient_taste, ingredient_size);
+                            info!("Glass is full, cannot add more ingredients.");
                         }
-
-                        info!(
-                            "Added ingredient to glass! Current volume: {}",
-                            glass.get_current_volume()
-                        );
-                        info!("Glass contents: {:?}", glass.ingredients);
-                        info!("Glass taste profile: {:?}", glass.taste);
-
-                        break;
                     }
                 },
             )
