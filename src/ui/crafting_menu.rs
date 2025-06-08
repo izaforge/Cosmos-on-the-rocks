@@ -163,10 +163,3 @@ pub fn crafting_button_interaction_system(
         }
     }
 }
-
-// Cleanup system for when exiting the crafting state
-pub fn cleanup_crafting_menu(mut commands: Commands, query: Query<Entity, With<OnCraftingScreen>>) {
-    for entity in query.iter() {
-        commands.entity(entity).despawn();
-    }
-}

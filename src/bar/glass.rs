@@ -14,7 +14,6 @@ use crate::{
         drinks::Drink,
         ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect},
     },
-    customers::dialogue::NextDialogueNode,
     engine::{GameState, asset_loader::ImageAssets},
 };
 

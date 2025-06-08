@@ -1,3 +1,10 @@
+title: BartenderMonologue
+---
+Bartender: Time for a pick-me-up. Something strong, for a long night.
+<<make_drink "Orion's Belt Bypass" "self">>
+Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
+===
+
 title: ZaraDialogue
 ---
 // Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format

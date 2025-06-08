@@ -29,10 +29,7 @@ pub struct DrinkWasServed;
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            YarnSpinnerPlugin::with_yarn_sources(vec![
-                YarnFileSource::file("dialogue/zara.yarn"),
-                YarnFileSource::file("dialogue/hello_world.yarn"),
-            ]),
+            YarnSpinnerPlugin::with_yarn_source(YarnFileSource::file("dialogue/on_the_rocks.yarn")),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
         .init_resource::<PatronEffects>()

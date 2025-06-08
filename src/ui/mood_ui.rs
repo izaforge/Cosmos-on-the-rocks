@@ -2,7 +2,6 @@ use crate::bar::ingredient::PrimaryEffect;
 use crate::customers::dialogue::PatronEffects;
 use crate::engine::GameState;
 use bevy::prelude::*;
-use bevy::ui::UiSystem;
 
 /// Plugin for displaying mood/effect parameters UI
 pub struct MoodUiPlugin;

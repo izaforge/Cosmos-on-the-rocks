@@ -5,8 +5,6 @@ use bevy_asset_loader::prelude::*;
 use bevy_seedling::prelude::*;
 
 use crate::{
-    CosmosOnTheRocksPlugin,
-    bar::crafting::CraftingPlugin,
     customers::CustomerPlugin,
     engine::{
         GameState,
