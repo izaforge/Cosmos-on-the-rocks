@@ -77,6 +77,7 @@ pub fn spawn_ingredients(
                 transform,
                 anim_state,
                 Pickable::default(),
+                Interaction::None,
                 OnCraftingScreen,
             ))
             .observe(
@@ -121,6 +122,7 @@ pub fn spawn_ingredients(
                 sprite,
                 transform,
                 Pickable::default(),
+                Interaction::None,
                 OnCraftingScreen,
             ))
             .observe(
@@ -159,8 +161,6 @@ pub fn spawn_ingredients(
             );
     }
 }
-
-
 
 pub fn get_ice_gels(
     image_assets: &Res<ImageAssets>,

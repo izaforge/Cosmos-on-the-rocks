@@ -176,18 +176,30 @@ pub fn handle_drink_effects(
         info!("Serving test drink to patron!");
     }
     
+    // Press E to manually add effects for testing
+    if keyboard_input.just_pressed(KeyCode::KeyE) {
+        patron_effects.effects.insert(PrimaryEffect::Energizing, 8);
+        patron_effects.effects.insert(PrimaryEffect::TruthInducing, 6);
+        patron_effects.effects.insert(PrimaryEffect::MindEnhancing, 4);
+        info!("🧪 TEST: Manually added effects: {:?}", patron_effects.effects);
+    }
+    
     // Process all effect drinks
     for (drink_entity, drink) in drinks.iter() {
         // If no specific target, apply to the current patron effects resource
         if drink.target_patron.is_none() {
+            info!("🍸 Processing drink effects: {:?}", drink.effects);
+            
             // Apply or update each effect
             for (effect, value) in &drink.effects {
-                let current_value = patron_effects.effects.get(effect).unwrap_or(&0);
-                let new_value = (*current_value + value).min(10);
+                let current_value = *patron_effects.effects.get(effect).unwrap_or(&0);
+                let new_value = (current_value + value).min(10);
                 patron_effects.effects.insert(effect.clone(), new_value);
                 
-                info!("Applied {:?} effect with value {}", effect, new_value);
+                info!("✅ Applied {:?} effect: {} -> {}", effect, current_value, new_value);
             }
+            
+            info!("🎯 Final patron effects: {:?}", patron_effects.effects);
             
             // Remove the drink entity after it's been applied
             commands.entity(drink_entity).despawn();

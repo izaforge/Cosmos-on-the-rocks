@@ -59,6 +59,9 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
                     let drink = Drink::from(glass.clone());
                     info!("Crafted {:#?}", drink);
                     
+                    // Spawn the drink entity - this will trigger convert_drink_to_effects
+                    commands.spawn(drink);
+                    
                     // Set the next dialogue node to continue after drink completion
                     commands.insert_resource(NextDialogueNode("ZaraAfterDrink".to_string()));
                     

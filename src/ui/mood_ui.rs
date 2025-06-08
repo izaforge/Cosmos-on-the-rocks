@@ -45,6 +45,7 @@ fn setup_mood_ui(
                     padding: UiRect::all(Val::Px(15.0)),
                     flex_direction: FlexDirection::Column,
                     align_items: AlignItems::FlexStart,
+                    min_width: Val::Px(200.0),
                     ..default()
                 },
                 BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
@@ -89,15 +90,37 @@ struct EffectValueText(PrimaryEffect);
 /// System to update the mood display when effects change
 fn update_mood_display(
     patron_effects: Res<PatronEffects>,
-    mut text_query: Query<(&mut Text, &EffectValueText)>,
+    mut text_query: Query<(&mut Text, &mut TextColor, &EffectValueText)>,
 ) {
-    // Update text content based on effect values
-    for (mut text, effect_text) in text_query.iter_mut() {
+    // Only update if PatronEffects has changed
+    if !patron_effects.is_changed() {
+        return;
+    }
+    
+    // Update text content and color based on effect values
+    for (mut text, mut text_color, effect_text) in text_query.iter_mut() {
         let value = patron_effects.effects.get(&effect_text.0).unwrap_or(&0);
         **text = format!("{:?}: {}", effect_text.0, value);
         
-        // TODO: Update text color based on value
-        // This would require additional component queries to implement properly
+        // Update text color based on value (higher values = brighter colors)
+        let intensity = (*value as f32) / 10.0;
+        match effect_text.0 {
+            PrimaryEffect::Energizing => {
+                text_color.0 = Color::srgb(1.0, 0.5 + intensity * 0.5, 0.5 + intensity * 0.5);
+            },
+            PrimaryEffect::Calming => {
+                text_color.0 = Color::srgb(0.5 + intensity * 0.5, 0.5 + intensity * 0.5, 1.0);
+            },
+            PrimaryEffect::TruthInducing => {
+                text_color.0 = Color::srgb(0.5 + intensity * 0.5, 1.0, 0.5 + intensity * 0.5);
+            },
+            PrimaryEffect::MindEnhancing => {
+                text_color.0 = Color::srgb(1.0, 0.5 + intensity * 0.5, 1.0);
+            },
+            _ => {
+                text_color.0 = Color::srgb(0.8, 0.8, 0.8);
+            }
+        }
     }
 }
 
