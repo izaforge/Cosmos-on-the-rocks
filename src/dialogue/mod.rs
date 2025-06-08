@@ -1,19 +1,24 @@
-mod nodes;
 pub mod intel;
-mod systems;
+mod nodes;
 pub mod patrons;
+mod systems;
 
 // Use more specific exports to avoid conflicts
-pub use nodes::{DialogueNode, DialogueOption, DialogueCondition, DialogueEffect, DialogueTree, DialoguePlugin as NodesPlugin, EmotionType, Comparison};
-pub use intel::{IntelRegistry, IntelDiscoveredEvent, IntelPlugin};
-pub use systems::{DialogueInteractionPlugin, ActiveDialogue, DialogueOptionButton, DialogueOptionSelected};
-pub use patrons::{Patron, RelationshipRegistry, PatronPlugin, Happiness, Sadness, Anger};
+pub use intel::{IntelDiscoveredEvent, IntelPlugin, IntelRegistry};
+pub use nodes::{
+    Comparison, DialogueCondition, DialogueEffect, DialogueNode, DialogueOption, DialogueTree,
+    EmotionType,
+};
+pub use patrons::{Anger, Happiness, Patron, PatronPlugin, RelationshipRegistry, Sadness};
+pub use systems::{
+    ActiveDialogue, DialogueInteractionPlugin, DialogueOptionButton, DialogueOptionSelected,
+};
 
 // Re-export the enums with specific namespaces to avoid conflicts
 pub mod node_types {
-    pub use super::nodes::{Personality, Relationship, EmotionType, Comparison};
+    pub use super::nodes::{Comparison, EmotionType, Personality, Relationship};
 }
 
 pub mod patron_types {
     pub use super::patrons::{Personality, Relationship};
-} 
+}

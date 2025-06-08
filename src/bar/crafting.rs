@@ -16,7 +16,6 @@ pub enum CraftButtons {
     Reset,
 }
 
-/// Component for ingredient tooltip UI
 #[derive(Component)]
 pub struct IngredientTooltip;
 
@@ -35,18 +34,13 @@ impl Plugin for CraftingPlugin {
             ),
         )
         .add_systems(
-            Update, 
-            (
-                animate_spite,
-            ).run_if(in_state(GameState::Crafting))
+            Update,
+            (animate_spite,).run_if(in_state(GameState::Crafting)),
         )
         .add_systems(OnExit(GameState::Crafting), cleanup_crafting)
         .add_event::<AnimationEvent>();
     }
 }
-
-
-
 
 pub fn cleanup_crafting(mut commands: Commands, query: Query<Entity, With<OnCraftingScreen>>) {
     for entity in query.iter() {

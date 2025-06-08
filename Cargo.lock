@@ -1827,13 +1827,12 @@ dependencies = [
 name = "cosmos-on-the-rocks"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bevy",
  "bevy_asset_loader",
  "bevy_seedling",
  "bevy_yarnspinner",
  "bevy_yarnspinner_example_dialogue_view",
- "ron",
- "serde",
 ]
 
 [[package]]

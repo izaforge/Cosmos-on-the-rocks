@@ -1,5 +1,5 @@
+use crate::dialogue::patrons::{Anger, Happiness, Patron, Sadness};
 use bevy::prelude::*;
-use crate::dialogue::patrons::{Patron, Happiness, Sadness, Anger};
 
 /// Component marker for selected patron whose emotions should be displayed
 #[derive(Component)]
@@ -45,4 +45,4 @@ fn update_selected_patron(
             }
         }
     }
-} 
+}

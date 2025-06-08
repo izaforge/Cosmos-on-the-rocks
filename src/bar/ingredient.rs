@@ -1,9 +1,9 @@
 use bevy::{
-    prelude::*,
     picking::{
-        events::{Pointer, Pressed, Over, Out},
+        events::{Out, Over, Pointer, Pressed},
         prelude::Pickable,
     },
+    prelude::*,
 };
 
 use crate::{
@@ -91,13 +91,17 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste),
-                            Err(_) => {
-                                warn!("Clicked entity is not an ingredient!");
-                                return;
-                            }
-                        };
+                        let (ingredient_size, ingredient_taste) =
+                            match ingredient_query.get(ingredient_entity) {
+                                Ok(ingredient) => (
+                                    ingredient.ingredient_profile.size,
+                                    ingredient.ingredient_profile.taste,
+                                ),
+                                Err(_) => {
+                                    warn!("Clicked entity is not an ingredient!");
+                                    return;
+                                }
+                            };
 
                         glass.ingredients.insert(ingredient_entity, ingredient_size);
                         if let Some(existing_taste) = glass.taste.get_mut(&ingredient_taste) {
@@ -106,7 +110,10 @@ pub fn spawn_ingredients(
                             glass.taste.insert(ingredient_taste, ingredient_size);
                         }
 
-                        info!("Added ingredient to glass! Current volume: {}", glass.get_current_volume());
+                        info!(
+                            "Added ingredient to glass! Current volume: {}",
+                            glass.get_current_volume()
+                        );
                         info!("Glass contents: {:?}", glass.ingredients);
                         info!("Glass taste profile: {:?}", glass.taste);
 
@@ -117,15 +124,16 @@ pub fn spawn_ingredients(
             .observe(
                 |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
                     if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        info!("Hovering over: {} - {}", ingredient.name, ingredient.description);
+                        info!(
+                            "Hovering over: {} - {}",
+                            ingredient.name, ingredient.description
+                        );
                     }
                 },
             )
-            .observe(
-                |_: Trigger<Pointer<Out>>| {
-                    // Hover end - tooltip will be handled by the UI system
-                },
-            );
+            .observe(|_: Trigger<Pointer<Out>>| {
+                // Hover end - tooltip will be handled by the UI system
+            });
     }
 
     for (ingredient, sprite, transform) in other_ingredients {
@@ -143,13 +151,17 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste),
-                            Err(_) => {
-                                warn!("Clicked entity is not an ingredient!");
-                                return;
-                            }
-                        };
+                        let (ingredient_size, ingredient_taste) =
+                            match ingredient_query.get(ingredient_entity) {
+                                Ok(ingredient) => (
+                                    ingredient.ingredient_profile.size,
+                                    ingredient.ingredient_profile.taste,
+                                ),
+                                Err(_) => {
+                                    warn!("Clicked entity is not an ingredient!");
+                                    return;
+                                }
+                            };
 
                         glass.ingredients.insert(ingredient_entity, ingredient_size);
                         if let Some(existing_taste) = glass.taste.get_mut(&ingredient_taste) {
@@ -158,7 +170,10 @@ pub fn spawn_ingredients(
                             glass.taste.insert(ingredient_taste, ingredient_size);
                         }
 
-                        info!("Added ingredient to glass! Current volume: {}", glass.get_current_volume());
+                        info!(
+                            "Added ingredient to glass! Current volume: {}",
+                            glass.get_current_volume()
+                        );
                         info!("Glass contents: {:?}", glass.ingredients);
                         info!("Glass taste profile: {:?}", glass.taste);
 
@@ -169,15 +184,16 @@ pub fn spawn_ingredients(
             .observe(
                 |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
                     if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        info!("Hovering over: {} - {}", ingredient.name, ingredient.description);
+                        info!(
+                            "Hovering over: {} - {}",
+                            ingredient.name, ingredient.description
+                        );
                     }
                 },
             )
-            .observe(
-                |_: Trigger<Pointer<Out>>| {
-                    // Hover end - tooltip will be handled by the UI system
-                },
-            );
+            .observe(|_: Trigger<Pointer<Out>>| {
+                // Hover end - tooltip will be handled by the UI system
+            });
     }
 }
 

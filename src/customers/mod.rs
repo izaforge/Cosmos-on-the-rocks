@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{sprite_animation::{SpriteAnimState, animate_spite}, AnimationEvent},
+    animation::{
+        AnimationEvent,
+        sprite_animation::{SpriteAnimState, animate_spite},
+    },
     customers::dialogue::DialogPlugin,
     engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
 };
@@ -16,7 +19,10 @@ pub struct CustomerPlugin;
 impl Plugin for CustomerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(DialogPlugin)
-            .add_systems(OnEnter(GameState::Dialogues), (play_customer_bg, spawn_customer))
+            .add_systems(
+                OnEnter(GameState::Dialogues),
+                (play_customer_bg, spawn_customer),
+            )
             .add_systems(Update, animate_spite.run_if(in_state(GameState::Dialogues)))
             .add_systems(OnExit(GameState::Dialogues), cleanup_customer)
             .add_event::<AnimationEvent>();
@@ -105,11 +111,9 @@ pub fn spawn_customer(
     // Create a texture atlas for Zara with 4 animation frames
     let frame_size = UVec2::new(32, 48); // Adjust based on your sprite sheet dimensions
     let zara_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size,
-        4, // 4 frames horizontally
+        frame_size, 4, // 4 frames horizontally
         1, // 1 row
-        None,
-        None,
+        None, None,
     ));
 
     // Spawn Zara as a customer
@@ -135,7 +139,7 @@ pub fn spawn_customer(
         Transform::from_translation(Vec3::new(-400., 0., 1.)), // Position on the left side
         SpriteAnimState {
             start_index: 0,
-            end_index: 3, // 4 frames (0-3)
+            end_index: 3,                                           // 4 frames (0-3)
             timer: Timer::from_seconds(0.25, TimerMode::Repeating), // 4 frames per second
         },
         OnCustomerScreen,

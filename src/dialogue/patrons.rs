@@ -1,6 +1,6 @@
+use super::nodes::DialogueTree;
 use bevy::prelude::*;
 use std::collections::HashMap;
-use super::nodes::DialogueTree;
 
 /// Component for tracking a patron's personality state
 #[derive(Component, Debug, Clone)]
@@ -8,7 +8,7 @@ pub struct Patron {
     pub name: String,
     pub base_personality: Personality,
     pub current_dialogue_node: String,
-    pub dialogue_asset: Option<Handle<DialogueTree>>,  // Added to store dialogue handle
+    pub dialogue_asset: Option<Handle<DialogueTree>>, // Added to store dialogue handle
 }
 
 /// Component for tracking a patron's happiness level (0-100)
@@ -104,10 +104,10 @@ impl Plugin for PatronPlugin {
     fn build(&self, app: &mut App) {
         info!("PatronPlugin initialized!");
         info!("This plugin will spawn the four main patrons: Zara, Kael, Unit 734, and Lyra");
-        
+
         app.init_resource::<RelationshipRegistry>()
-           .add_systems(Startup, setup_initial_patrons)
-           .add_systems(Update, load_zara_dialogue.run_if(run_once));  // Only run once
+            .add_systems(Startup, setup_initial_patrons)
+            .add_systems(Update, load_zara_dialogue.run_if(run_once)); // Only run once
     }
 }
 
@@ -126,7 +126,7 @@ fn run_once() -> bool {
 
 /// System to handle patron emotion changes from drink effects
 pub fn apply_emotion_effect(
-    entity: Entity, 
+    entity: Entity,
     happiness_delta: i16,
     sadness_delta: i16,
     anger_delta: i16,
@@ -145,27 +145,27 @@ pub fn apply_emotion_effect(
 fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>) {
     info!("============================================");
     info!("Setting up initial patrons");
-    
+
     // Zara - The secretive security officer
     // Load Zara's dialogue from assets/dialogues/zara.yarn
     let zara_dialogue = asset_server.load("dialogues/zara.yarn");
-    
-    let zara_entity = commands.spawn((
-        Patron {
-            name: "Zara".to_string(),
-            base_personality: Personality::Secretive,
-            current_dialogue_node: "zara_intro".to_string(),
-            dialogue_asset: Some(zara_dialogue),  // Store the dialogue handle
-        },
-        Happiness { value: 50 },
-        Sadness { value: 20 },
-        Anger { value: 30 },
-        Name::new("Zara"),
-    )).id();
+
+    let zara_entity = commands
+        .spawn((
+            Patron {
+                name: "Zara".to_string(),
+                base_personality: Personality::Secretive,
+                current_dialogue_node: "zara_intro".to_string(),
+                dialogue_asset: Some(zara_dialogue), // Store the dialogue handle
+            },
+            Happiness { value: 50 },
+            Sadness { value: 20 },
+            Anger { value: 30 },
+            Name::new("Zara"),
+        ))
+        .id();
     info!("Spawned Zara with entity ID: {:?}", zara_entity);
-    
-    
-    
+
     info!("Initial patrons setup complete");
     info!("============================================");
 }
@@ -184,12 +184,12 @@ fn load_zara_dialogue(
                     println!("✅ SUCCESS: ZARA DIALOGUE LOADED FROM zara.dialogue.ron");
                     println!("Number of dialogue nodes: {}", dialogue_tree.nodes.len());
                     println!("Starting node: {}", dialogue_tree.starting_node);
-                    
+
                     if let Some(intro_node) = dialogue_tree.nodes.get("zara_intro") {
                         println!("Zara intro text: {}", intro_node.text);
                         println!("Available options: {}", intro_node.options.len());
                         for (i, option) in intro_node.options.iter().enumerate() {
-                            println!("  Option {}: {}", i+1, option.text);
+                            println!("  Option {}: {}", i + 1, option.text);
                         }
                     } else {
                         println!("❌ ERROR: 'zara_intro' node not found in dialogue tree!");
@@ -203,4 +203,4 @@ fn load_zara_dialogue(
             }
         }
     }
-} 
+}

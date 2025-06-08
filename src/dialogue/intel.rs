@@ -52,8 +52,8 @@ pub struct IntelPlugin;
 impl Plugin for IntelPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<IntelRegistry>()
-           .add_event::<IntelDiscoveredEvent>()
-           .add_systems(Update, update_intel_from_dialogue);
+            .add_event::<IntelDiscoveredEvent>()
+            .add_systems(Update, update_intel_from_dialogue);
     }
 }
 
@@ -65,4 +65,4 @@ fn update_intel_from_dialogue(
 ) {
     // This system will be expanded as more of the dialogue system is implemented
     // It will listen for dialogue selections and update the intel registry accordingly
-} 
+}

@@ -1,8 +1,12 @@
 use bevy::prelude::*;
 
-use cosmos_on_the_rocks::engine::{GameState, game_runner::GameRunnerPlugin, asset_loader::{AudioAssets, ImageAssets}};
-use cosmos_on_the_rocks::customers::dialogue::NextDialogueNode;
 use bevy_asset_loader::prelude::*;
+use cosmos_on_the_rocks::customers::dialogue::NextDialogueNode;
+use cosmos_on_the_rocks::engine::{
+    GameState,
+    asset_loader::{AudioAssets, ImageAssets},
+    game_runner::GameRunnerPlugin,
+};
 
 // Asset structs
 #[derive(Resource)]
@@ -39,11 +43,7 @@ fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(game_assets);
 }
 
-fn setup_game(
-    mut commands: Commands,
-    game_assets: Res<GameAssets>,
-    _windows: Query<&Window>,
-) {
+fn setup_game(mut commands: Commands, game_assets: Res<GameAssets>, _windows: Query<&Window>) {
     // Add background as a full-screen sprite with smooth scaling
     commands.spawn((
         Transform::from_xyz(0.0, 0.0, 0.0),
@@ -73,12 +73,12 @@ fn ensure_background_fills_screen(
         if let Some(image) = images.get(&game_assets.background) {
             let image_width = image.width() as f32;
             let image_height = image.height() as f32;
-            
+
             // Calculate scale to fill screen while maintaining aspect ratio
             let scale_x = window.resolution.width() / image_width;
             let scale_y = window.resolution.height() / image_height;
             let scale = scale_x.max(scale_y); // Use max to ensure full coverage
-            
+
             if let Ok(mut transform) = background_query.single_mut() {
                 // Apply smooth scaling with interpolation
                 transform.scale = Vec3::new(scale, scale, 1.0);

@@ -1,26 +1,20 @@
+use crate::bar::ingredient::PrimaryEffect;
+use crate::customers::dialogue::PatronEffects;
+use crate::engine::GameState;
 use bevy::prelude::*;
 use bevy::ui::UiSystem;
-use crate::customers::dialogue::PatronEffects;
-use crate::bar::ingredient::PrimaryEffect;
-use crate::engine::GameState;
 
 /// Plugin for displaying mood/effect parameters UI
 pub struct MoodUiPlugin;
 
 impl Plugin for MoodUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            OnEnter(GameState::Dialogues),
-            setup_mood_ui
-        )
-        .add_systems(
-            Update, 
-            update_mood_display.run_if(in_state(GameState::Dialogues))
-        )
-        .add_systems(
-            OnExit(GameState::Dialogues),
-            cleanup_mood_ui
-        );
+        app.add_systems(OnEnter(GameState::Dialogues), setup_mood_ui)
+            .add_systems(
+                Update,
+                update_mood_display.run_if(in_state(GameState::Dialogues)),
+            )
+            .add_systems(OnExit(GameState::Dialogues), cleanup_mood_ui);
     }
 }
 
@@ -29,10 +23,7 @@ impl Plugin for MoodUiPlugin {
 pub struct MoodUiDisplay;
 
 /// System to create the mood UI display when entering customer interaction
-fn setup_mood_ui(
-    mut commands: Commands,
-    game_state: Res<State<GameState>>,
-) {
+fn setup_mood_ui(mut commands: Commands, game_state: Res<State<GameState>>) {
     // Always show the mood UI when in CustomerInteraction state
     if game_state.get() == &GameState::Dialogues {
         commands
@@ -61,7 +52,7 @@ fn setup_mood_ui(
                     },
                     TextColor(Color::WHITE),
                 ));
-                
+
                 // Effect displays
                 for effect_type in [
                     PrimaryEffect::Energizing,
@@ -96,27 +87,27 @@ fn update_mood_display(
     if !patron_effects.is_changed() {
         return;
     }
-    
+
     // Update text content and color based on effect values
     for (mut text, mut text_color, effect_text) in text_query.iter_mut() {
         let value = patron_effects.effects.get(&effect_text.0).unwrap_or(&0);
         **text = format!("{:?}: {}", effect_text.0, value);
-        
+
         // Update text color based on value (higher values = brighter colors)
         let intensity = (*value as f32) / 10.0;
         match effect_text.0 {
             PrimaryEffect::Energizing => {
                 text_color.0 = Color::srgb(1.0, 0.5 + intensity * 0.5, 0.5 + intensity * 0.5);
-            },
+            }
             PrimaryEffect::Calming => {
                 text_color.0 = Color::srgb(0.5 + intensity * 0.5, 0.5 + intensity * 0.5, 1.0);
-            },
+            }
             PrimaryEffect::TruthInducing => {
                 text_color.0 = Color::srgb(0.5 + intensity * 0.5, 1.0, 0.5 + intensity * 0.5);
-            },
+            }
             PrimaryEffect::MindEnhancing => {
                 text_color.0 = Color::srgb(1.0, 0.5 + intensity * 0.5, 1.0);
-            },
+            }
             _ => {
                 text_color.0 = Color::srgb(0.8, 0.8, 0.8);
             }
@@ -125,12 +116,9 @@ fn update_mood_display(
 }
 
 /// System to clean up mood UI when exiting customer interaction
-fn cleanup_mood_ui(
-    mut commands: Commands,
-    ui_query: Query<Entity, With<MoodUiDisplay>>,
-) {
+fn cleanup_mood_ui(mut commands: Commands, ui_query: Query<Entity, With<MoodUiDisplay>>) {
     for entity in ui_query.iter() {
         commands.entity(entity).despawn();
     }
     info!("Cleaned up mood UI");
-} 
+}

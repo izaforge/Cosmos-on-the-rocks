@@ -1,10 +1,10 @@
-use bevy::{
-    prelude::*,
-    picking::events::{Pointer, Over, Out},
-};
 use crate::{
-    bar::{crafting::OnCraftingScreen, ingredient::Ingredient, glass::Glass},
-    constants::{TEXT_COLOR},
+    bar::{crafting::OnCraftingScreen, glass::Glass, ingredient::Ingredient},
+    constants::TEXT_COLOR,
+};
+use bevy::{
+    picking::events::{Out, Over, Pointer},
+    prelude::*,
 };
 
 /// Component marker for ingredient tooltip UI
@@ -28,7 +28,8 @@ pub fn setup_ingredient_tooltips(
     ingredient_query: Query<Entity, (With<Ingredient>, Without<IngredientTooltip>)>,
 ) {
     for entity in ingredient_query.iter() {
-        commands.entity(entity)
+        commands
+            .entity(entity)
             .observe(show_tooltip_on_hover)
             .observe(hide_tooltip_on_exit);
     }
@@ -40,7 +41,8 @@ pub fn setup_glass_tooltips(
     glass_query: Query<Entity, (With<Glass>, Without<GlassTooltip>)>,
 ) {
     for entity in glass_query.iter() {
-        commands.entity(entity)
+        commands
+            .entity(entity)
             .observe(show_glass_tooltip_on_hover)
             .observe(hide_glass_tooltip_on_exit);
     }
@@ -56,9 +58,13 @@ fn show_tooltip_on_hover(
     mut hovered_ingredient: ResMut<HoveredIngredient>,
     windows: Query<&Window>,
 ) {
-    let Ok(window) = windows.single() else { return; };
-    let Ok((transform, ingredient)) = ingredient_query.get(trigger.target()) else { return; };
-    
+    let Ok(window) = windows.single() else {
+        return;
+    };
+    let Ok((transform, ingredient)) = ingredient_query.get(trigger.target()) else {
+        return;
+    };
+
     // Remove any existing tooltip
     for tooltip_entity in tooltip_query.iter() {
         commands.entity(tooltip_entity).despawn();
@@ -157,9 +163,13 @@ fn show_glass_tooltip_on_hover(
     tooltip_query: Query<Entity, With<GlassTooltip>>,
     windows: Query<&Window>,
 ) {
-    let Ok(window) = windows.single() else { return; };
-    let Ok((transform, glass)) = glass_query.get(trigger.target()) else { return; };
-    
+    let Ok(window) = windows.single() else {
+        return;
+    };
+    let Ok((transform, glass)) = glass_query.get(trigger.target()) else {
+        return;
+    };
+
     // Remove any existing glass tooltip
     for tooltip_entity in tooltip_query.iter() {
         commands.entity(tooltip_entity).despawn();
@@ -217,4 +227,4 @@ fn hide_glass_tooltip_on_exit(
     for tooltip_entity in tooltip_query.iter() {
         commands.entity(tooltip_entity).despawn();
     }
-} 
+}
