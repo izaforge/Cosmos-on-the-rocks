@@ -50,11 +50,10 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
             Pickable::default(),
         ))
         .observe(
-            |ev: Trigger<Pointer<Click>>,
+            |_: Trigger<Pointer<Click>>,
              mut glass_query: Query<&mut Glass>,
-             mut game_state: ResMut<NextState<GameState>>,
-             ingredient_query: Query<&Ingredient>| {
-                for mut glass in glass_query.iter_mut() {
+             mut game_state: ResMut<NextState<GameState>>| {
+                for glass in glass_query.iter_mut() {
                     let drink = Drink::from(glass.clone());
                     info!("Crafted {:#?}", drink);
                     game_state.set(GameState::CustomerInteraction);

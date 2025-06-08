@@ -20,13 +20,13 @@ pub struct ImageAssets {
     pub synth_vapor: Handle<Image>,
     #[asset(path = "images/bar/ingredients/circuit_juice.png")]
     pub circuit_juice: Handle<Image>,
-    #[asset(path = "images/bar/ingredients/Void Reserve.png")]
+    #[asset(path = "images/bar/ingredients/void_reserve.png")]
     pub void_reserve: Handle<Image>,
-    #[asset(path = "images/bar/ingredients/Sweetflux.png")]
+    #[asset(path = "images/bar/ingredients/sweetflux.png")]
     pub sweetflux: Handle<Image>,
-    #[asset(path = "images/bar/ingredients/Citraplasm.png")]
+    #[asset(path = "images/bar/ingredients/citraplasm.png")]
     pub citraplasm: Handle<Image>,
-    #[asset(path = "images/bar/ingredients/bg.png")]
+    #[asset(path = "images/bar/bg.png")]
     pub background_image: Handle<Image>,
 }
 
