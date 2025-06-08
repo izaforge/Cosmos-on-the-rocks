@@ -1,16 +1,5 @@
 use crate::{
-    engine::GameState,
-    ui::{
-        crafting_menu::{crafting_button_interaction_system, cleanup_crafting_menu, setup_crafting_menu},
-        main_menu::{button_interaction_system, cleanup_menu, setup_main_menu},
-        emotion_ui::EmotionUiPlugin,
-        mood_ui::MoodUiPlugin,
-        ingredient_tooltip::{
-            setup_ingredient_tooltips, cleanup_ingredient_tooltips, HoveredIngredient,
-            setup_glass_tooltips, cleanup_glass_tooltips,
-        },
-    },
-    bar::crafting::CraftingPlugin,
+    bar::crafting::CraftingPlugin, engine::GameState, ui::{crafting_menu::{cleanup_crafting_menu, crafting_button_interaction_system, setup_crafting_menu}, emotion_ui::EmotionUiPlugin, ingredient_tooltip::{cleanup_glass_tooltips, cleanup_ingredient_tooltips, setup_glass_tooltips, setup_ingredient_tooltips, HoveredIngredient}, main_menu::{button_interaction_system, cleanup_menu, setup_main_menu}, mood_ui::MoodUiPlugin}
 };
 use bevy::prelude::*;
 

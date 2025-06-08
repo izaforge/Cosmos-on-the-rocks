@@ -34,16 +34,16 @@ impl Plugin for DialogPlugin {
         ))
         .init_resource::<PatronEffects>()
         .add_systems(
-            OnEnter(GameState::CustomerInteraction),
+            OnEnter(GameState::Dialogues),
             spawn_dialogue_runner,
         )
         .add_systems(Update, (
             handle_drink_effects, 
             convert_drink_to_effects,
-            update_dialogue_variables.run_if(in_state(GameState::CustomerInteraction)),
-            debug_yarn_variables.run_if(in_state(GameState::CustomerInteraction))
+            update_dialogue_variables.run_if(in_state(GameState::Dialogues)),
+            debug_yarn_variables.run_if(in_state(GameState::Dialogues))
         ))
-        .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
+        .add_systems(OnExit(GameState::Dialogues), cleanup_customer);
     }
 }
 
@@ -92,7 +92,7 @@ pub fn spawn_dialogue_runner(
     };
     
     dialogue_runner.start_node(&start_node);
-    println!("✅ Started dialogue node: {}", start_node);
+    println!("? Started dialogue node: {}", start_node);
     
     // NOW set the variables AFTER starting the dialogue
     let mut storage = dialogue_runner.variable_storage_mut();
@@ -112,7 +112,7 @@ pub fn spawn_dialogue_runner(
     variables.insert("$truth_effect".to_string(), truth_value.into());
     variables.insert("$healing_effect".to_string(), healing_value.into());
     
-    println!("🎯 Set initial variables - energizing: {}, truth: {}, mind: {}", 
+    println!("?? Set initial variables - energizing: {}, truth: {}, mind: {}", 
              energizing_value, truth_value, mind_enhancing_value);
     
     commands.spawn((dialogue_runner, OnCustomerScreen));
@@ -125,7 +125,7 @@ fn set_game_state(In(state_name): In<String>, world: &mut World) {
         "MainMenu" => next_state.set(GameState::MainMenu),
         "Loading" => next_state.set(GameState::Loading),
         "Settings" => next_state.set(GameState::Settings),
-        "CustomerInteraction" => next_state.set(GameState::CustomerInteraction),
+        "CustomerInteraction" => next_state.set(GameState::Dialogues),
         "Crafting" => next_state.set(GameState::Crafting),
         "EndNight" => next_state.set(GameState::EndNight),
         _ => warn!("Unknown GameState: {}", state_name),
@@ -164,7 +164,7 @@ pub fn handle_drink_effects(
     for (drink_entity, drink) in drinks.iter() {
         // If no specific target, apply to the current patron effects resource
         if drink.target_patron.is_none() {
-            info!("🍸 Processing drink effects: {:?}", drink.effects);
+            info!("?? Processing drink effects: {:?}", drink.effects);
             
             // Apply or update each effect
             for (effect, value) in &drink.effects {
@@ -172,10 +172,10 @@ pub fn handle_drink_effects(
                 let new_value = (current_value + value).min(10);
                 patron_effects.effects.insert(effect.clone(), new_value);
                 
-                info!("✅ Applied {:?} effect: {} -> {}", effect, current_value, new_value);
+                info!("? Applied {:?} effect: {} -> {}", effect, current_value, new_value);
             }
             
-            info!("🎯 Final patron effects: {:?}", patron_effects.effects);
+            info!("?? Final patron effects: {:?}", patron_effects.effects);
             
             // Remove the drink entity after it's been applied
             commands.entity(drink_entity).despawn();
@@ -279,7 +279,7 @@ fn update_dialogue_variables(
         variables.insert("$healing_effect".to_string(), healing_value.into());
         
         // Only log when values actually change, and use debug instead of info
-        debug!("🔄 Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
+        debug!("?? Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
               energizing_value, truth_value, mind_enhancing_value);
     }
 }
@@ -290,35 +290,35 @@ pub fn debug_yarn_variables(
 ) {
     // Press D to debug YarnSpinner variables
     if keyboard_input.just_pressed(KeyCode::KeyD) {
-        info!("🔍 D PRESSED - Reading YarnSpinner variables directly:");
+        info!("?? D PRESSED - Reading YarnSpinner variables directly:");
         
         for dialogue_runner in dialogue_runner_query.iter() {
             let storage = dialogue_runner.variable_storage();
             let variables = storage.variables();
             
-            info!("📋 All YarnSpinner variables:");
+            info!("?? All YarnSpinner variables:");
             for (key, value) in variables.iter() {
                 info!("  {} = {:?}", key, value);
             }
             
             // Check specific effect variables
-            info!("🎯 Effect variables specifically:");
+            info!("?? Effect variables specifically:");
             if let Some(val) = variables.get("$energizing_effect") {
                 info!("  $energizing_effect = {:?}", val);
             } else {
-                info!("  ❌ $energizing_effect NOT FOUND");
+                info!("  ? $energizing_effect NOT FOUND");
             }
             
             if let Some(val) = variables.get("$truth_effect") {
                 info!("  $truth_effect = {:?}", val);
             } else {
-                info!("  ❌ $truth_effect NOT FOUND");
+                info!("  ? $truth_effect NOT FOUND");
             }
             
             if let Some(val) = variables.get("$mind_enhancing_effect") {
                 info!("  $mind_enhancing_effect = {:?}", val);
             } else {
-                info!("  ❌ $mind_enhancing_effect NOT FOUND");
+                info!("  ? $mind_enhancing_effect NOT FOUND");
             }
         }
     }

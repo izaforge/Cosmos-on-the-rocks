@@ -10,15 +10,15 @@ pub struct MoodUiPlugin;
 impl Plugin for MoodUiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
-            OnEnter(GameState::CustomerInteraction),
+            OnEnter(GameState::Dialogues),
             setup_mood_ui
         )
         .add_systems(
             Update, 
-            update_mood_display.run_if(in_state(GameState::CustomerInteraction))
+            update_mood_display.run_if(in_state(GameState::Dialogues))
         )
         .add_systems(
-            OnExit(GameState::CustomerInteraction),
+            OnExit(GameState::Dialogues),
             cleanup_mood_ui
         );
     }
@@ -34,7 +34,7 @@ fn setup_mood_ui(
     game_state: Res<State<GameState>>,
 ) {
     // Always show the mood UI when in CustomerInteraction state
-    if game_state.get() == &GameState::CustomerInteraction {
+    if game_state.get() == &GameState::Dialogues {
         commands
             .spawn((
                 MoodUiDisplay,

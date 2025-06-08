@@ -24,7 +24,7 @@ fn main() {
             .load_collection::<ImageAssets>()
             .continue_to_state(GameState::Crafting),
     )
-    .add_systems(OnEnter(GameState::CustomerInteraction), set_zara_dialogue_start_node)
+    .add_systems(OnEnter(GameState::Dialogues), set_zara_dialogue_start_node)
     .run();
 }
 

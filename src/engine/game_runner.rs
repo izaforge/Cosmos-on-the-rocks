@@ -29,7 +29,7 @@ impl Plugin for GameRunnerPlugin {
             LoadingState::new(GameState::Loading)
                 .load_collection::<AudioAssets>()
                 .load_collection::<ImageAssets>()
-                .continue_to_state(GameState::Crafting),
+                .continue_to_state(GameState::Dialogues),
         )
         .add_systems(Startup, setup_camera);
     }

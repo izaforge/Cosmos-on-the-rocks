@@ -35,7 +35,7 @@ pub enum IngredientTaste {
     Sweet,
     Sour,
     Bitter,
-    Salty,
+    Citrus,
     Umami,
     Spicy,
 }
@@ -223,7 +223,7 @@ pub fn get_ice_gels(
 
     let blue_icegel_profile = IngredientProfile {
         size: 10.0,
-        taste: IngredientTaste::None,
+        taste: IngredientTaste::Umami,
         primary_effect: PrimaryEffect::Calming,
         secondary_effect: SecondaryEffect::Sedated(EffectCondition {
             volume_needed: 90.0,
@@ -243,7 +243,7 @@ pub fn get_ice_gels(
     };
     let green_icegel_profile = IngredientProfile {
         size: 12.0,
-        taste: IngredientTaste::Sweet,
+        taste: IngredientTaste::Bitter,
         primary_effect: PrimaryEffect::Healing,
         secondary_effect: SecondaryEffect::Euphoric(EffectCondition {
             volume_needed: 90.0,

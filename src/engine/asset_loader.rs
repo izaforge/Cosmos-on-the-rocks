@@ -8,8 +8,12 @@ pub struct ImageAssets {
     pub bartender: Handle<Image>,
     #[asset(path = "images/characters/zara.png")]
     pub zara: Handle<Image>,
-    #[asset(path = "images/bar/wine_glass.png")]
+    #[asset(path = "images/bar/glasses/whiskey_glass.png")]
+    pub whiskey_glass: Handle<Image>,
+    #[asset(path = "images/bar/glasses/wine_glass.png")]
     pub wine_glass: Handle<Image>,
+    #[asset(path = "images/bar/glasses/cocktail_glass.png")]
+    pub cocktail_glass: Handle<Image>,
     #[asset(path = "images/bar/ingredients/blue_icegel.png")]
     pub blue_icegel: Handle<Image>,
     #[asset(path = "images/bar/ingredients/red_icegel.png")]
@@ -34,6 +38,26 @@ pub struct ImageAssets {
     pub bar_counter: Handle<Image>,
     #[asset(path = "images/bar/bar_shelf.png")]
     pub bar_shelf: Handle<Image>,
+    #[asset(path = "images/bar/drinks/binary_barrel.png")]
+    pub binary_barrel: Handle<Image>,
+    #[asset(path = "images/bar/drinks/botanica_surge.png")]
+    pub botanica_surge: Handle<Image>,
+    #[asset(path = "images/bar/drinks/cosmopolitan.png")]
+    pub cosmopolitan: Handle<Image>,
+    #[asset(path = "images/bar/drinks/echo_bloom.png")]
+    pub echo_bloom: Handle<Image>,
+    #[asset(path = "images/bar/drinks/event_horizon.png")]
+    pub event_horizon: Handle<Image>,
+    #[asset(path = "images/bar/drinks/old_memory.png")]
+    pub old_memory: Handle<Image>,
+    #[asset(path = "images/bar/drinks/synth_cascade.png")]
+    pub synth_cascade: Handle<Image>,
+    #[asset(path = "images/bar/drinks/cryo_drop.png")]
+    pub cryo_drop: Handle<Image>,
+    #[asset(path = "images/bar/drinks/stellar_lumen.png")]
+    pub stellar_lumen: Handle<Image>,
+    #[asset(path = "images/bar/drinks/zero_phase.png")]
+    pub zero_phase: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

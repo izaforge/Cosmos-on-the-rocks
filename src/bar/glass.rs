@@ -9,7 +9,11 @@ use bevy::{
 };
 
 use crate::{
-    bar::{crafting::OnCraftingScreen, drinks::Drink, ingredient::{Ingredient, IngredientTaste}},
+    bar::{
+        crafting::OnCraftingScreen,
+        drinks::Drink,
+        ingredient::{Ingredient, IngredientTaste},
+    },
     engine::{GameState, asset_loader::ImageAssets},
     customers::dialogue::NextDialogueNode,
 };
@@ -27,13 +31,17 @@ impl Glass {
     pub fn get_current_volume(&self) -> f32 {
         self.ingredients.values().sum()
     }
+    pub fn reset(&mut self) {
+        self.ingredients.clear();
+        self.taste.clear();
+    }
 }
 
 #[derive(Clone, Debug)]
 pub enum GlassShape {
     Whiskey,
     Wine,
-    Jar,
+    Cocktail,
 }
 
 pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
@@ -57,21 +65,25 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
             Pickable::default(),
         ))
         .observe(
-            |_: Trigger<Pointer<Click>>,
-             mut commands: Commands,
-             mut glass_query: Query<&mut Glass>,
-             mut game_state: ResMut<NextState<GameState>>| {
-                for glass in glass_query.iter_mut() {
-                    let drink = Drink::from(glass.clone());
-                    info!("Crafted {:#?}", drink);
-                    
-                    // Spawn the drink entity - this will trigger convert_drink_to_effects
-                    commands.spawn(drink);
-                    
-                    // Set the next dialogue node to continue after drink completion
-                    commands.insert_resource(NextDialogueNode("ZaraAfterDrink".to_string()));
-                    
-                    game_state.set(GameState::CustomerInteraction);
+            |event: Trigger<Pointer<Click>>,
+             mut query: Query<(&mut Glass, &mut Sprite)>,
+             image_assets: Res<ImageAssets>| {
+                if let Ok((mut glass, mut sprite)) = query.get_mut(event.target) {
+                    let (next_shape, new_image) = match glass.shape {
+                        GlassShape::Wine => {
+                            (GlassShape::Whiskey, image_assets.whiskey_glass.clone())
+                        }
+                        GlassShape::Whiskey => {
+                            (GlassShape::Cocktail, image_assets.cocktail_glass.clone())
+                        }
+                        GlassShape::Cocktail => (GlassShape::Wine, image_assets.wine_glass.clone()),
+                    };
+                    info!(
+                        "Switched glass shape from {:?} to {:?}",
+                        glass.shape, next_shape
+                    );
+                    glass.shape = next_shape;
+                    sprite.image = new_image;
                 }
             },
         )
