@@ -19,12 +19,6 @@ fn main() {
         GameRunnerPlugin,
     ))
     .init_state::<GameState>()
-    .add_loading_state(
-        LoadingState::new(GameState::Loading)
-            .load_collection::<AudioAssets>()
-            .load_collection::<ImageAssets>()
-            .continue_to_state(GameState::Crafting),
-    )
     .add_systems(OnEnter(GameState::Dialogues), set_zara_dialogue_start_node)
     .run();
 }
