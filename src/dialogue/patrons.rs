@@ -164,50 +164,7 @@ fn setup_initial_patrons(mut commands: Commands, asset_server: Res<AssetServer>)
     )).id();
     info!("Spawned Zara with entity ID: {:?}", zara_entity);
     
-    // Kael - The volatile mercenary
-    let kael_entity = commands.spawn((
-        Patron {
-            name: "Kael".to_string(),
-            base_personality: Personality::Volatile,
-            current_dialogue_node: "kael_intro".to_string(),
-            dialogue_asset: None,  // No specific dialogue file yet
-        },
-        Happiness { value: 40 },
-        Sadness { value: 10 },
-        Anger { value: 60 },
-        Name::new("Kael"),
-    )).id();
-    info!("Spawned Kael with entity ID: {:?}", kael_entity);
     
-    // Unit 734 - The artificial intelligence
-    let unit_entity = commands.spawn((
-        Patron {
-            name: "Unit 734".to_string(),
-            base_personality: Personality::Artificial,
-            current_dialogue_node: "unit_intro".to_string(),
-            dialogue_asset: None,  // No specific dialogue file yet
-        },
-        Happiness { value: 50 },
-        Sadness { value: 50 },
-        Anger { value: 0 },
-        Name::new("Unit 734"),
-    )).id();
-    info!("Spawned Unit 734 with entity ID: {:?}", unit_entity);
-    
-    // Lyra - The creative artist
-    let lyra_entity = commands.spawn((
-        Patron {
-            name: "Lyra".to_string(),
-            base_personality: Personality::Creative,
-            current_dialogue_node: "lyra_intro".to_string(),
-            dialogue_asset: None,  // No specific dialogue file yet
-        },
-        Happiness { value: 70 },
-        Sadness { value: 30 },
-        Anger { value: 10 },
-        Name::new("Lyra"),
-    )).id();
-    info!("Spawned Lyra with entity ID: {:?}", lyra_entity);
     
     info!("Initial patrons setup complete");
     info!("============================================");

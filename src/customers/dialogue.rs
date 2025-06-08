@@ -22,6 +22,10 @@ pub struct PatronEffects {
     pub effects: HashMap<PrimaryEffect, u8>, // Values range from 0-10
 }
 
+/// Resource to indicate that a drink was just served and its effects applied
+#[derive(Resource, Default)]
+pub struct DrinkWasServed;
+
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
@@ -143,61 +147,18 @@ pub fn handle_drink_effects(
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     // Just for testing - press T to apply a test drink effect
-    if keyboard_input.just_pressed(KeyCode::KeyT) {
-        // Create a test drink
-        let mut effects = HashMap::new();
-        effects.insert(PrimaryEffect::Energizing, 8);
-        effects.insert(PrimaryEffect::MindEnhancing, 5);
-        
-        commands.spawn(EffectDrink {
-            effects,
-            target_patron: None, // Apply to current patron
-        });
-        
-        info!("Serving test drink to patron!");
-    }
+    
     
     // Press E to manually add effects for testing
-    if keyboard_input.just_pressed(KeyCode::KeyE) {
-        patron_effects.effects.insert(PrimaryEffect::Energizing, 8);
-        patron_effects.effects.insert(PrimaryEffect::TruthInducing, 6);
-        patron_effects.effects.insert(PrimaryEffect::MindEnhancing, 4);
-        info!("🧪 TEST: Manually added effects: {:?}", patron_effects.effects);
-        info!("🔍 E PRESSED - Effects should now be: Energizing=8, Truth=6, Mind=4");
-        info!("💡 TIP: Press F to restart dialogue or go to crafting and come back to see new options!");
-    }
+    
     
     // Press Q to add maximum effects (unlock ALL dialogue options)
-    if keyboard_input.just_pressed(KeyCode::KeyQ) {
-        patron_effects.effects.insert(PrimaryEffect::Energizing, 10);
-        patron_effects.effects.insert(PrimaryEffect::TruthInducing, 10);
-        patron_effects.effects.insert(PrimaryEffect::MindEnhancing, 10);
-        patron_effects.effects.insert(PrimaryEffect::Calming, 10);
-        patron_effects.effects.insert(PrimaryEffect::CourageBoosting, 10);
-        patron_effects.effects.insert(PrimaryEffect::Healing, 10);
-        info!("🚀 MAX TEST: All effects set to 10 - ALL OPTIONS UNLOCKED!");
-        info!("🔍 Q PRESSED - All effects should now be 10. Effects: {:?}", patron_effects.effects);
-        info!("💡 TIP: Press F to restart dialogue or go to crafting and come back to see ALL new options!");
-    }
+    
     
     // Press R to print current state for debugging
-    if keyboard_input.just_pressed(KeyCode::KeyR) {
-        info!("🔍 CURRENT PATRON EFFECTS DEBUG:");
-        info!("  Energizing: {}", patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0));
-        info!("  Truth: {}", patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0));
-        info!("  Mind: {}", patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0));
-        info!("  Calming: {}", patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0));
-        info!("  Courage: {}", patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0));
-        info!("  Healing: {}", patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0));
-        info!("🔍 Full effects map: {:?}", patron_effects.effects);
-    }
+    
     
     // Press F to force navigation back to main dialogue (useful after changing effects)
-    if keyboard_input.just_pressed(KeyCode::KeyF) {
-        commands.insert_resource(NextDialogueNode("ZaraDialogue".to_string()));
-        info!("🔄 F PRESSED - Will restart ZaraDialogue on next customer interaction");
-        info!("💡 TIP: Exit to crafting and come back to see updated dialogue options");
-    }
     
     // Process all effect drinks
     for (drink_entity, drink) in drinks.iter() {
@@ -292,9 +253,7 @@ fn update_dialogue_variables(
     mut dialogue_runner_query: Query<&mut DialogueRunner>,
 ) {
     // Only update if PatronEffects has actually changed
-    if !patron_effects.is_changed() && !dialogue_runner_query.is_empty() {
-        return;
-    }
+    
     
     for mut dialogue_runner in dialogue_runner_query.iter_mut() {
         // Get current effect values
@@ -315,6 +274,7 @@ fn update_dialogue_variables(
         variables.insert("$mind_enhancing_effect".to_string(), mind_enhancing_value.into());
         variables.insert("$courage_effect".to_string(), courage_value.into());
         variables.insert("$truth_effect".to_string(), truth_value.into());
+        variables.insert("$healing_effect".to_string(), healing_value.into());
         
         
         info!("🔄 Updated dialogue variables - energizing: {}, truth: {}, mind: {}", 
@@ -362,23 +322,5 @@ pub fn debug_yarn_variables(
     }
     
     // Press X to force set test values directly in YarnSpinner
-    if keyboard_input.just_pressed(KeyCode::KeyX) {
-        info!("🧪 X PRESSED - Force setting test values in YarnSpinner:");
-        
-        for mut dialogue_runner in dialogue_runner_query.iter_mut() {
-            let mut storage = dialogue_runner.variable_storage_mut();
-            let mut variables = storage.variables();
-            
-            // Force set high values
-            variables.insert("$energizing_effect".to_string(), 10.0.into());
-            variables.insert("$truth_effect".to_string(), 10.0.into());
-            variables.insert("$mind_enhancing_effect".to_string(), 10.0.into());
-            variables.insert("$calming_effect".to_string(), 10.0.into());
-            variables.insert("$courage_effect".to_string(), 10.0.into());
-            variables.insert("$healing_effect".to_string(), 10.0.into());
-            
-            info!("✅ Force set all effect variables to 10.0");
-            info!("💡 TIP: These should now make all dialogue options available!");
-        }
-    }
+   
 }
