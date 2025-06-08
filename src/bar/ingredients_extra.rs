@@ -53,39 +53,6 @@ pub fn get_other_ingredients(
         hazard: None,
     };
 
-    let synth_vapor_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::Bitter,
-        primary_effect: PrimaryEffect::Energizing,
-        secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-
-    let circuit_juice_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::None,
-        primary_effect: PrimaryEffect::Energizing,
-        secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-
-    let void_reserve_profile = IngredientProfile {
-        size: 0.1,
-        taste: IngredientTaste::None,
-        primary_effect: PrimaryEffect::Calming,
-        secondary_effect: SecondaryEffect::Sedated(EffectCondition {
-            volume_needed: 90.0,
-            catalyst: None,
-        }),
-        hazard: None,
-    };
-
     let sweetflux_profile = IngredientProfile {
         size: 0.1,
         taste: IngredientTaste::Sweet,
@@ -99,10 +66,43 @@ pub fn get_other_ingredients(
 
     let citraplasm_profile = IngredientProfile {
         size: 0.1,
-        taste: IngredientTaste::Sour,
+        taste: IngredientTaste::Citrus,
         primary_effect: PrimaryEffect::MindEnhancing,
         secondary_effect: SecondaryEffect::Hallucinogenic(EffectCondition {
             volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
+    let synth_vapor_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::Bitter,
+        primary_effect: PrimaryEffect::Energizing,
+        secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
+            volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
+    let circuit_juice_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::Bitter,
+        primary_effect: PrimaryEffect::Energizing,
+        secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
+            volume_needed: 90.0,
+            catalyst: None,
+        }),
+        hazard: None,
+    };
+
+    let void_reserve_profile = IngredientProfile {
+        size: 0.1,
+        taste: IngredientTaste::Umami,
+        primary_effect: PrimaryEffect::Calming,
+        secondary_effect: SecondaryEffect::Sedated(EffectCondition {
+            volume_needed: 40.0,
             catalyst: None,
         }),
         hazard: None,
@@ -112,6 +112,18 @@ pub fn get_other_ingredients(
         name: "Fizzion Mist".to_string(),
         description: "Fuzzy Drink".to_string(),
         ingredient_profile: fizzion_mist_profile,
+    };
+
+    let sweetflux = Ingredient {
+        name: "Sweetflux".to_string(),
+        description: "Sweet and glowing liquid".to_string(),
+        ingredient_profile: sweetflux_profile,
+    };
+
+    let citraplasm = Ingredient {
+        name: "Citraplasm".to_string(),
+        description: "Sour, citrus-like liquid".to_string(),
+        ingredient_profile: citraplasm_profile,
     };
 
     let synth_vapor = Ingredient {
@@ -130,18 +142,6 @@ pub fn get_other_ingredients(
         name: "Void Reserve".to_string(),
         description: "Dark Matter".to_string(),
         ingredient_profile: void_reserve_profile,
-    };
-
-    let sweetflux = Ingredient {
-        name: "Sweetflux".to_string(),
-        description: "Sweet and glowing liquid".to_string(),
-        ingredient_profile: sweetflux_profile,
-    };
-
-    let citraplasm = Ingredient {
-        name: "Citraplasm".to_string(),
-        description: "Sour, citrus-like liquid".to_string(),
-        ingredient_profile: citraplasm_profile,
     };
 
     vec![

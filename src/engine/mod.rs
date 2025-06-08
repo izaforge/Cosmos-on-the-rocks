@@ -10,7 +10,7 @@ pub enum GameState {
     MainMenu,
     Loading,
     Settings,
-    CustomerInteraction,
+    Dialogues,
     Crafting,
     EndNight,
 }

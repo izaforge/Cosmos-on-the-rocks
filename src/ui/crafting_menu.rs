@@ -1,5 +1,7 @@
 use crate::{
-    bar::crafting::OnCraftingScreen, constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR}, engine::GameState
+    bar::{crafting::OnCraftingScreen, drinks::Drink, glass::Glass},
+    constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
+    engine::GameState,
 };
 use bevy::prelude::*;
 
@@ -96,17 +98,25 @@ pub fn crafting_button_interaction_system(
         (&Interaction, &mut BackgroundColor, &CraftingButtons),
         (Changed<Interaction>, With<Button>),
     >,
+    mut glass_query: Query<&mut Glass>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, mut color, button) in interaction_query.iter_mut() {
         match *interaction {
             Interaction::Pressed => match button {
                 CraftingButtons::Craft => {
-                    println!("Craft Button Clicked");
-                    // Implement crafting logic here
+                    for glass in glass_query.iter_mut() {
+                        let drink = Drink::from(glass.clone());
+                        info!("Crafted {:#?}", drink);
+                        game_state.set(GameState::Dialogues);
+                    }
                 }
                 CraftingButtons::Reset => {
                     println!("Reset Button Clicked");
-                    // Implement reset logic here
+                    for mut glass in glass_query.iter_mut() {
+                        glass.reset();
+                        info!("Glass Reset {:#?}", glass);
+                    }
                 }
             },
             Interaction::Hovered => {

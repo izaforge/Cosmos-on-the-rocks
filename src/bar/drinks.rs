@@ -11,24 +11,44 @@ pub struct Drink {
     pub name: String,
     pub ingredients: HashMap<Entity, f32>,
     pub taste: DrinkTaste,
+    pub created_drink: CreatedDrink,
+}
+
+#[derive(Debug)]
+pub enum CreatedDrink {
+    ZeroPhase,
+    Cosmopolitan,
+    SynthCascade,
+    OldMemory,
+    EchoBloom,
+    BotanicalSurge,
+    BinaryBarrel,
+    EventHorizon,
 }
 
 impl From<Glass> for Drink {
     fn from(glass: Glass) -> Self {
-    let mut taste_vec: Vec<(IngredientTaste, f32)> = glass.taste.into_iter().collect();
-    taste_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        let mut taste_vec: Vec<(IngredientTaste, f32)> = glass.taste.into_iter().collect();
+        taste_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
-    let primary = taste_vec.get(0).map(|(t, _)| *t).unwrap_or(IngredientTaste::None);
-    let secondary = taste_vec.get(1).map(|(t, _)| *t).unwrap_or(IngredientTaste::None);
+        let primary = taste_vec
+            .get(0)
+            .map(|(t, _)| *t)
+            .unwrap_or(IngredientTaste::None);
+        let secondary = taste_vec
+            .get(1)
+            .map(|(t, _)| *t)
+            .unwrap_or(IngredientTaste::None);
 
-    let tastes = DrinkTaste {
-        primary_taste: primary,
-        secondary_taste: secondary,
-    };
+        let tastes = DrinkTaste {
+            primary_taste: primary,
+            secondary_taste: secondary,
+        };
         Drink {
             name: format!("{:#?}", glass.shape),
             ingredients: glass.ingredients,
             taste: tastes,
+            created_drink: CreatedDrink::ZeroPhase,
         }
     }
 }

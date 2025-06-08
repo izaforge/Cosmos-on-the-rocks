@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{sprite_animation::animate_spite, AnimationEvent},
+    animation::{AnimationEvent, sprite_animation::animate_spite},
     bar::{bar_counter::spawn_crafting_area, glass::spawn_glass, ingredient::spawn_ingredients},
     customers::spawn_bartender,
-    engine::{audio_controller::play_crafting_bg, GameState},
+    engine::{GameState, audio_controller::play_crafting_bg},
 };
 
 #[derive(Component)]

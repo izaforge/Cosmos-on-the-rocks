@@ -3,7 +3,11 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::{
-    bar::{crafting::OnCraftingScreen, drinks::Drink, ingredient::{Ingredient, IngredientTaste}},
+    bar::{
+        crafting::OnCraftingScreen,
+        drinks::Drink,
+        ingredient::{Ingredient, IngredientTaste},
+    },
     engine::{GameState, asset_loader::ImageAssets},
 };
 
@@ -20,13 +24,17 @@ impl Glass {
     pub fn get_current_volume(&self) -> f32 {
         self.ingredients.values().sum()
     }
+    pub fn reset(&mut self) {
+        self.ingredients.clear();
+        self.taste.clear();
+    }
 }
 
 #[derive(Clone, Debug)]
 pub enum GlassShape {
     Whiskey,
     Wine,
-    Jar,
+    Cocktail,
 }
 
 pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
@@ -51,12 +59,11 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
         ))
         .observe(
             |_: Trigger<Pointer<Click>>,
-             mut glass_query: Query<&mut Glass>,
-             mut game_state: ResMut<NextState<GameState>>| {
-                for glass in glass_query.iter_mut() {
-                    let drink = Drink::from(glass.clone());
-                    info!("Crafted {:#?}", drink);
-                    game_state.set(GameState::CustomerInteraction);
+             mut glass_query: Query<(&mut Glass, &mut Sprite)>,
+             image_assets: Res<ImageAssets>| {
+                for (mut glass, mut sprite) in glass_query.iter_mut() {
+                    glass.shape = GlassShape::Whiskey;
+                    sprite.image = image_assets.whiskey_glass.clone();
                 }
             },
         );
