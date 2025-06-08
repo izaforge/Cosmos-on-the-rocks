@@ -34,7 +34,7 @@ pub enum IngredientTaste {
     Spicy,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum PrimaryEffect {
     Calming,
     Energizing,

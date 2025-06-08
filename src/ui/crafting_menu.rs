@@ -125,6 +125,6 @@ pub fn cleanup_crafting_menu(
     query: Query<Entity, With<OnCraftingScreen>>,
 ) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

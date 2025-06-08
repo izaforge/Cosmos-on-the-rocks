@@ -2,7 +2,8 @@ use bevy::prelude::*;
 use bevy::log::warn;
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
-use crate::dialogue::patrons::{Happiness, Sadness, Anger, Patron};
+use crate::bar::ingredient::PrimaryEffect;
+use std::collections::HashMap;
 
 use crate::{
     customers::{OnCustomerScreen, cleanup_customer},
@@ -19,16 +20,24 @@ pub struct NextDialogueNode(pub String);
 #[derive(Resource, Default)]
 struct AutoSelectOption(bool);
 
+/// Resource to store effect values for dialogue branching
+#[derive(Resource, Default, Debug)]
+pub struct PatronEffects {
+    pub effects: HashMap<PrimaryEffect, u8>, // Values range from 0-10
+}
+
 impl Plugin for DialogPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             YarnSpinnerPlugin::new(),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
+        .init_resource::<PatronEffects>()
         .add_systems(
             OnEnter(GameState::CustomerInteraction),
             spawn_dialogue_runner,
         )
+        .add_systems(Update, (handle_drink_effects, convert_drink_to_effects))
         .add_systems(OnExit(GameState::CustomerInteraction), cleanup_customer);
     }
 }
@@ -38,7 +47,7 @@ fn auto_select_first_option(
     dialogue_runners: Query<&DialogueRunner>,
     mut auto_select: ResMut<AutoSelectOption>,
     mut keyboard: ResMut<ButtonInput<KeyCode>>,
-    time: Res<Time>,
+    _time: Res<Time>,
 ) {
     // Only proceed if there's an active dialogue runner
     if !dialogue_runners.is_empty() && !auto_select.0 {
@@ -58,6 +67,7 @@ pub fn spawn_dialogue_runner(
     next_node: Option<Res<NextDialogueNode>>,
     existing_dialogue: Query<Entity, With<DialogueRunner>>,
     existing_ui: Query<Entity, With<OnCustomerScreen>>,
+    patron_effects: Res<PatronEffects>,
 ) {
     // Reset auto-select flag when spawning a new dialogue
     commands.insert_resource(AutoSelectOption(false));
@@ -77,13 +87,32 @@ pub fn spawn_dialogue_runner(
     // Register the system and get its SystemId
     let set_game_state_id = commands.register_system(set_game_state);
     
+    // Set variables for effect values in dialogue
+    let calming_value = patron_effects.effects.get(&PrimaryEffect::Calming).unwrap_or(&0);
+    let energizing_value = patron_effects.effects.get(&PrimaryEffect::Energizing).unwrap_or(&0);
+    let mind_enhancing_value = patron_effects.effects.get(&PrimaryEffect::MindEnhancing).unwrap_or(&0);
+    let courage_value = patron_effects.effects.get(&PrimaryEffect::CourageBoosting).unwrap_or(&0);
+    let truth_value = patron_effects.effects.get(&PrimaryEffect::TruthInducing).unwrap_or(&0);
+    let healing_value = patron_effects.effects.get(&PrimaryEffect::Healing).unwrap_or(&0);
+    
     // Register the custom command that allows changing the game state from dialogue
     dialogue_runner
         .commands_mut()
         .add_command("set_game_state", set_game_state_id);
     
+    // Set variables for dialogue to use
+    let mut storage = dialogue_runner.variable_storage_mut();
+    let mut variables = storage.variables();
+    variables.insert("$calming_effect".to_string(), (*calming_value).into());
+    variables.insert("$energizing_effect".to_string(), (*energizing_value).into());
+    variables.insert("$mind_enhancing_effect".to_string(), (*mind_enhancing_value).into());
+    variables.insert("$courage_effect".to_string(), (*courage_value).into());
+    variables.insert("$truth_effect".to_string(), (*truth_value).into());
+    variables.insert("$healing_effect".to_string(), (*healing_value).into());
+    
     // Print debug header
     println!("============================================");
+    println!("Current drink effects: {:?}", patron_effects.effects);
     println!("Checking for dialogue nodes");
     
     // Check if we have a specific node to start
@@ -144,77 +173,101 @@ fn set_game_state(In(state_name): In<String>, world: &mut World) {
     }
 }
 
-/// Component for a drink that can affect emotions
+/// Component for a drink that can affect customers based on primary effects
 #[derive(Component)]
-pub struct EmotionDrink {
-    pub happiness_effect: i16,
-    pub sadness_effect: i16,
-    pub anger_effect: i16,
+pub struct EffectDrink {
+    pub effects: HashMap<PrimaryEffect, u8>, // Values range from 0-10
     pub target_patron: Option<Entity>,
 }
 
-/// System to handle drink effects on patron emotions
+/// System to handle drink effects on patrons
 pub fn handle_drink_effects(
     mut commands: Commands,
-    drinks: Query<(Entity, &EmotionDrink)>,
-    mut patrons: Query<(Entity, &Patron, &mut Happiness, &mut Sadness, &mut Anger)>,
+    drinks: Query<(Entity, &EffectDrink)>,
+    mut patron_effects: ResMut<PatronEffects>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
-    // Just for testing - press T to apply a drink effect to the first patron
+    // Just for testing - press T to apply a test drink effect
     if keyboard_input.just_pressed(KeyCode::KeyT) {
-        // For testing, just find the first patron
-        if let Some((entity, _, _, _, _)) = patrons.iter().next() {
-            // Create a test drink
-            commands.spawn(EmotionDrink {
-                happiness_effect: 10,
-                sadness_effect: -5,
-                anger_effect: -15,
-                target_patron: Some(entity),
-            });
-            
-            info!("Serving test drink to patron!");
-        }
+        // Create a test drink
+        let mut effects = HashMap::new();
+        effects.insert(PrimaryEffect::Energizing, 8);
+        effects.insert(PrimaryEffect::MindEnhancing, 5);
+        
+        commands.spawn(EffectDrink {
+            effects,
+            target_patron: None, // Apply to current patron
+        });
+        
+        info!("Serving test drink to patron!");
     }
     
-    // Process all emotion drinks and apply effects
+    // Process all effect drinks
     for (drink_entity, drink) in drinks.iter() {
-        // If target patron is specified, use that
-        if let Some(target) = drink.target_patron {
-            if let Ok((_, patron, mut happiness, mut sadness, mut anger)) = patrons.get_mut(target) {
-                // Apply emotion changes
-                happiness.value = ((happiness.value as i16) + drink.happiness_effect).clamp(0, 100) as u8;
-                sadness.value = ((sadness.value as i16) + drink.sadness_effect).clamp(0, 100) as u8;
-                anger.value = ((anger.value as i16) + drink.anger_effect).clamp(0, 100) as u8;
+        // If no specific target, apply to the current patron effects resource
+        if drink.target_patron.is_none() {
+            // Apply or update each effect
+            for (effect, value) in &drink.effects {
+                let current_value = patron_effects.effects.get(effect).unwrap_or(&0);
+                let new_value = (*current_value + value).min(10);
+                patron_effects.effects.insert(effect.clone(), new_value);
                 
-                info!(
-                    "Applied drink to {}: Happiness: {}, Sadness: {}, Anger: {}", 
-                    patron.name, happiness.value, sadness.value, anger.value
-                );
-                
-                // Remove the drink entity after it's been applied
-                commands.entity(drink_entity).despawn();
+                info!("Applied {:?} effect with value {}", effect, new_value);
             }
-        } 
-        // If no target specified, try to find Zara
-        else {
-            // Try to find Zara by name
-            for (_entity, patron, mut happiness, mut sadness, mut anger) in patrons.iter_mut() {
-                if patron.name == "Zara" {
-                    // Apply emotion changes
-                    happiness.value = ((happiness.value as i16) + drink.happiness_effect).clamp(0, 100) as u8;
-                    sadness.value = ((sadness.value as i16) + drink.sadness_effect).clamp(0, 100) as u8;
-                    anger.value = ((anger.value as i16) + drink.anger_effect).clamp(0, 100) as u8;
-                    
-                    info!(
-                        "Applied drink to Zara: Happiness: {}, Sadness: {}, Anger: {}", 
-                        happiness.value, sadness.value, anger.value
-                    );
-                    
-                    // Remove the drink entity after it's been applied
-                    commands.entity(drink_entity).despawn();
-                    break; // Stop after finding Zara
-                }
+            
+            // Remove the drink entity after it's been applied
+            commands.entity(drink_entity).despawn();
+        }
+    }
+}
+
+/// System to convert a crafted drink into effects
+pub fn convert_drink_to_effects(
+    mut commands: Commands,
+    drinks: Query<(Entity, &crate::bar::drinks::Drink), Added<crate::bar::drinks::Drink>>,
+) {
+    for (drink_entity, drink) in drinks.iter() {
+        let mut effects = HashMap::new();
+        
+        // Extract primary effects from ingredients
+        for (_ingredient_entity, _amount) in &drink.ingredients {
+            // We would need to query the ingredient to get its effects
+            // For now, this is a simplified implementation
+            // In a full implementation, you would look up each ingredient's primary effect
+        }
+        
+        // For now, let's create a test effect based on the drink's primary taste
+        match drink.taste.primary_taste {
+            crate::bar::ingredient::IngredientTaste::Sweet => {
+                effects.insert(PrimaryEffect::Healing, 7);
+                effects.insert(PrimaryEffect::Calming, 3);
+            },
+            crate::bar::ingredient::IngredientTaste::Sour => {
+                effects.insert(PrimaryEffect::Energizing, 8);
+                effects.insert(PrimaryEffect::MindEnhancing, 2);
+            },
+            crate::bar::ingredient::IngredientTaste::Bitter => {
+                effects.insert(PrimaryEffect::TruthInducing, 9);
+            },
+            crate::bar::ingredient::IngredientTaste::Spicy => {
+                effects.insert(PrimaryEffect::CourageBoosting, 8);
+                effects.insert(PrimaryEffect::Energizing, 4);
+            },
+            _ => {
+                // Default effect for other tastes
+                effects.insert(PrimaryEffect::Calming, 5);
             }
         }
+        
+        info!("Created effect drink with effects: {:?}", effects);
+        
+        // Spawn the effect drink
+        commands.spawn(EffectDrink {
+            effects,
+            target_patron: None, // Apply to current patron
+        });
+        
+        // Remove the original drink
+        commands.entity(drink_entity).despawn();
     }
 }

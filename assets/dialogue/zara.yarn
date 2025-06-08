@@ -65,17 +65,107 @@ title: ZaraAfterDrink
 ---
 Zara: *takes a sip* This has... quite the kick to it.
 
--> How do you like it?
-    Player: How do you like it?
-    Zara: *eyes narrowing slightly* It's strong. Just what I needed to take the edge off. 
-    Zara: My superiors at Galactic Corp wouldn't approve of me drinking on leave.
-    Zara: But after what I've seen... rules seem less important these days.
-    <<jump ZaraAfterDrinkContinue>>
--> Notice anything different?
-    Player: Notice anything different about yourself?
-    Zara: *raises an eyebrow* What did you put in this? I feel... angrier somehow. More focused.
-    Zara: That's... interesting. Maybe that's what I needed to finally confront what's been bothering me.
-    <<jump ZaraAfterDrinkContinue>>
+<<if $energizing_effect >= 6>>
+    Zara: *eyes widen slightly* Wow, that's... energizing. I feel like I could take on a whole squadron of enforcers right now.
+    Zara: My mind is racing. It's like everything is in sharper focus.
+    <<jump ZaraEnergized>>
+<<elseif $calming_effect >= 6>>
+    Zara: *shoulders visibly relax* This is... calming. I haven't felt this relaxed in months.
+    Zara: Working security for Galactic Corp means you're always on edge. Always watching.
+    <<jump ZaraCalmed>>
+<<elseif $truth_effect >= 6>>
+    Zara: *expression shifts to surprise* I... what did you put in this? I feel like I need to... to tell someone...
+    Zara: *leans in closer* There are things I've been keeping hidden. Things I shouldn't talk about...
+    <<jump ZaraTruthful>>
+<<elseif $mind_enhancing_effect >= 6>>
+    Zara: *blinks rapidly* My thoughts are... clearer somehow. Like I can see connections I couldn't before.
+    Zara: The security breach. The missing files. The coincidental transfers... it all makes sense now.
+    <<jump ZaraMindEnhanced>>
+<<else>>
+    -> How do you like it?
+        Player: How do you like it?
+        Zara: *eyes narrowing slightly* It's strong. Just what I needed to take the edge off. 
+        Zara: My superiors at Galactic Corp wouldn't approve of me drinking on leave.
+        Zara: But after what I've seen... rules seem less important these days.
+        <<jump ZaraAfterDrinkContinue>>
+    -> Notice anything different?
+        Player: Notice anything different about yourself?
+        Zara: *raises an eyebrow* What did you put in this? I feel... different somehow. More present.
+        Zara: That's... interesting. Maybe that's what I needed to finally start processing what's been bothering me.
+        <<jump ZaraAfterDrinkContinue>>
+<<endif>>
+===
+
+title: ZaraEnergized
+---
+Zara: *speaks rapidly* I've been tracking a conspiracy within Galactic Corp for months. Higher-ups are selling classified tech to fringe colonies.
+Zara: *paces back and forth* I have proof - access logs, transmission records, financial transfers to shell companies.
+Zara: I need to act now, before they realize what I know. This drink was exactly what I needed!
+
+-> Slow down, you might be in danger
+    Player: Slow down, Zara. If what you're saying is true, you might be in danger.
+    Zara: *nods quickly* You're right. I need to be smart about this. Strategic.
+    Zara: I have a secure data cache in the spaceport locker. If anything happens to me, the access code is 7734-XB.
+    Zara: I should go. Thanks for the drink, bartender. It gave me the push I needed.
+-> I can help
+    Player: I can help. What do you need?
+    Zara: *grins* A distraction. Next time a Galactic Corp officer comes in, mention seeing me heading to the Outer Rim.
+    Zara: I'll be hiding much closer. And I'll need another drink like this one next time I stop by.
+    Zara: I should go. Time to put my plan into action!
+===
+
+title: ZaraCalmed
+---
+Zara: *sighs deeply* You know, I've been carrying this weight for so long. The things I've seen in this job...
+Zara: Sometimes I wonder if I'm on the right side. Galactic Corp isn't exactly known for its ethics.
+Zara: *takes another sip* This drink makes me feel like maybe I don't have to solve everything tonight.
+
+-> What have you seen?
+    Player: What have you seen that bothers you so much?
+    Zara: *speaks softly* Suppression of evidence. Covering up accidents that weren't accidents. Making people "disappear."
+    Zara: I joined to protect people. Not to be part of something like this.
+    Zara: Thank you for listening, bartender. And for this drink. I needed this moment of peace.
+-> Maybe you need a change
+    Player: Maybe it's time for a change of career.
+    Zara: *smiles sadly* Maybe. I've thought about joining the independent security forces in the Proxima sector.
+    Zara: Less pay, but I might be able to sleep at night.
+    Zara: I should go. But I'll remember this conversation. Thank you.
+===
+
+title: ZaraTruthful
+---
+Zara: *words tumble out* I've been spying for the resistance. I'm a double agent inside Galactic Corp security.
+Zara: *looks horrified at her own words* I can't believe I just told you that. What's in this drink?
+Zara: *glances around nervously* If anyone from Corp finds out, I'm dead. My handler is dead. Everyone I've helped is dead.
+
+-> Your secret is safe with me
+    Player: Your secret is safe with me, Zara. I promise.
+    Zara: *studies your face* I believe you. I don't know why, but I do.
+    Zara: There's a data drop tomorrow at the abandoned hangar. Someone needs to warn them it might be compromised.
+    Zara: I need to go. I've said too much already. But... thank you.
+-> Why risk everything?
+    Player: Why risk everything to help the resistance?
+    Zara: *expression hardens* Because I've seen what Corp does to planets that resist acquisition. It's not pretty.
+    Zara: My home world was "peacefully integrated" ten years ago. Half my family didn't survive the "transition period."
+    Zara: I should go. Forget what I said. Please.
+===
+
+title: ZaraMindEnhanced
+---
+Zara: *speaking with unusual clarity* The security breach three months ago wasn't external. It was an inside job.
+Zara: Director Krell authorized it himself. He's been feeding information to the Syndicate for years.
+Zara: The evidence is hidden in plain sight - transfer records, duty rosters, maintenance logs. All the patterns are there.
+
+-> What will you do with this information?
+    Player: What will you do with this information, Zara?
+    Zara: *thoughtfully* I need to be strategic. Taking this directly to Internal Affairs would be suicide.
+    Zara: I need to compile the evidence, encrypt it, and send copies to multiple trusted sources.
+    Zara: Then trigger simultaneous releases if anything happens to me. It's the only way to ensure the truth gets out.
+-> This sounds dangerous
+    Player: This sounds incredibly dangerous, Zara. Are you sure?
+    Zara: *nods with determination* The danger is already there whether I act or not. Krell has eliminated three security officers who got too close.
+    Zara: If I do nothing, I'm just waiting my turn. At least this way, I choose the battlefield.
+    Zara: I should go. I have work to do. Thank you for the clarity, bartender.
 ===
 
 title: ZaraAfterDrinkContinue
