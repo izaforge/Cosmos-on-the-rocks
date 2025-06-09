@@ -8,6 +8,8 @@ pub struct ImageAssets {
     pub bartender: Handle<Image>,
     #[asset(path = "images/characters/zara.png")]
     pub zara: Handle<Image>,
+    #[asset(path = "images/characters/coda.png")]
+    pub coda: Handle<Image>,
     #[asset(path = "images/bar/glasses/whiskey_glass.png")]
     pub whiskey_glass: Handle<Image>,
     #[asset(path = "images/bar/glasses/wine_glass.png")]

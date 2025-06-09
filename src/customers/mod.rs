@@ -126,9 +126,12 @@ pub fn spawn_customer(
     image_assets: Res<ImageAssets>,
     dialogue_state: Res<DialogueState>,
 ) {
-    // Spawn different customers based on dialogue state
-    if !dialogue_state.zara_dialogue_finished {
-        // Spawn Zara (first time or returning)
+    // Spawn different customers based on dialogue state - matching the exact dialogue progression
+    if !dialogue_state.bartender_monologue_played || !dialogue_state.bartender_drink_finished {
+        // During bartender dialogues, no customer is visible
+        return;
+    } else if !dialogue_state.zara_dialogue_finished {
+        // Spawn Zara during her dialogue
         commands.spawn((
             Customer {
                 name: "Zara".to_string(),
@@ -154,8 +157,8 @@ pub fn spawn_customer(
             DialogueAlignedCharacter, // Mark this character for dialogue alignment
             OnCustomerScreen,
         ));
-    } else {
-        // Spawn Coda (first time or second visit)
+    } else if !dialogue_state.coda_dialogue_finished || !dialogue_state.coda_second_visit {
+        // Spawn Coda during his dialogues (first visit and second visit)
         commands.spawn((
             Customer {
                 name: "Coda".to_string(),
@@ -173,7 +176,34 @@ pub fn spawn_customer(
             CustomerSadness { value: 10 },
             CustomerAnger { value: 20 },
             Sprite {
-                image: image_assets.zara.clone(), // Using Zara image for now, can be updated with Coda image later
+                image: image_assets.coda.clone(), // Now using Coda's actual image
+                custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
+            DialogueAlignedCharacter, // Mark this character for dialogue alignment
+            OnCustomerScreen,
+        ));
+    } else {
+        // Spawn Zara for her return dialogue (ZaraReturnDialogue)
+        commands.spawn((
+            Customer {
+                name: "Zara".to_string(),
+                preferred_taste: IngredientTaste::Umami,
+                disliked_taste: IngredientTaste::Bitter,
+                preferred_effect: PrimaryEffect::Energizing,
+                disliked_effect: PrimaryEffect::MindEnhancing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Volatile,
+            },
+            CustomerHappiness { value: 50 },
+            CustomerSadness { value: 20 },
+            CustomerAnger { value: 30 },
+            Sprite {
+                image: image_assets.zara.clone(),
                 custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
                 ..default()
             },
