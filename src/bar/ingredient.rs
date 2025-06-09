@@ -126,12 +126,27 @@ pub fn spawn_ingredients(
                 },
             )
             .observe(
-                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>, asset_server: Res<AssetServer>, mut commands: Commands,| {
                     if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        info!(
-                            "Hovering over: {} - {}",
-                            ingredient.name, ingredient.description
-                        );
+                        commands.spawn((
+        // Accepts a `String` or any type that converts into a `String`, such as `&str`
+        Text::new(format!("{} : {} Taste {:#?}", ingredient.name, ingredient.description, ingredient.ingredient_profile.taste)),
+        TextFont {
+            // This font is loaded and will be used instead of the default font.
+            font: asset_server.load("fonts/DigitTech14-Regular.ttf"),
+            font_size: 10.0,
+            ..default()
+        },
+        TextLayout::new_with_justify(JustifyText::Right),
+        // Set the style of the Node itself.
+        Node {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(5.0),
+            right: Val::Px(5.0),
+            ..default()
+        },
+    ));
+
                     }
                 },
             )
@@ -188,20 +203,7 @@ pub fn spawn_ingredients(
                         }
                     }
                 },
-            )
-            .observe(
-                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
-                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        info!(
-                            "Hovering over: {} - {}",
-                            ingredient.name, ingredient.description
-                        );
-                    }
-                },
-            )
-            .observe(|_: Trigger<Pointer<Out>>| {
-                // Hover end - tooltip will be handled by the UI system
-            });
+            );
     }
 }
 
@@ -296,19 +298,19 @@ pub fn get_ice_gels(
         (
             blue_icegel,
             blue_icegel_sprite,
-            Transform::from_xyz(-500.0, -100.0, 1.0),
+            Transform::from_xyz(-450.0, -200.0, 1.1),
             icegel_anim_state.clone(),
         ),
         (
             red_icegel_ingredient,
             red_icegel_sprite,
-            Transform::from_xyz(-300.0, -100.0, 1.0),
+            Transform::from_xyz(-400.0, -200.0, 1.0),
             icegel_anim_state.clone(),
         ),
         (
             green_icegel_ingredient,
             green_icegel_sprite,
-            Transform::from_xyz(-100.0, -100.0, 1.0),
+            Transform::from_xyz(-350.0, -200.0, 1.1),
             icegel_anim_state.clone(),
         ),
     ]

@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
-use crate::engine::{
-    GameState,
-    game_runner::GameRunnerPlugin,
-};
+use crate::engine::{GameState, game_runner::GameRunnerPlugin};
 
 pub mod animation;
 pub mod bar;

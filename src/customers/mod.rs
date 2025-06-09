@@ -2,8 +2,12 @@ use bevy::prelude::*;
 
 use crate::{
     animation::{
-        sprite_animation::{animate_spite, SpriteAnimState}, AnimationEvent
-    }, bar::ingredient::{IngredientTaste, PrimaryEffect}, customers::dialogue::DialogPlugin, engine::{asset_loader::ImageAssets, audio_controller::play_customer_bg, GameState}
+        AnimationEvent,
+        sprite_animation::{SpriteAnimState, animate_spite},
+    },
+    bar::ingredient::{IngredientTaste, PrimaryEffect},
+    customers::dialogue::DialogPlugin,
+    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
 };
 
 pub mod dialogue;
@@ -120,11 +124,8 @@ pub fn spawn_customer(
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let frame_size = UVec2::new(128, 128);
-    let zara_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size, 6,
-        1,
-        None, None,
-    ));
+    let zara_layout_handle =
+        texture_atlases.add(TextureAtlasLayout::from_grid(frame_size, 6, 1, None, None));
 
     // Spawn Zara as a customer
     commands.spawn((
