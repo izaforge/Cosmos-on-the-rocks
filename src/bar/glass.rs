@@ -84,42 +84,4 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
                     sprite.image = new_image;
                 }
             },
-        );
-}
-
-pub fn glass_tooltip(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    query: Query<&Glass>,
-) {
-        for glass in query.iter() {
-        commands.spawn((
-            OnCraftingScreen,
-        Text::new(format!(
-                    "Current Glass Type: {:#?}\nVolume: {}/{}\nTaste: {:#?}\nEffects: {:#?}",
-                    glass.shape,
-                    glass.get_current_volume(),
-                    glass.capacity,
-                    glass.taste,
-                    glass.effect,
-                )),
-                BorderColor(BUTTON_BORDER),
-                BorderRadius::ZERO,
-                BackgroundColor(NORMAL_BUTTON),
-                TextFont {
-            font: asset_server.load("fonts/Nasa21.ttf"),
-            font_size: 20.0,
-            ..default()
-        },
-        TextColor (TEXT_COLOR),
-        // Set the style of the Node itself.
-            Node {
-                    position_type: PositionType::Absolute,
-    bottom: Val::Px(20.0),
-    right: Val::Px(20.0),
-    align_items: AlignItems::FlexStart,
-    justify_content: JustifyContent::FlexStart,
-    ..Default::default()
-        },
-    ));}
-}
+         );}
