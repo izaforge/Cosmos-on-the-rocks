@@ -102,7 +102,7 @@ Zara: Not here. Too many ears. But if you're curious, mix me something with that
 title: ZaraWait
 ---
 Zara: I'll be waiting. No rush.
-<<set_game_state Crafting>>
+<<change_gamestate Crafting>>
 ===
 
 title: ZaraAfterDrink

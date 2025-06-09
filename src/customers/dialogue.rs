@@ -3,7 +3,7 @@ use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
 
 use crate::{
-    customers::{OnCustomerScreen, cleanup_customer},
+    customers::{OnCustomerScreen},
     engine::GameState,
 };
 
@@ -15,7 +15,7 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::with_yarn_source(YarnFileSource::file("dialogue/on_the_rocks.yarn")),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
-        .add_systems(Update, spawn_dialogue_runner.run_if(resource_added::<YarnProject>).run_if(in_state(GameState::Dialogues)));
+        .add_systems(OnEnter(GameState::Dialogues), spawn_dialogue_runner);
     }
 }
 
