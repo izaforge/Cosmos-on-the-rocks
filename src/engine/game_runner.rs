@@ -5,19 +5,16 @@ use bevy_asset_loader::prelude::*;
 use bevy_seedling::prelude::*;
 
 use crate::{
-    customers::CustomerPlugin,
-    engine::{
-        GameState,
-        asset_loader::{AudioAssets, ImageAssets},
-    },
-    ui::GameUiPlugin,
+    bar::crafting::CraftingPlugin, customers::CustomerPlugin, engine::{
+        asset_loader::{AudioAssets, ImageAssets}, GameState
+    }, ui::GameUiPlugin
 };
 
 pub struct GameRunnerPlugin;
 
 impl Plugin for GameRunnerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((SeedlingPlugin::default(), GameUiPlugin, CustomerPlugin))
+        app.add_plugins((SeedlingPlugin::default(), GameUiPlugin, CustomerPlugin, CraftingPlugin))
             // .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
             .add_loading_state(
                 LoadingState::new(GameState::Loading)

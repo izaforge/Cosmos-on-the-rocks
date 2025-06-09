@@ -2,11 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     animation::{
-        AnimationEvent,
-        sprite_animation::{SpriteAnimState, animate_spite},
-    },
-    customers::dialogue::DialogPlugin,
-    engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
+        sprite_animation::{animate_spite, SpriteAnimState}, AnimationEvent
+    }, bar::ingredient::{IngredientTaste, PrimaryEffect}, customers::dialogue::DialogPlugin, engine::{asset_loader::ImageAssets, audio_controller::play_customer_bg, GameState}
 };
 
 pub mod dialogue;
@@ -33,9 +30,24 @@ impl Plugin for CustomerPlugin {
 #[require(Sprite, SpriteAnimState, Transform)]
 pub struct Customer {
     pub name: String,
-    pub faction: Factions,
-    pub likes: Vec<String>,
-    pub dislikes: Vec<String>,
+    pub preferred_taste: IngredientTaste,
+    pub disliked_taste: IngredientTaste,
+    pub preferred_effect: PrimaryEffect,
+    pub disliked_effect: PrimaryEffect,
+    pub satisfaction_score: f32,
+    pub has_been_served: bool,
+    pub current_drink: Option<Entity>,
+    pub dialogue_node: Option<String>,
+    pub base_personality: Personality,
+}
+
+/// Base personalities for each patron
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Personality {
+    Secretive,  // Mystery
+    Volatile,   // Zara
+    Artificial, // Unit 734
+    Creative,   // Coda
 }
 
 // New emotion components for customers
@@ -54,13 +66,6 @@ pub struct CustomerAnger {
     pub value: u8, // 0-100 value
 }
 
-pub enum Factions {
-    Rebels,
-    Empire,
-    BountyHunter,
-    Unknown,
-}
-
 pub fn spawn_bartender(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
@@ -77,9 +82,15 @@ pub fn spawn_bartender(
     commands.spawn((
         Customer {
             name: "Bartender".to_string(),
-            faction: Factions::BountyHunter,
-            likes: vec!["Drinks".to_string(), "Money".to_string()],
-            dislikes: vec!["Rude Customers".to_string()],
+            preferred_taste: IngredientTaste::Spicy,
+            disliked_taste: IngredientTaste::Sweet,
+            preferred_effect: PrimaryEffect::Healing,
+            disliked_effect: PrimaryEffect::TruthInducing,
+            satisfaction_score: 100.0,
+            has_been_served: false,
+            current_drink: None,
+            dialogue_node: None,
+            base_personality: Personality::Artificial,
         },
         CustomerHappiness { value: 50 },
         CustomerSadness { value: 20 },
@@ -108,11 +119,10 @@ pub fn spawn_customer(
     image_assets: Res<ImageAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    // Create a texture atlas for Zara with 4 animation frames
-    let frame_size = UVec2::new(32, 48); // Adjust based on your sprite sheet dimensions
+    let frame_size = UVec2::new(128, 128);
     let zara_layout_handle = texture_atlases.add(TextureAtlasLayout::from_grid(
-        frame_size, 4, // 4 frames horizontally
-        1, // 1 row
+        frame_size, 6,
+        1,
         None, None,
     ));
 
@@ -120,9 +130,15 @@ pub fn spawn_customer(
     commands.spawn((
         Customer {
             name: "Zara".to_string(),
-            faction: Factions::Empire,
-            likes: vec!["Strong Drinks".to_string(), "Blue Proxima".to_string()],
-            dislikes: vec!["Light Drinks".to_string(), "Small Talk".to_string()],
+            preferred_taste: IngredientTaste::Umami,
+            disliked_taste: IngredientTaste::Bitter,
+            preferred_effect: PrimaryEffect::Energizing,
+            disliked_effect: PrimaryEffect::MindEnhancing,
+            satisfaction_score: 50.0,
+            has_been_served: false,
+            current_drink: None,
+            dialogue_node: None,
+            base_personality: Personality::Volatile,
         },
         CustomerHappiness { value: 50 },
         CustomerSadness { value: 20 },
@@ -133,7 +149,6 @@ pub fn spawn_customer(
                 layout: zara_layout_handle,
                 index: 0,
             }),
-            custom_size: Some(Vec2::new(96., 144.)), // Scaled up for visibility
             ..default()
         },
         Transform::from_translation(Vec3::new(-400., 0., 1.)), // Position on the left side

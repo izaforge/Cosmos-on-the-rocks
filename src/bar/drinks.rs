@@ -16,6 +16,12 @@ pub struct Drink {
 }
 
 #[derive(Debug)]
+pub struct DrinkTaste {
+    pub primary_taste: IngredientTaste,
+    pub secondary_taste: IngredientTaste,
+}
+
+#[derive(Debug)]
 pub struct DrinkEffect {
     pub primary_effect: PrimaryEffect,
     pub secondary_effect: PrimaryEffect,
@@ -95,12 +101,6 @@ impl From<Glass> for Drink {
             effect: effects,
         }
     }
-}
-
-#[derive(Debug)]
-pub struct DrinkTaste {
-    pub primary_taste: IngredientTaste,
-    pub secondary_taste: IngredientTaste,
 }
 
 #[derive(Debug, Clone, PartialEq)]

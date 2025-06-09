@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
-use crate::engine::{GameState, game_runner::GameRunnerPlugin, asset_loader::{AudioAssets, ImageAssets}};
-use crate::customers::dialogue::NextDialogueNode;
-use bevy_asset_loader::prelude::*;
+use crate::engine::{
+    GameState,
+    game_runner::GameRunnerPlugin,
+};
 
 pub mod animation;
 pub mod bar;
@@ -14,17 +15,10 @@ pub mod ui;
 
 fn main() {
     let mut app = App::new();
-    app.add_plugins((
-        DefaultPlugins.set(create_window_plugin()),
-        GameRunnerPlugin,
-    ))
-    .init_state::<GameState>()
-    .add_systems(OnEnter(GameState::Dialogues), set_zara_dialogue_start_node)
-    .run();
-}
-
-fn set_zara_dialogue_start_node(mut commands: Commands) {
-    commands.insert_resource(NextDialogueNode("ZaraDialogue".to_string()));
+    app.add_plugins((DefaultPlugins.set(create_window_plugin()), GameRunnerPlugin))
+        .init_state::<GameState>()
+        .insert_resource(ClearColor(Color::srgb(0.05, 0.05, 0.1)))
+        .run();
 }
 
 fn create_window_plugin() -> WindowPlugin {
