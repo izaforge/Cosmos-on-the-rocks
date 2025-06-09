@@ -1,4 +1,10 @@
-use bevy::prelude::*;
+use bevy::{
+    picking::{
+        events::{Out, Over, Pointer, Pressed},
+        prelude::Pickable,
+    },
+    prelude::*,
+};
 
 use crate::{
     animation::sprite_animation::SpriteAnimState,
@@ -34,7 +40,7 @@ pub enum IngredientTaste {
     Spicy,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum PrimaryEffect {
     Calming,
     Energizing,
@@ -85,13 +91,14 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste),
+                        let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
+                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste, ingredient.ingredient_profile.primary_effect),
                             Err(_) => {
                                 warn!("Clicked entity is not an ingredient!");
                                 return;
                             }
                         };
+
                         if glass.get_current_volume() + ingredient_size < glass.capacity {
                             glass
                                 .ingredients
@@ -107,13 +114,32 @@ pub fn spawn_ingredients(
                                 .entry(ingredient_taste)
                                 .and_modify(|v| *v += ingredient_size)
                                 .or_insert(ingredient_size);
+                            glass
+                                .effect
+                                .entry(ingredient_effect)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
                         } else {
                             info!("Glass is full, cannot add more ingredients.");
                         }
                     }
                 },
-            );
+            )
+            .observe(
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
+                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
+                        info!(
+                            "Hovering over: {} - {}",
+                            ingredient.name, ingredient.description
+                        );
+                    }
+                },
+            )
+            .observe(|_: Trigger<Pointer<Out>>| {
+                // Hover end - tooltip will be handled by the UI system
+            });
     }
+
     for (ingredient, sprite, transform) in other_ingredients {
         commands
             .spawn((
@@ -129,34 +155,53 @@ pub fn spawn_ingredients(
                  ingredient_query: Query<&Ingredient>| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste),
+                        let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
+                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste, ingredient.ingredient_profile.primary_effect),
                             Err(_) => {
                                 warn!("Clicked entity is not an ingredient!");
                                 return;
                             }
                         };
+
                         if glass.get_current_volume() + ingredient_size < glass.capacity {
                             glass
                                 .ingredients
                                 .entry(ingredient_entity)
                                 .and_modify(|v| *v += ingredient_size)
                                 .or_insert(ingredient_size);
+                            info!(
+                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
+                                glass.ingredients, glass.capacity, glass.taste
+                            );
                             glass
                                 .taste
                                 .entry(ingredient_taste)
                                 .and_modify(|v| *v += ingredient_size)
                                 .or_insert(ingredient_size);
-                            info!(
-                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                                glass.ingredients, glass.capacity, glass.taste
-                            );
+                            glass
+                                .effect
+                                .entry(ingredient_effect)
+                                .and_modify(|v| *v += ingredient_size)
+                                .or_insert(ingredient_size);
                         } else {
                             info!("Glass is full, cannot add more ingredients.");
                         }
                     }
                 },
-            );
+            )
+            .observe(
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>| {
+                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
+                        info!(
+                            "Hovering over: {} - {}",
+                            ingredient.name, ingredient.description
+                        );
+                    }
+                },
+            )
+            .observe(|_: Trigger<Pointer<Out>>| {
+                // Hover end - tooltip will be handled by the UI system
+            });
     }
 }
 

@@ -16,6 +16,9 @@ pub enum CraftButtons {
     Reset,
 }
 
+#[derive(Component)]
+pub struct IngredientTooltip;
+
 pub struct CraftingPlugin;
 
 impl Plugin for CraftingPlugin {

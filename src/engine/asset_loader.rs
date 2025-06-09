@@ -6,6 +6,8 @@ use bevy_seedling::sample::Sample;
 pub struct ImageAssets {
     #[asset(path = "images/characters/bartender.png")]
     pub bartender: Handle<Image>,
+    #[asset(path = "images/characters/zara.png")]
+    pub zara: Handle<Image>,
     #[asset(path = "images/bar/glasses/whiskey_glass.png")]
     pub whiskey_glass: Handle<Image>,
     #[asset(path = "images/bar/glasses/wine_glass.png")]

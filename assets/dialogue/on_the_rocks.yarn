@@ -1,0 +1,287 @@
+title: BartenderMonologue
+---
+Bartender: Time for a pick-me-up. Something strong, for a long night.
+Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
+-> Enter Crafting State
+    <<change_gamestate "Crafting">>
+===
+
+title: ZaraDialogue
+---
+// Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format
+// Secretive security officer who has seen things she shouldn't have
+
+// Variable declarations for effect system
+<<declare $calming_effect = 0 as number>>
+<<declare $energizing_effect = 0 as number>>
+<<declare $mind_enhancing_effect = 0 as number>>
+<<declare $courage_effect = 0 as number>>
+<<declare $truth_effect = 0 as number>>
+<<declare $healing_effect = 0 as number>>
+
+// The $player_name variable is already declared in start.yarn
+
+Zara: Hey there, bartender. I could use a drink.
+
+-> What can I get you?
+    Player: What can I get you?
+    <<jump ZaraOrder>>
+-> You look like you've had a rough day.
+    Player: You look like you've had a rough day.
+    <<jump ZaraDay>>
+-> You seem really alert tonight. (ENERGIZED - Requires 5+)
+    <<if $energizing_effect >= 5>>
+        Player: You seem really alert tonight.
+        Zara: *eyes bright* That's because I've figured out something important. Something about the corporation.
+        <<jump ZaraEnergizedDialogue>>
+    <<else>>
+        Player: You seem really alert tonight.
+        Zara: *yawns* Alert? I'm exhausted. Maybe after I have something to wake me up.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Tell me what's really going on. (TRUTH SERUM - Requires 6+)
+    <<if $truth_effect >= 6>>
+        Player: Tell me what's really going on.
+        Zara: *compelled to speak* I... I can't hold it back anymore. There's a conspiracy at Galactic Corp.
+        <<jump ZaraTruthfulPath>>
+    <<else>>
+        Player: Tell me what's really going on.
+        Zara: *guards her expression* Nothing I can talk about. Not without... loosening up first.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> I can see you're connecting dots. (MIND ENHANCED - Requires 4+)
+    <<if $mind_enhancing_effect >= 4>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *nods thoughtfully* Yes... the patterns are becoming clearer. The security breaches weren't random.
+        <<jump ZaraMindEnhancedPath>>
+    <<else>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *looks confused* Dots? I'm not seeing any patterns right now. My mind feels foggy.
+        <<jump ZaraDialogue>>
+    <<endif>>
+===
+
+title: ZaraOrder
+---
+Zara: Something strong. Surprise me.
+
+-> Coming right up.
+    Player: Coming right up.
+    <<set $zara_likes_strong_drinks = true>>
+    <<jump ZaraWait>>
+-> Maybe something lighter would be better?
+    Player: Maybe something lighter would be better?
+    <<jump ZaraAnnoyance>>
+===
+
+title: ZaraDay
+---
+Zara: Let's just say I've seen things I shouldn't have. Working security for Galactic Corp has its downsides.
+
+-> Want to talk about it?
+    Player: Want to talk about it?
+    <<jump ZaraSecret>>
+-> Let me get you that drink.
+    Player: Let me get you that drink.
+    <<jump ZaraOrder>>
+===
+
+title: ZaraSecret
+---
+Zara: Not here. Too many ears. But if you're curious, mix me something with that blue liquid from Proxima B. It might loosen my tongue.
+
+-> I'll see what I can do.
+    Player: I'll see what I can do.
+    <<set $zara_hint_blue_proxima = true>>
+    <<jump ZaraWait>>
+-> later.
+    Player: later.
+    <<jump ZaraWait>>
+===
+
+title: ZaraWait
+---
+Zara: I'll be waiting. No rush.
+<<change_gamestate Crafting>>
+===
+
+title: ZaraAfterDrink
+---
+Zara: *takes a sip* This is... interesting. 
+
+-> So how are you feeling? (ENERGIZED 6+)
+    <<if $energizing_effect >= 6>>
+        Player: So how are you feeling?
+        Zara: *vibrant* Like I could stay awake all night! The patterns are so clear now...
+        <<jump ZaraEnergizedHigh>>
+    <<else>>
+        Player: So how are you feeling?
+        Zara: *tired* Still pretty worn out. This isn't quite hitting the spot yet.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> What about that conspiracy? (TRUTH SERUM 6+) 
+    <<if $truth_effect >= 6>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *unable to hold back* The executive orders... they're falsified. Someone's been manipulating the company from the inside.
+        <<jump ZaraConspiracyReveal>>
+    <<else>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *tightlipped* I can't... not yet. Need something stronger to loosen my tongue.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Those security patterns... (MIND ENHANCED 6+)
+    <<if $mind_enhancing_effect >= 6>>
+        Player: Those security patterns you mentioned...
+        Zara: *eyes wide with realization* They're not random at all! Someone's been testing our defenses, probing for weaknesses systematically.
+        <<jump ZaraPatternAnalysis>>
+    <<else>>
+        Player: Those security patterns you mentioned...
+        Zara: *squints* What patterns? My head's still too cloudy to make sense of it all.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Another drink?
+    Player: Want another drink?
+    Zara: *nods* Yes, I think I need something stronger to help me think clearly.
+    <<jump ZaraOrder>>
+===
+
+title: ZaraEnergized
+---
+Zara: *speaks rapidly* I've been tracking a conspiracy within Galactic Corp for months. Higher-ups are selling classified tech to fringe colonies.
+Zara: *paces back and forth* I have proof - access logs, transmission records, financial transfers to shell companies.
+Zara: I need to act now, before they realize what I know. This drink was exactly what I needed!
+
+-> Slow down, you might be in danger
+    Player: Slow down, Zara. If what you're saying is true, you might be in danger.
+    Zara: *nods quickly* You're right. I need to be smart about this. Strategic.
+    Zara: I have a secure data cache in the spaceport locker. If anything happens to me, the access code is 7734-XB.
+    Zara: I should go. Thanks for the drink, bartender. It gave me the push I needed.
+-> I can help
+    Player: I can help. What do you need?
+    Zara: *grins* A distraction. Next time a Galactic Corp officer comes in, mention seeing me heading to the Outer Rim.
+    Zara: I'll be hiding much closer. And I'll need another drink like this one next time I stop by.
+    Zara: I should go. Time to put my plan into action!
+===
+
+title: ZaraCalmed
+---
+Zara: *sighs deeply* You know, I've been carrying this weight for so long. The things I've seen in this job...
+Zara: Sometimes I wonder if I'm on the right side. Galactic Corp isn't exactly known for its ethics.
+Zara: *takes another sip* This drink makes me feel like maybe I don't have to solve everything tonight.
+
+-> What have you seen?
+    Player: What have you seen that bothers you so much?
+    Zara: *speaks softly* Suppression of evidence. Covering up accidents that weren't accidents. Making people "disappear."
+    Zara: I joined to protect people. Not to be part of something like this.
+    Zara: Thank you for listening, bartender. And for this drink. I needed this moment of peace.
+-> Maybe you need a change
+    Player: Maybe it's time for a change of career.
+    Zara: *smiles sadly* Maybe. I've thought about joining the independent security forces in the Proxima sector.
+    Zara: Less pay, but I might be able to sleep at night.
+    Zara: I should go. But I'll remember this conversation. Thank you.
+===
+
+title: ZaraTruthful
+---
+Zara: *words tumble out* I've been spying for the resistance. I'm a double agent inside Galactic Corp security.
+Zara: *looks horrified at her own words* I can't believe I just told you that. What's in this drink?
+Zara: *glances around nervously* If anyone from Corp finds out, I'm dead. My handler is dead. Everyone I've helped is dead.
+
+-> Your secret is safe with me
+    Player: Your secret is safe with me, Zara. I promise.
+    Zara: *studies your face* I believe you. I don't know why, but I do.
+    Zara: There's a data drop tomorrow at the abandoned hangar. Someone needs to warn them it might be compromised.
+    Zara: I need to go. I've said too much already. But... thank you.
+-> Why risk everything?
+    Player: Why risk everything to help the resistance?
+    Zara: *expression hardens* Because I've seen what Corp does to planets that resist acquisition. It's not pretty.
+    Zara: My home world was "peacefully integrated" ten years ago. Half my family didn't survive the "transition period."
+    Zara: I should go. Forget what I said. Please.
+===
+
+title: ZaraMindEnhanced
+---
+Zara: *speaking with unusual clarity* The security breach three months ago wasn't external. It was an inside job.
+Zara: Director Krell authorized it himself. He's been feeding information to the Syndicate for years.
+Zara: The evidence is hidden in plain sight - transfer records, duty rosters, maintenance logs. All the patterns are there.
+
+-> What will you do with this information?
+    Player: What will you do with this information, Zara?
+    Zara: *thoughtfully* I need to be strategic. Taking this directly to Internal Affairs would be suicide.
+    Zara: I need to compile the evidence, encrypt it, and send copies to multiple trusted sources.
+    Zara: Then trigger simultaneous releases if anything happens to me. It's the only way to ensure the truth gets out.
+-> This sounds dangerous
+    Player: This sounds incredibly dangerous, Zara. Are you sure?
+    Zara: *nods with determination* The danger is already there whether I act or not. Krell has eliminated three security officers who got too close.
+    Zara: If I do nothing, I'm just waiting my turn. At least this way, I choose the battlefield.
+    Zara: I should go. I have work to do. Thank you for the clarity, bartender.
+===
+
+title: ZaraAfterDrinkContinue
+---
+Zara: *leans in closer* Listen, bartender. The security breach at Proxima B wasn't an accident.
+Zara: Someone high up wanted those files leaked. And now they're hunting down anyone who knows too much.
+Zara: *glances around nervously* I shouldn't be telling you this.
+
+-> I can help
+    Player: I can help. What do you need?
+    Zara: Just... keep an eye out for anyone asking about me. And maybe another drink later.
+    Zara: I should go. Thanks for listening, bartender.
+-> Be careful
+    Player: Be careful, Zara. Sounds dangerous.
+    Zara: *smiles grimly* Always am. That's how I've survived this long.
+    Zara: I should go. Thanks for the drink... and the conversation.
+===
+
+title: ZaraAnnoyance
+---
+Zara: Do I look like someone who wants a light drink? Strong. Now.
+
+-> Of course, coming right up.
+    Player: Of course, coming right up.
+    <<set $zara_likes_strong_drinks = true>>
+    <<set $zara_is_impatient = true>>
+    <<jump ZaraWait>>
+===
+
+title: ZaraEnergizedDialogue
+---
+Zara: I've been tracking data patterns all night. Someone high up is selling secrets, and I know who.
+
+-> Who is it?
+    Player: Who is it?
+    Zara: Director Krell. I have proof, but I need to be careful how I expose him.
+    <<jump ZaraAfterDrinkContinue>>
+-> That's dangerous knowledge.
+    Player: That's dangerous knowledge to have.
+    Zara: *grins* Danger is my business. Thanks for the drink that helped me see clearly.
+    <<jump ZaraAfterDrinkContinue>>
+===
+
+title: ZaraTruthfulPath
+---
+Zara: *speaking rapidly* I'm a double agent. I work for Galactic Corp security, but I feed information to the resistance.
+
+-> Your secret is safe with me.
+    Player: Your secret is safe with me.
+    Zara: I believe you. There's something about this place... this drink... that makes me trust you.
+    <<jump ZaraAfterDrinkContinue>>
+-> Why risk everything?
+    Player: Why risk everything for the resistance?
+    Zara: Because Corp destroyed my home world. I won't let them do it to others.
+    <<jump ZaraAfterDrinkContinue>>
+===
+
+title: ZaraMindEnhancedPath
+---
+Zara: The timing of the breaches, the personnel transfers, the "accidents" - it all connects to one person.
+
+-> Tell me more about these connections.
+    Player: Tell me more about these connections.
+    Zara: Every breach happened within 48 hours of Krell authorizing new security protocols. He's the inside man.
+    <<jump ZaraAfterDrinkContinue>>
+-> How do you plan to use this information?
+    Player: How do you plan to use this information?
+    Zara: Carefully. One wrong move and I'm dead. But the truth needs to come out.
+    <<jump ZaraAfterDrinkContinue>>
+=== 

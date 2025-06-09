@@ -24,5 +24,8 @@ target/
 # Added by cargo
 
 /target
-workflow.md
+
+# Ignore all .md files except README.md
 *.md
+!README.md
+*.pdf
