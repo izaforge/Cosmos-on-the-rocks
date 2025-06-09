@@ -9,7 +9,9 @@ use bevy::{
 use crate::{
     animation::sprite_animation::SpriteAnimState,
     bar::{crafting::OnCraftingScreen, glass::Glass, ingredients_extra},
+    constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR},
     engine::asset_loader::ImageAssets,
+    ui::ingredient_tooltip::IngredientTooltip,
 };
 
 #[derive(Component, Clone, Debug)]
@@ -129,29 +131,43 @@ pub fn spawn_ingredients(
                 |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>, asset_server: Res<AssetServer>, mut commands: Commands,| {
                     if let Ok(ingredient) = ingredient_query.get(ev.target()) {
                         commands.spawn((
+                            IngredientTooltip,
         // Accepts a `String` or any type that converts into a `String`, such as `&str`
-        Text::new(format!("{} : {} Taste {:#?}", ingredient.name, ingredient.description, ingredient.ingredient_profile.taste)),
-        TextFont {
-            // This font is loaded and will be used instead of the default font.
-            font: asset_server.load("fonts/DigitTech14-Regular.ttf"),
-            font_size: 10.0,
+        Text::new(format!(
+                    "{} : {}\nTaste: {:#?}\nEffects: {:#?}",
+                    ingredient.name,
+                    ingredient.description,
+                    ingredient.ingredient_profile.taste,
+                    ingredient.ingredient_profile.primary_effect
+                )),
+                Transform::from_translation(Vec3::new(400.0, 0.0, 0.0)),
+                BorderColor(BUTTON_BORDER),
+                BorderRadius::ZERO,
+                BackgroundColor(NORMAL_BUTTON),
+                TextFont {
+            font: asset_server.load("fonts/Nasa21.ttf"),
+            font_size: 20.0,
             ..default()
         },
-        TextLayout::new_with_justify(JustifyText::Right),
+        TextColor (TEXT_COLOR),
         // Set the style of the Node itself.
-        Node {
-            position_type: PositionType::Absolute,
-            bottom: Val::Px(5.0),
-            right: Val::Px(5.0),
-            ..default()
+            Node {
+                    position_type: PositionType::Absolute,
+    top: Val::Px(20.0),
+    right: Val::Px(20.0),
+    align_items: AlignItems::FlexStart,
+    justify_content: JustifyContent::FlexStart,
+    ..Default::default()
         },
     ));
 
                     }
                 },
             )
-            .observe(|_: Trigger<Pointer<Out>>| {
-                // Hover end - tooltip will be handled by the UI system
+            .observe(|_: Trigger<Pointer<Out>>, mut commands: Commands, tooltip_query: Query<Entity, With<IngredientTooltip>>| {
+                for entity in tooltip_query.iter() {
+                        commands.entity(entity).despawn();
+                    }
             });
     }
 
@@ -203,7 +219,48 @@ pub fn spawn_ingredients(
                         }
                     }
                 },
-            );
+            ).observe(
+                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>, asset_server: Res<AssetServer>, mut commands: Commands,| {
+                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
+                        commands.spawn((
+                            IngredientTooltip,
+        // Accepts a `String` or any type that converts into a `String`, such as `&str`
+        Text::new(format!(
+                    "{} : {}\nTaste: {:#?}\nEffects: {:#?}",
+                    ingredient.name,
+                    ingredient.description,
+                    ingredient.ingredient_profile.taste,
+                    ingredient.ingredient_profile.primary_effect
+                )),
+                Transform::from_translation(Vec3::new(400.0, 0.0, 0.0)),
+                BorderColor(BUTTON_BORDER),
+                BorderRadius::ZERO,
+                BackgroundColor(NORMAL_BUTTON),
+                TextFont {
+            font: asset_server.load("fonts/Nasa21.ttf"),
+            font_size: 20.0,
+            ..default()
+        },
+        TextColor (TEXT_COLOR),
+        // Set the style of the Node itself.
+            Node {
+                    position_type: PositionType::Absolute,
+    top: Val::Px(20.0),
+    right: Val::Px(20.0),
+    align_items: AlignItems::FlexStart,
+    justify_content: JustifyContent::FlexStart,
+    ..Default::default()
+        },
+    ));
+
+                    }
+                },
+            )
+            .observe(|_: Trigger<Pointer<Out>>, mut commands: Commands, tooltip_query: Query<Entity, With<IngredientTooltip>>| {
+                for entity in tooltip_query.iter() {
+                        commands.entity(entity).despawn();
+                    }
+            });
     }
 }
 
@@ -258,7 +315,7 @@ pub fn get_ice_gels(
         hazard: None,
     };
     let red_icegel_profile = IngredientProfile {
-        size: 11.0,
+        size: 10.0,
         taste: IngredientTaste::Spicy,
         primary_effect: PrimaryEffect::Energizing,
         secondary_effect: SecondaryEffect::Agitated(EffectCondition {
@@ -268,7 +325,7 @@ pub fn get_ice_gels(
         hazard: None,
     };
     let green_icegel_profile = IngredientProfile {
-        size: 12.0,
+        size: 10.0,
         taste: IngredientTaste::Bitter,
         primary_effect: PrimaryEffect::Healing,
         secondary_effect: SecondaryEffect::Euphoric(EffectCondition {
