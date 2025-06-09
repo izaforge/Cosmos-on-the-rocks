@@ -15,6 +15,9 @@ pub mod dialogue;
 #[derive(Component)]
 pub struct OnCustomerScreen;
 
+#[derive(Component)]
+pub struct DialogueAlignedCharacter;
+
 pub struct CustomerPlugin;
 
 impl Plugin for CustomerPlugin {
@@ -24,14 +27,14 @@ impl Plugin for CustomerPlugin {
                 OnEnter(GameState::Dialogues),
                 (play_customer_bg, spawn_customer),
             )
-            .add_systems(Update, animate_spite.run_if(in_state(GameState::Dialogues)))
+            .add_systems(Update, (animate_spite, position_dialogue_aligned_characters).run_if(in_state(GameState::Dialogues)))
             .add_systems(OnExit(GameState::Dialogues), cleanup_customer)
             .add_event::<AnimationEvent>();
     }
 }
 
 #[derive(Component)]
-#[require(Sprite, SpriteAnimState, Transform)]
+#[require(Sprite, Transform)]
 pub struct Customer {
     pub name: String,
     pub preferred_taste: IngredientTaste,
@@ -121,13 +124,8 @@ pub fn spawn_bartender(
 pub fn spawn_customer(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
-    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let frame_size = UVec2::new(128, 128);
-    let zara_layout_handle =
-        texture_atlases.add(TextureAtlasLayout::from_grid(frame_size, 6, 1, None, None));
-
-    // Spawn Zara as a customer
+    // Spawn Zara as a customer with static image
     commands.spawn((
         Customer {
             name: "Zara".to_string(),
@@ -146,20 +144,32 @@ pub fn spawn_customer(
         CustomerAnger { value: 30 },
         Sprite {
             image: image_assets.zara.clone(),
-            texture_atlas: Some(TextureAtlas {
-                layout: zara_layout_handle,
-                index: 0,
-            }),
+            custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
             ..default()
         },
-        Transform::from_translation(Vec3::new(-400., 0., 1.)), // Position on the left side
-        SpriteAnimState {
-            start_index: 0,
-            end_index: 3,                                           // 4 frames (0-3)
-            timer: Timer::from_seconds(0.25, TimerMode::Repeating), // 4 frames per second
-        },
+        Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
+        DialogueAlignedCharacter, // Mark this character for dialogue alignment
         OnCustomerScreen,
     ));
+}
+
+/// System to position dialogue-aligned characters relative to the dialogue box area
+fn position_dialogue_aligned_characters(
+    mut character_query: Query<&mut Transform, With<DialogueAlignedCharacter>>,
+) {
+    // Calculate the dialogue area position based on screen dimensions
+    // The dialogue typically appears in the bottom 30% of the screen
+    let screen_height = 1080.0; // From camera setup - fixed vertical viewport
+    let dialogue_area_height_ratio = 0.3; // Dialogue takes up bottom 30% of screen
+    let dialogue_top_y = -(screen_height * 0.5) + (screen_height * dialogue_area_height_ratio);
+    
+    // Position characters slightly above the dialogue area
+    let character_y = dialogue_top_y + 50.0; // 50 pixels above dialogue area
+    
+    for mut transform in character_query.iter_mut() {
+        // Keep X position the same, just adjust Y to align with dialogue
+        transform.translation.y = character_y;
+    }
 }
 
 // System to cleanup menu when exiting MainMenu state
