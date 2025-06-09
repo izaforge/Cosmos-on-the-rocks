@@ -68,6 +68,9 @@ pub struct EffectCondition {
     pub catalyst: Option<Entity>,
 }
 
+#[derive(Component)]
+pub struct GlassFullIndicator;
+
 pub fn spawn_ingredients(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
@@ -90,7 +93,9 @@ pub fn spawn_ingredients(
             .observe(
                 |ev: Trigger<Pointer<Pressed>>,
                  mut glass_query: Query<&mut Glass>,
-                 ingredient_query: Query<&Ingredient>| {
+                 ingredient_query: Query<&Ingredient>,
+                 asset_server: Res<AssetServer>,
+                 mut commands: Commands| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
                         let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
@@ -123,6 +128,29 @@ pub fn spawn_ingredients(
                                 .or_insert(ingredient_size);
                         } else {
                             info!("Glass is full, cannot add more ingredients.");
+                            commands.spawn((
+                                GlassFullIndicator,
+                                Text::new("Glass is Full!"),
+                                Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
+                                BorderColor(Color::srgb(1.0, 0.0, 0.0)),
+                                BorderRadius::ZERO,
+                                BackgroundColor(Color::srgb(0.8, 0.1, 0.1)),
+                                TextFont {
+                                    font: asset_server.load("fonts/Nasa21.ttf"),
+                                    font_size: 30.0,
+                                    ..default()
+                                },
+                                TextColor(Color::srgb(1.0, 1.0, 1.0)),
+                                Node {
+                                    position_type: PositionType::Absolute,
+                                    top: Val::Px(20.0),
+                                    left: Val::Px(20.0),
+                                    align_items: AlignItems::FlexStart,
+                                    justify_content: JustifyContent::FlexStart,
+                                    ..Default::default()
+                                },
+                                GlassFullTimer(Timer::from_seconds(2.0, TimerMode::Once)),
+                            ));
                         }
                     }
                 },
@@ -183,7 +211,9 @@ pub fn spawn_ingredients(
             .observe(
                 |ev: Trigger<Pointer<Pressed>>,
                  mut glass_query: Query<&mut Glass>,
-                 ingredient_query: Query<&Ingredient>| {
+                 ingredient_query: Query<&Ingredient>,
+                 asset_server: Res<AssetServer>,
+                 mut commands: Commands| {
                     let ingredient_entity = ev.target();
                     for mut glass in glass_query.iter_mut() {
                         let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
@@ -216,6 +246,29 @@ pub fn spawn_ingredients(
                                 .or_insert(ingredient_size);
                         } else {
                             info!("Glass is full, cannot add more ingredients.");
+                            commands.spawn((
+                                GlassFullIndicator,
+                                Text::new("Glass is Full!"),
+                                Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
+                                BorderColor(Color::srgb(1.0, 0.0, 0.0)),
+                                BorderRadius::ZERO,
+                                BackgroundColor(Color::srgb(0.8, 0.1, 0.1)),
+                                TextFont {
+                                    font: asset_server.load("fonts/Nasa21.ttf"),
+                                    font_size: 30.0,
+                                    ..default()
+                                },
+                                TextColor(Color::srgb(1.0, 1.0, 1.0)),
+                                Node {
+                                    position_type: PositionType::Absolute,
+                                    top: Val::Px(20.0),
+                                    left: Val::Px(20.0),
+                                    align_items: AlignItems::FlexStart,
+                                    justify_content: JustifyContent::FlexStart,
+                                    ..Default::default()
+                                },
+                                GlassFullTimer(Timer::from_seconds(2.0, TimerMode::Once)),
+                            ));
                         }
                     }
                 },
@@ -263,6 +316,23 @@ pub fn spawn_ingredients(
             });
     }
 }
+
+// New system to despawn the GlassFullIndicator
+pub fn despawn_glass_full_indicator(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut query: Query<(Entity, &mut GlassFullTimer), With<GlassFullIndicator>>,
+) {
+    for (entity, mut timer) in query.iter_mut() {
+        timer.0.tick(time.delta());
+        if timer.0.finished() {
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+#[derive(Component, Deref, DerefMut)]
+pub struct GlassFullTimer(Timer);
 
 pub fn get_ice_gels(
     image_assets: &Res<ImageAssets>,
