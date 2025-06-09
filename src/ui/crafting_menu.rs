@@ -3,7 +3,10 @@ use crate::{
         crafting::OnCraftingScreen,
         drinks::{CreatedDrink, Drink},
         glass::Glass,
-    }, constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR}, customers::OnCustomerScreen, engine::{asset_loader::ImageAssets, GameState}
+    },
+    constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
+    customers::OnCustomerScreen,
+    engine::{GameState, asset_loader::ImageAssets},
 };
 use bevy::prelude::*;
 
@@ -102,12 +105,16 @@ pub fn crafting_button_interaction_system(
         (Changed<Interaction>, With<Button>),
     >,
     mut glass_query: Query<&mut Glass>,
+    drink_query: Query<Entity, With<Drink>>,
     image_assets: Res<ImageAssets>,
 ) {
     for (interaction, mut color, button) in interaction_query.iter_mut() {
         match *interaction {
             Interaction::Pressed => match button {
                 CraftingButtons::Craft => {
+                    for entity in drink_query.iter() {
+                        commands.entity(entity).despawn();
+                    }
                     for glass in glass_query.iter_mut() {
                         let drink = Drink::from(glass.clone());
                         info!("Crafted {:#?}", drink);
@@ -155,7 +162,9 @@ pub fn crafting_button_interaction_system(
                     }
                 }
                 CraftingButtons::Reset => {
-                    println!("Reset Button Clicked");
+                    for entity in drink_query.iter() {
+                        commands.entity(entity).despawn();
+                    }
                     for mut glass in glass_query.iter_mut() {
                         glass.reset();
                         info!("Glass Reset {:#?}", glass);

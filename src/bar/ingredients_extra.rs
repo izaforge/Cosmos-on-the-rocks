@@ -43,7 +43,7 @@ pub fn get_other_ingredients(
     };
 
     let fizzion_mist_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Sour,
         primary_effect: PrimaryEffect::Energizing,
         secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
@@ -54,7 +54,7 @@ pub fn get_other_ingredients(
     };
 
     let sweetflux_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Sweet,
         primary_effect: PrimaryEffect::Healing,
         secondary_effect: SecondaryEffect::Euphoric(EffectCondition {
@@ -65,7 +65,7 @@ pub fn get_other_ingredients(
     };
 
     let citraplasm_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Citrus,
         primary_effect: PrimaryEffect::MindEnhancing,
         secondary_effect: SecondaryEffect::Hallucinogenic(EffectCondition {
@@ -76,7 +76,7 @@ pub fn get_other_ingredients(
     };
 
     let synth_vapor_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Bitter,
         primary_effect: PrimaryEffect::Energizing,
         secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
@@ -87,7 +87,7 @@ pub fn get_other_ingredients(
     };
 
     let circuit_juice_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Bitter,
         primary_effect: PrimaryEffect::Energizing,
         secondary_effect: SecondaryEffect::Aggresive(EffectCondition {
@@ -98,7 +98,7 @@ pub fn get_other_ingredients(
     };
 
     let void_reserve_profile = IngredientProfile {
-        size: 0.1,
+        size: 10.,
         taste: IngredientTaste::Umami,
         primary_effect: PrimaryEffect::Calming,
         secondary_effect: SecondaryEffect::Sedated(EffectCondition {
