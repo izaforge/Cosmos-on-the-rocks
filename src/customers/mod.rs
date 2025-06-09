@@ -111,7 +111,7 @@ pub fn spawn_bartender(
             custom_size: Some(Vec2::new(192., 256.)),
             ..default()
         },
-        Transform::from_translation(Vec3::new(400., 0., 1.)),
+        Transform::from_translation(Vec3::new(400., -170., 1.)),
         SpriteAnimState {
             start_index: 0,
             end_index: 1,
