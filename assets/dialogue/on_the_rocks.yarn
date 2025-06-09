@@ -6,6 +6,13 @@ Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Ho
     <<change_gamestate "Crafting">>
 ===
 
+title: BartenderAfterDrink
+---
+Bartender: *Takes a sip and nods approvingly*
+Bartender: *A customer walks into the bar*
+<<jump ZaraDialogue>>
+===
+
 title: ZaraDialogue
 ---
 // Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format

@@ -7,6 +7,12 @@ use crate::{
     engine::GameState,
 };
 
+#[derive(Resource, Default)]
+pub struct DialogueState {
+    pub bartender_monologue_played: bool,
+    pub bartender_drink_finished: bool,
+}
+
 pub struct DialogPlugin;
 
 impl Plugin for DialogPlugin {
@@ -15,17 +21,34 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::with_yarn_source(YarnFileSource::file("dialogue/on_the_rocks.yarn")),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
+        .init_resource::<DialogueState>()
         .add_systems(OnEnter(GameState::Dialogues), spawn_dialogue_runner);
     }
 }
 
-pub fn spawn_dialogue_runner(mut commands: Commands, project: Res<YarnProject>) {
+pub fn spawn_dialogue_runner(
+    mut commands: Commands, 
+    project: Res<YarnProject>,
+    mut dialogue_state: ResMut<DialogueState>
+) {
     let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
     dialogue_runner.commands_mut().add_command(
         "change_gamestate",
         commands.register_system(change_gamestate),
     );
-    dialogue_runner.start_node("BartenderMonologue");
+    
+    // Choose starting node based on dialogue state
+    let starting_node = if !dialogue_state.bartender_monologue_played {
+        dialogue_state.bartender_monologue_played = true;
+        "BartenderMonologue"
+    } else if !dialogue_state.bartender_drink_finished {
+        dialogue_state.bartender_drink_finished = true;
+        "BartenderAfterDrink"
+    } else {
+        "ZaraDialogue"
+    };
+    
+    dialogue_runner.start_node(starting_node);
     commands.spawn((dialogue_runner, OnCustomerScreen));
 }
 
