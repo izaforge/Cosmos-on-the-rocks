@@ -6,7 +6,7 @@ use crate::{
         sprite_animation::{SpriteAnimState, animate_spite},
     },
     bar::ingredient::{IngredientTaste, PrimaryEffect},
-    customers::dialogue::DialogPlugin,
+    customers::dialogue::{DialogPlugin, DialogueState},
     engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
 };
 
@@ -124,33 +124,64 @@ pub fn spawn_bartender(
 pub fn spawn_customer(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
+    dialogue_state: Res<DialogueState>,
 ) {
-    // Spawn Zara as a customer with static image
-    commands.spawn((
-        Customer {
-            name: "Zara".to_string(),
-            preferred_taste: IngredientTaste::Umami,
-            disliked_taste: IngredientTaste::Bitter,
-            preferred_effect: PrimaryEffect::Energizing,
-            disliked_effect: PrimaryEffect::MindEnhancing,
-            satisfaction_score: 50.0,
-            has_been_served: false,
-            current_drink: None,
-            dialogue_node: None,
-            base_personality: Personality::Volatile,
-        },
-        CustomerHappiness { value: 50 },
-        CustomerSadness { value: 20 },
-        CustomerAnger { value: 30 },
-        Sprite {
-            image: image_assets.zara.clone(),
-            custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
-            ..default()
-        },
-        Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
-        DialogueAlignedCharacter, // Mark this character for dialogue alignment
-        OnCustomerScreen,
-    ));
+    // Spawn different customers based on dialogue state
+    if !dialogue_state.zara_dialogue_finished {
+        // Spawn Zara (first time or returning)
+        commands.spawn((
+            Customer {
+                name: "Zara".to_string(),
+                preferred_taste: IngredientTaste::Umami,
+                disliked_taste: IngredientTaste::Bitter,
+                preferred_effect: PrimaryEffect::Energizing,
+                disliked_effect: PrimaryEffect::MindEnhancing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Volatile,
+            },
+            CustomerHappiness { value: 50 },
+            CustomerSadness { value: 20 },
+            CustomerAnger { value: 30 },
+            Sprite {
+                image: image_assets.zara.clone(),
+                custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
+            DialogueAlignedCharacter, // Mark this character for dialogue alignment
+            OnCustomerScreen,
+        ));
+    } else {
+        // Spawn Coda (first time or second visit)
+        commands.spawn((
+            Customer {
+                name: "Coda".to_string(),
+                preferred_taste: IngredientTaste::Sweet,
+                disliked_taste: IngredientTaste::Sour,
+                preferred_effect: PrimaryEffect::MindEnhancing,
+                disliked_effect: PrimaryEffect::Energizing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Creative,
+            },
+            CustomerHappiness { value: 60 },
+            CustomerSadness { value: 10 },
+            CustomerAnger { value: 20 },
+            Sprite {
+                image: image_assets.zara.clone(), // Using Zara image for now, can be updated with Coda image later
+                custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
+            DialogueAlignedCharacter, // Mark this character for dialogue alignment
+            OnCustomerScreen,
+        ));
+    }
 }
 
 /// System to position dialogue-aligned characters relative to the dialogue box area

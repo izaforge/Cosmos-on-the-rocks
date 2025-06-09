@@ -8,6 +8,9 @@ use crate::{customers::OnCustomerScreen, engine::GameState};
 pub struct DialogueState {
     pub bartender_monologue_played: bool,
     pub bartender_drink_finished: bool,
+    pub zara_dialogue_finished: bool,
+    pub coda_dialogue_finished: bool,
+    pub coda_second_visit: bool,
 }
 
 pub struct DialogPlugin;
@@ -41,8 +44,19 @@ pub fn spawn_dialogue_runner(
     } else if !dialogue_state.bartender_drink_finished {
         dialogue_state.bartender_drink_finished = true;
         "BartenderAfterDrink"
-    } else {
+    } else if !dialogue_state.zara_dialogue_finished {
+        dialogue_state.zara_dialogue_finished = true;
         "ZaraDialogue"
+    } else if !dialogue_state.coda_dialogue_finished {
+        dialogue_state.coda_dialogue_finished = true;
+        "CodaDialogue"
+    } else if !dialogue_state.coda_second_visit {
+        dialogue_state.coda_second_visit = true;
+        "CodaSecondVisit"
+    } else {
+        // Loop back to Zara
+        dialogue_state.zara_dialogue_finished = false;
+        "ZaraReturnDialogue"
     };
     
     dialogue_runner.start_node(starting_node);
