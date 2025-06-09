@@ -110,37 +110,37 @@ pub fn get_other_ingredients(
 
     let fizzion_mist = Ingredient {
         name: "Fizzion Mist".to_string(),
-        description: "Fuzzy Drink".to_string(),
+        description: "A bubbly, sour liquid that crackles with energy, leaving a tingling sensation.".to_string(),
         ingredient_profile: fizzion_mist_profile,
     };
 
     let sweetflux = Ingredient {
         name: "Sweetflux".to_string(),
-        description: "Sweet and glowing liquid".to_string(),
+        description: "A luminous, sugary syrup that flows like liquid light, known for its calming properties.".to_string(),
         ingredient_profile: sweetflux_profile,
     };
 
     let citraplasm = Ingredient {
         name: "Citraplasm".to_string(),
-        description: "Sour, citrus-like liquid".to_string(),
+        description: "A vibrant, zesty plasma with a sharp citrus bite, perfect for stimulating the mind.".to_string(),
         ingredient_profile: citraplasm_profile,
     };
 
     let synth_vapor = Ingredient {
         name: "Synth Vapor".to_string(),
-        description: "Vodka".to_string(),
+        description: "A potent synthetic spirit, clear and almost tasteless, yet it carries a powerful, energizing kick.".to_string(),
         ingredient_profile: synth_vapor_profile,
     };
 
     let circuit_juice = Ingredient {
         name: "Circuit Juice".to_string(),
-        description: "Gin".to_string(),
+        description: "A sharp, botanical spirit with a metallic tang, designed to awaken the senses and enhance focus.".to_string(),
         ingredient_profile: circuit_juice_profile,
     };
 
     let void_reserve = Ingredient {
         name: "Void Reserve".to_string(),
-        description: "Dark Matter".to_string(),
+        description: "A dense, inky fluid that absorbs light, offering a deep, earthy taste and a profound sense of calm.".to_string(),
         ingredient_profile: void_reserve_profile,
     };
 
