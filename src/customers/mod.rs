@@ -27,7 +27,7 @@ impl Plugin for CustomerPlugin {
                 OnEnter(GameState::Dialogues),
                 (play_customer_bg, spawn_customer),
             )
-            .add_systems(Update, (animate_spite, position_dialogue_aligned_characters).run_if(in_state(GameState::Dialogues)))
+            .add_systems(Update, (animate_spite, position_dialogue_aligned_characters, handle_dialogue_state_changes).run_if(in_state(GameState::Dialogues)))
             .add_systems(OnExit(GameState::Dialogues), cleanup_customer)
             .add_event::<AnimationEvent>();
     }
@@ -257,6 +257,164 @@ fn position_dialogue_aligned_characters(
     for mut transform in character_query.iter_mut() {
         // Keep X position the same, just adjust Y to align with dialogue
         transform.translation.y = character_y;
+    }
+}
+
+/// System to handle dialogue state changes and respawn appropriate customers
+fn handle_dialogue_state_changes(
+    mut commands: Commands,
+    image_assets: Res<ImageAssets>,
+    dialogue_state: Res<DialogueState>,
+    customer_query: Query<(Entity, &Customer)>,
+    mut last_dialogue_state: Local<Option<DialogueState>>,
+) {
+    // Check if dialogue state has changed
+    let current_state = DialogueState {
+        bartender_monologue_played: dialogue_state.bartender_monologue_played,
+        bartender_drink_finished: dialogue_state.bartender_drink_finished,
+        zara_dialogue_finished: dialogue_state.zara_dialogue_finished,
+        coda_dialogue_finished: dialogue_state.coda_dialogue_finished,
+        coda_second_visit: dialogue_state.coda_second_visit,
+    };
+    
+    if let Some(ref last_state) = *last_dialogue_state {
+        // Compare states to see if anything changed
+        if last_state.zara_dialogue_finished != current_state.zara_dialogue_finished ||
+           last_state.coda_dialogue_finished != current_state.coda_dialogue_finished ||
+           last_state.coda_second_visit != current_state.coda_second_visit {
+            
+            // Clean up existing customers (except bartender)
+            for (entity, customer) in customer_query.iter() {
+                if customer.name != "Bartender" {
+                    commands.entity(entity).despawn();
+                }
+            }
+            
+            // Spawn the appropriate customer for the new state
+            spawn_appropriate_customer(&mut commands, &image_assets, &dialogue_state);
+        }
+    }
+    
+    *last_dialogue_state = Some(current_state);
+}
+
+/// Helper function to spawn the appropriate customer based on dialogue state
+fn spawn_appropriate_customer(
+    commands: &mut Commands,
+    image_assets: &Res<ImageAssets>,
+    dialogue_state: &Res<DialogueState>,
+) {
+    if !dialogue_state.bartender_monologue_played || !dialogue_state.bartender_drink_finished {
+        // During bartender dialogues, no customer is visible
+        return;
+    } else if !dialogue_state.zara_dialogue_finished {
+        // Spawn Zara during her first dialogue
+        commands.spawn((
+            Customer {
+                name: "Zara".to_string(),
+                preferred_taste: IngredientTaste::Umami,
+                disliked_taste: IngredientTaste::Bitter,
+                preferred_effect: PrimaryEffect::Energizing,
+                disliked_effect: PrimaryEffect::MindEnhancing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Volatile,
+            },
+            CustomerHappiness { value: 50 },
+            CustomerSadness { value: 20 },
+            CustomerAnger { value: 30 },
+            Sprite {
+                image: image_assets.zara.clone(),
+                custom_size: Some(Vec2::new(200., 300.)),
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)),
+            DialogueAlignedCharacter,
+            OnCustomerScreen,
+        ));
+    } else if dialogue_state.zara_dialogue_finished && !dialogue_state.coda_dialogue_finished {
+        // Spawn Coda during his first dialogue (CodaDialogue)
+        commands.spawn((
+            Customer {
+                name: "Coda".to_string(),
+                preferred_taste: IngredientTaste::Sweet,
+                disliked_taste: IngredientTaste::Sour,
+                preferred_effect: PrimaryEffect::MindEnhancing,
+                disliked_effect: PrimaryEffect::Energizing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Creative,
+            },
+            CustomerHappiness { value: 60 },
+            CustomerSadness { value: 10 },
+            CustomerAnger { value: 20 },
+            Sprite {
+                image: image_assets.coda.clone(),
+                custom_size: Some(Vec2::new(200., 300.)),
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)),
+            DialogueAlignedCharacter,
+            OnCustomerScreen,
+        ));
+    } else if dialogue_state.coda_dialogue_finished && !dialogue_state.coda_second_visit {
+        // Spawn Coda during his second visit (CodaSecondVisit)
+        commands.spawn((
+            Customer {
+                name: "Coda".to_string(),
+                preferred_taste: IngredientTaste::Sweet,
+                disliked_taste: IngredientTaste::Sour,
+                preferred_effect: PrimaryEffect::MindEnhancing,
+                disliked_effect: PrimaryEffect::Energizing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Creative,
+            },
+            CustomerHappiness { value: 60 },
+            CustomerSadness { value: 10 },
+            CustomerAnger { value: 20 },
+            Sprite {
+                image: image_assets.coda.clone(),
+                custom_size: Some(Vec2::new(200., 300.)),
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)),
+            DialogueAlignedCharacter,
+            OnCustomerScreen,
+        ));
+    } else {
+        // Spawn Zara for her return dialogue (ZaraReturnDialogue)
+        commands.spawn((
+            Customer {
+                name: "Zara".to_string(),
+                preferred_taste: IngredientTaste::Umami,
+                disliked_taste: IngredientTaste::Bitter,
+                preferred_effect: PrimaryEffect::Energizing,
+                disliked_effect: PrimaryEffect::MindEnhancing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Volatile,
+            },
+            CustomerHappiness { value: 50 },
+            CustomerSadness { value: 20 },
+            CustomerAnger { value: 30 },
+            Sprite {
+                image: image_assets.zara.clone(),
+                custom_size: Some(Vec2::new(200., 300.)),
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)),
+            DialogueAlignedCharacter,
+            OnCustomerScreen,
+        ));
     }
 }
 
