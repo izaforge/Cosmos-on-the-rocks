@@ -131,7 +131,7 @@ pub fn spawn_customer(
         // During bartender dialogues, no customer is visible
         return;
     } else if !dialogue_state.zara_dialogue_finished {
-        // Spawn Zara during her dialogue
+        // Spawn Zara during her first dialogue
         commands.spawn((
             Customer {
                 name: "Zara".to_string(),
@@ -157,8 +157,35 @@ pub fn spawn_customer(
             DialogueAlignedCharacter, // Mark this character for dialogue alignment
             OnCustomerScreen,
         ));
-    } else if !dialogue_state.coda_dialogue_finished || !dialogue_state.coda_second_visit {
-        // Spawn Coda during his dialogues (first visit and second visit)
+    } else if dialogue_state.zara_dialogue_finished && !dialogue_state.coda_dialogue_finished {
+        // Spawn Coda during his first dialogue (CodaDialogue)
+        commands.spawn((
+            Customer {
+                name: "Coda".to_string(),
+                preferred_taste: IngredientTaste::Sweet,
+                disliked_taste: IngredientTaste::Sour,
+                preferred_effect: PrimaryEffect::MindEnhancing,
+                disliked_effect: PrimaryEffect::Energizing,
+                satisfaction_score: 50.0,
+                has_been_served: false,
+                current_drink: None,
+                dialogue_node: None,
+                base_personality: Personality::Creative,
+            },
+            CustomerHappiness { value: 60 },
+            CustomerSadness { value: 10 },
+            CustomerAnger { value: 20 },
+            Sprite {
+                image: image_assets.coda.clone(), // Now using Coda's actual image
+                custom_size: Some(Vec2::new(200., 300.)), // Sized to fit nicely in the scene
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(-400., 0., 1.)), // Initial position, will be adjusted by positioning system
+            DialogueAlignedCharacter, // Mark this character for dialogue alignment
+            OnCustomerScreen,
+        ));
+    } else if dialogue_state.coda_dialogue_finished && !dialogue_state.coda_second_visit {
+        // Spawn Coda during his second visit (CodaSecondVisit)
         commands.spawn((
             Customer {
                 name: "Coda".to_string(),
@@ -185,7 +212,7 @@ pub fn spawn_customer(
             OnCustomerScreen,
         ));
     } else {
-        // Spawn Zara for her return dialogue (ZaraReturnDialogue)
+        // Spawn Zara for her return dialogue (ZaraReturnDialogue) - this happens when all previous dialogues are finished
         commands.spawn((
             Customer {
                 name: "Zara".to_string(),
@@ -225,7 +252,7 @@ fn position_dialogue_aligned_characters(
     let dialogue_top_y = -(screen_height * 0.5) + (screen_height * dialogue_area_height_ratio);
     
     // Position characters slightly above the dialogue area
-    let character_y = dialogue_top_y + 50.0; // 50 pixels above dialogue area
+    let character_y = dialogue_top_y + 100.0; // 100 pixels above dialogue area
     
     for mut transform in character_query.iter_mut() {
         // Keep X position the same, just adjust Y to align with dialogue
