@@ -3,9 +3,7 @@ use crate::{
         crafting::OnCraftingScreen,
         drinks::{CreatedDrink, Drink},
         glass::Glass,
-    },
-    constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
-    engine::{GameState, asset_loader::ImageAssets},
+    }, constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR}, customers::OnCustomerScreen, engine::{asset_loader::ImageAssets, GameState}
 };
 use bevy::prelude::*;
 
@@ -129,6 +127,7 @@ pub fn crafting_button_interaction_system(
 
                         // Spawn the crafted drink as a Sprite with the Drink component
                         commands.spawn((
+                            OnCustomerScreen,
                             drink,
                             Sprite {
                                 image: drink_image,
@@ -144,6 +143,15 @@ pub fn crafting_button_interaction_system(
                 game_state.set(GameState::Dialogues);
             },
         );
+                        commands.spawn((
+                            OnCustomerScreen,
+                            Sprite {
+                                image: image_assets.pop.clone(),
+                                custom_size: Some(Vec2::new(512., 512.)),
+                                ..Default::default()
+                            },
+                            Transform::from_xyz(0.0, 0.0, 1.9),
+                        ));
                     }
                 }
                 CraftingButtons::Reset => {

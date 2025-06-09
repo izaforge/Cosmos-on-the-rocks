@@ -61,7 +61,7 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
         .spawn((
             crafting_glass,
             glass_sprite,
-            Transform::from_translation(Vec3::new(200., 0., 1.)),
+            Transform::from_translation(Vec3::new(200., -210., 1.)),
             OnCraftingScreen,
             Pickable::default(),
         ))

@@ -23,7 +23,9 @@ pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app//.add_plugins((EmotionUiPlugin, MoodUiPlugin))
+        app //.add_plugins((TooltipPlugin,
+            //EmotionUiPlugin, MoodUiPlugin
+            //))
             //.init_resource::<HoveredIngredient>()
             .add_systems(OnEnter(GameState::MainMenu), setup_main_menu)
             .add_systems(

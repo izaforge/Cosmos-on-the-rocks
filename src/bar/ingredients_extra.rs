@@ -148,32 +148,32 @@ pub fn get_other_ingredients(
         (
             synth_vapor,
             synth_vapor_sprite,
-            Transform::from_xyz(-480.0, 200.0, 1.0),
+            Transform::from_xyz(-480.0, 160.0, 1.0),
         ),
         (
             void_reserve,
             void_reserve_sprite,
-            Transform::from_xyz(-280.0, 200.0, 1.0),
+            Transform::from_xyz(-280.0, 160.0, 1.0),
         ),
         (
             circuit_juice,
             circuit_juice_sprite,
-            Transform::from_xyz(-80.0, 200.0, 1.0),
+            Transform::from_xyz(-80.0, 160.0, 1.0),
         ),
         (
             fizzion_mist,
             fizzion_mist_sprite,
-            Transform::from_xyz(-480.0, 50.0, 1.0),
+            Transform::from_xyz(-480.0, 10.0, 1.0),
         ),
         (
             sweetflux,
             sweetflux_sprite,
-            Transform::from_xyz(-280.0, 50.0, 1.0),
+            Transform::from_xyz(-280.0, 10.0, 1.0),
         ),
         (
             citraplasm,
             citraplasm_sprite,
-            Transform::from_xyz(-80.0, 50.0, 1.0),
+            Transform::from_xyz(-80.0, 10.0, 1.0),
         ),
     ]
 }
