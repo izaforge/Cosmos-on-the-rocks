@@ -27,16 +27,16 @@ impl Plugin for DialogPlugin {
 }
 
 pub fn spawn_dialogue_runner(
-    mut commands: Commands, 
+    mut commands: Commands,
     project: Res<YarnProject>,
-    mut dialogue_state: ResMut<DialogueState>
+    mut dialogue_state: ResMut<DialogueState>,
 ) {
     let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
     dialogue_runner.commands_mut().add_command(
         "change_gamestate",
         commands.register_system(change_gamestate),
     );
-    
+
     // Choose starting node based on dialogue state
     let starting_node = if !dialogue_state.bartender_monologue_played {
         dialogue_state.bartender_monologue_played = true;
@@ -58,7 +58,7 @@ pub fn spawn_dialogue_runner(
         dialogue_state.zara_dialogue_finished = false;
         "ZaraReturnDialogue"
     };
-    
+
     dialogue_runner.start_node(starting_node);
     commands.spawn((dialogue_runner, OnCustomerScreen));
 }

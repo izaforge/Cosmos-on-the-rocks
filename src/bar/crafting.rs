@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{AnimationEvent, sprite_animation::animate_spite},
+    animation::{sprite_animation::animate_spite, AnimationEvent},
     bar::{bar_counter::spawn_crafting_area, glass::spawn_glass, ingredient::spawn_ingredients},
     customers::spawn_bartender,
-    engine::{GameState, audio_controller::play_crafting_bg},
+    engine::{audio_controller::play_crafting_bg, GameState},
 };
 
 #[derive(Component)]
@@ -15,9 +15,6 @@ pub enum CraftButtons {
     Craft,
     Reset,
 }
-
-#[derive(Component)]
-pub struct IngredientTooltip;
 
 pub struct CraftingPlugin;
 

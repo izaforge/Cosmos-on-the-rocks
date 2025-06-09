@@ -10,11 +10,8 @@ use bevy::{
 
 use crate::{
     bar::{
-        crafting::OnCraftingScreen,
-        drinks::Drink,
-        ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect},
-    },
-    engine::{GameState, asset_loader::ImageAssets},
+        crafting::OnCraftingScreen, drinks::Drink, glass, ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect}
+    }, constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR}, engine::{asset_loader::ImageAssets, GameState}
 };
 
 #[derive(Component, Clone, Debug)]
@@ -87,17 +84,4 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
                     sprite.image = new_image;
                 }
             },
-        )
-        .observe(|ev: Trigger<Pointer<Over>>, glass_query: Query<&Glass>| {
-            if let Ok(glass) = glass_query.get(ev.target()) {
-                let volume = glass.get_current_volume();
-                info!(
-                    "Hovering over glass - Current volume: {:.1}/{:.1}",
-                    volume, glass.capacity
-                );
-            }
-        })
-        .observe(|_: Trigger<Pointer<Out>>| {
-            // Hover end - tooltip will be handled by the UI system
-        });
-}
+         );}
