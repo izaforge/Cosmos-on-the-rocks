@@ -58,6 +58,8 @@ pub struct ImageAssets {
     pub stellar_lumen: Handle<Image>,
     #[asset(path = "images/bar/drinks/zero_phase.png")]
     pub zero_phase: Handle<Image>,
+    #[asset(path = "images/ui/pop.png")]
+    pub pop: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]

@@ -2,10 +2,7 @@ use bevy::prelude::*;
 use bevy_yarnspinner::prelude::*;
 use bevy_yarnspinner_example_dialogue_view::prelude::*;
 
-use crate::{
-    customers::{OnCustomerScreen},
-    engine::GameState,
-};
+use crate::{customers::OnCustomerScreen, engine::GameState};
 
 #[derive(Resource, Default)]
 pub struct DialogueState {
