@@ -18,6 +18,9 @@ pub struct OnCustomerScreen;
 #[derive(Component)]
 pub struct DialogueAlignedCharacter;
 
+#[derive(Component)]
+pub struct OnDialogueScreen;
+
 pub struct CustomerPlugin;
 
 impl Plugin for CustomerPlugin {
@@ -25,7 +28,7 @@ impl Plugin for CustomerPlugin {
         app.add_plugins(DialogPlugin)
             .add_systems(
                 OnEnter(GameState::Dialogues),
-                (play_customer_bg, spawn_customer),
+                (play_customer_bg, spawn_customer, spawn_dialogue_background),
             )
             .add_systems(Update, (animate_spite, position_dialogue_aligned_characters, handle_dialogue_state_changes).run_if(in_state(GameState::Dialogues)))
             .add_systems(OnExit(GameState::Dialogues), cleanup_customer)
@@ -418,9 +421,26 @@ fn spawn_appropriate_customer(
     }
 }
 
-// System to cleanup menu when exiting MainMenu state
-pub fn cleanup_customer(mut commands: Commands, query: Query<Entity, With<OnCustomerScreen>>) {
-    for entity in query.iter() {
+pub fn spawn_dialogue_background(
+    mut commands: Commands,
+    image_assets: Res<ImageAssets>,
+) {
+    commands.spawn((
+        Sprite {
+            image: image_assets.talk_background.clone(),
+            custom_size: Some(Vec2::new(1920.0, 1080.0)), // Assuming full screen background
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, -10.0), // Ensure it's behind other elements
+        OnDialogueScreen,
+    ));
+}
+
+pub fn cleanup_customer(mut commands: Commands, customer_query: Query<Entity, With<OnCustomerScreen>>, dialogue_bg_query: Query<Entity, With<OnDialogueScreen>>) {
+    for entity in customer_query.iter() {
+        commands.entity(entity).despawn();
+    }
+    for entity in dialogue_bg_query.iter() {
         commands.entity(entity).despawn();
     }
 }

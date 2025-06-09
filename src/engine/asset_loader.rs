@@ -62,6 +62,8 @@ pub struct ImageAssets {
     pub zero_phase: Handle<Image>,
     #[asset(path = "images/ui/pop.png")]
     pub pop: Handle<Image>,
+    #[asset(path = "images/dialogue/talk_bg.png")]
+    pub talk_background: Handle<Image>,
 }
 
 #[derive(AssetCollection, Resource)]
