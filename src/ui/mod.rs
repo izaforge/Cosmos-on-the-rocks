@@ -2,7 +2,7 @@ use crate::{
     engine::GameState,
     ui::{
         crafting_menu::{crafting_button_interaction_system, setup_crafting_menu},
-        //emotion_ui::EmotionUiPlugin,
+        emotion_ui::EmotionUiPlugin,
         // ingredient_tooltip::{
         //     HoveredIngredient, cleanup_glass_tooltips, cleanup_ingredient_tooltips,
         //     setup_glass_tooltips, setup_ingredient_tooltips,
@@ -23,7 +23,7 @@ pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app//.add_plugins((EmotionUiPlugin, MoodUiPlugin))
+        app.add_plugins(EmotionUiPlugin)
             //.init_resource::<HoveredIngredient>()
             .add_systems(OnEnter(GameState::MainMenu), setup_main_menu)
             .add_systems(
