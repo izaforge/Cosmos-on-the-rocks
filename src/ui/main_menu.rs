@@ -7,7 +7,6 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub enum MenuButtons {
     Play,
-    Settings,
 }
 
 #[derive(Component)]
@@ -74,34 +73,6 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                         TextColor(TEXT_COLOR),
                     ));
                 });
-            // Game Settings Button
-            parent
-                .spawn((
-                    Button,
-                    Node {
-                        width: Val::Px(250.0),
-                        height: Val::Px(65.0),
-                        border: UiRect::all(Val::Px(5.0)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    BorderColor(BUTTON_BORDER),
-                    BorderRadius::MAX,
-                    BackgroundColor(NORMAL_BUTTON),
-                ))
-                .insert(MenuButtons::Settings)
-                .with_children(|parent| {
-                    parent.spawn((
-                        Text::from("Settings"),
-                        TextFont {
-                            font: menu_font,
-                            font_size: 30.0,
-                            ..default()
-                        },
-                        TextColor(TEXT_COLOR),
-                    ));
-                });
         });
 }
 
@@ -119,10 +90,6 @@ pub fn button_interaction_system(
                 MenuButtons::Play => {
                     println!("Play Game Button Clicked");
                     game_state.set(GameState::Loading);
-                }
-                MenuButtons::Settings => {
-                    println!("Settings Button Clicked");
-                    game_state.set(GameState::Settings);
                 }
             },
             Interaction::Hovered => {

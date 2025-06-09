@@ -9,7 +9,6 @@ pub enum GameState {
     #[default]
     MainMenu,
     Loading,
-    Settings,
     Dialogues,
     Crafting,
     EndNight,
