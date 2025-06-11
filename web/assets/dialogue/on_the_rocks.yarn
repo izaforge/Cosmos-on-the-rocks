@@ -1,0 +1,742 @@
+title: BartenderMonologue
+---
+Bartender: Time for a pick-me-up. Something strong, for a long night.
+Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
+-> Enter Crafting State
+    <<change_gamestate "Crafting">>
+===
+
+title: BartenderAfterDrink
+---
+Bartender: *Takes a sip and nods approvingly*
+Bartender: *A customer walks into the bar*
+<<jump ZaraDialogue>>
+===
+
+title: ZaraDialogue
+---
+// Zara's dialogue converted from zara.dialogue.ron to YarnSpinner format
+// Secretive security officer who has seen things she shouldn't have
+
+// Variable declarations for effect system
+<<declare $calming_effect = 0 as number>>
+<<declare $energizing_effect = 0 as number>>
+<<declare $mind_enhancing_effect = 0 as number>>
+<<declare $courage_effect = 0 as number>>
+<<declare $truth_effect = 0 as number>>
+<<declare $healing_effect = 0 as number>>
+
+// The $player_name variable is already declared in start.yarn
+
+Zara: Hey there, bartender. I could use a drink.
+
+-> What can I get you?
+    Player: What can I get you?
+    <<jump ZaraOrder>>
+-> You look like you've had a rough day.
+    Player: You look like you've had a rough day.
+    <<jump ZaraDay>>
+-> You seem really alert tonight. (ENERGIZED - Requires 5+)
+    <<if $energizing_effect >= 5>>
+        Player: You seem really alert tonight.
+        Zara: *eyes bright* That's because I've figured out something important. Something about the corporation.
+        <<jump ZaraEnergizedDialogue>>
+    <<else>>
+        Player: You seem really alert tonight.
+        Zara: *yawns* Alert? I'm exhausted. Maybe after I have something to wake me up.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Tell me what's really going on. (TRUTH SERUM - Requires 6+)
+    <<if $truth_effect >= 6>>
+        Player: Tell me what's really going on.
+        Zara: *compelled to speak* I... I can't hold it back anymore. There's a conspiracy at Galactic Corp.
+        <<jump ZaraTruthfulPath>>
+    <<else>>
+        Player: Tell me what's really going on.
+        Zara: *guards her expression* Nothing I can talk about. Not without... loosening up first.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> I can see you're connecting dots. (MIND ENHANCED - Requires 4+)
+    <<if $mind_enhancing_effect >= 4>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *nods thoughtfully* Yes... the patterns are becoming clearer. The security breaches weren't random.
+        <<jump ZaraMindEnhancedPath>>
+    <<else>>
+        Player: I can see you're connecting dots in your head.
+        Zara: *looks confused* Dots? I'm not seeing any patterns right now. My mind feels foggy.
+        <<jump ZaraDialogue>>
+    <<endif>>
+===
+
+title: ZaraOrder
+---
+Zara: Something strong. Surprise me.
+
+-> Coming right up.
+    Player: Coming right up.
+    <<set $zara_likes_strong_drinks = true>>
+    <<jump ZaraWait>>
+-> Maybe something lighter would be better?
+    Player: Maybe something lighter would be better?
+    <<jump ZaraAnnoyance>>
+===
+
+title: ZaraDay
+---
+Zara: Let's just say I've seen things I shouldn't have. Working security for Galactic Corp has its downsides.
+
+-> Want to talk about it?
+    Player: Want to talk about it?
+    <<jump ZaraSecret>>
+-> Let me get you that drink.
+    Player: Let me get you that drink.
+    <<jump ZaraOrder>>
+===
+
+title: ZaraSecret
+---
+Zara: Not here. Too many ears. But if you're curious, mix me something with that blue liquid from Proxima B. It might loosen my tongue.
+
+-> I'll see what I can do.
+    Player: I'll see what I can do.
+    <<set $zara_hint_blue_proxima = true>>
+    <<jump ZaraWait>>
+-> later.
+    Player: later.
+    <<jump ZaraWait>>
+===
+
+title: ZaraWait
+---
+Zara: I'll be waiting. No rush.
+<<change_gamestate Crafting>>
+===
+
+title: ZaraAfterDrink
+---
+Zara: *takes a sip* This is... interesting. 
+
+-> So how are you feeling? (ENERGIZED 6+)
+    <<if $energizing_effect >= 6>>
+        Player: So how are you feeling?
+        Zara: *vibrant* Like I could stay awake all night! The patterns are so clear now...
+        <<jump ZaraEnergizedHigh>>
+    <<else>>
+        Player: So how are you feeling?
+        Zara: *tired* Still pretty worn out. This isn't quite hitting the spot yet.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> What about that conspiracy? (TRUTH SERUM 6+) 
+    <<if $truth_effect >= 6>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *unable to hold back* The executive orders... they're falsified. Someone's been manipulating the company from the inside.
+        <<jump ZaraConspiracyReveal>>
+    <<else>>
+        Player: What about that conspiracy you mentioned?
+        Zara: *tightlipped* I can't... not yet. Need something stronger to loosen my tongue.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Those security patterns... (MIND ENHANCED 6+)
+    <<if $mind_enhancing_effect >= 6>>
+        Player: Those security patterns you mentioned...
+        Zara: *eyes wide with realization* They're not random at all! Someone's been testing our defenses, probing for weaknesses systematically.
+        <<jump ZaraPatternAnalysis>>
+    <<else>>
+        Player: Those security patterns you mentioned...
+        Zara: *squints* What patterns? My head's still too cloudy to make sense of it all.
+        <<jump ZaraDialogue>>
+    <<endif>>
+-> Another drink?
+    Player: Want another drink?
+    Zara: *nods* Yes, I think I need something stronger to help me think clearly.
+    <<jump ZaraOrder>>
+===
+
+title: ZaraEnergized
+---
+Zara: *speaks rapidly* I've been tracking a conspiracy within Galactic Corp for months. Higher-ups are selling classified tech to fringe colonies.
+Zara: *paces back and forth* I have proof - access logs, transmission records, financial transfers to shell companies.
+Zara: I need to act now, before they realize what I know. This drink was exactly what I needed!
+
+-> Slow down, you might be in danger
+    Player: Slow down, Zara. If what you're saying is true, you might be in danger.
+    Zara: *nods quickly* You're right. I need to be smart about this. Strategic.
+    Zara: I have a secure data cache in the spaceport locker. If anything happens to me, the access code is 7734-XB.
+    Zara: I should go. Thanks for the drink, bartender. It gave me the push I needed.
+-> I can help
+    Player: I can help. What do you need?
+    Zara: *grins* A distraction. Next time a Galactic Corp officer comes in, mention seeing me heading to the Outer Rim.
+    Zara: I'll be hiding much closer. And I'll need another drink like this one next time I stop by.
+    Zara: I should go. Time to put my plan into action!
+===
+
+title: ZaraCalmed
+---
+Zara: *sighs deeply* You know, I've been carrying this weight for so long. The things I've seen in this job...
+Zara: Sometimes I wonder if I'm on the right side. Galactic Corp isn't exactly known for its ethics.
+Zara: *takes another sip* This drink makes me feel like maybe I don't have to solve everything tonight.
+
+-> What have you seen?
+    Player: What have you seen that bothers you so much?
+    Zara: *speaks softly* Suppression of evidence. Covering up accidents that weren't accidents. Making people "disappear."
+    Zara: I joined to protect people. Not to be part of something like this.
+    Zara: Thank you for listening, bartender. And for this drink. I needed this moment of peace.
+-> Maybe you need a change
+    Player: Maybe it's time for a change of career.
+    Zara: *smiles sadly* Maybe. I've thought about joining the independent security forces in the Proxima sector.
+    Zara: Less pay, but I might be able to sleep at night.
+    Zara: I should go. But I'll remember this conversation. Thank you.
+===
+
+title: ZaraTruthful
+---
+Zara: *words tumble out* I've been spying for the resistance. I'm a double agent inside Galactic Corp security.
+Zara: *looks horrified at her own words* I can't believe I just told you that. What's in this drink?
+Zara: *glances around nervously* If anyone from Corp finds out, I'm dead. My handler is dead. Everyone I've helped is dead.
+
+-> Your secret is safe with me
+    Player: Your secret is safe with me, Zara. I promise.
+    Zara: *studies your face* I believe you. I don't know why, but I do.
+    Zara: There's a data drop tomorrow at the abandoned hangar. Someone needs to warn them it might be compromised.
+    Zara: I need to go. I've said too much already. But... thank you.
+-> Why risk everything?
+    Player: Why risk everything to help the resistance?
+    Zara: *expression hardens* Because I've seen what Corp does to planets that resist acquisition. It's not pretty.
+    Zara: My home world was "peacefully integrated" ten years ago. Half my family didn't survive the "transition period."
+    Zara: I should go. Forget what I said. Please.
+===
+
+title: ZaraMindEnhanced
+---
+Zara: *speaking with unusual clarity* The security breach three months ago wasn't external. It was an inside job.
+Zara: Director Krell authorized it himself. He's been feeding information to the Syndicate for years.
+Zara: The evidence is hidden in plain sight - transfer records, duty rosters, maintenance logs. All the patterns are there.
+
+-> What will you do with this information?
+    Player: What will you do with this information, Zara?
+    Zara: *thoughtfully* I need to be strategic. Taking this directly to Internal Affairs would be suicide.
+    Zara: I need to compile the evidence, encrypt it, and send copies to multiple trusted sources.
+    Zara: Then trigger simultaneous releases if anything happens to me. It's the only way to ensure the truth gets out.
+-> This sounds dangerous
+    Player: This sounds incredibly dangerous, Zara. Are you sure?
+    Zara: *nods with determination* The danger is already there whether I act or not. Krell has eliminated three security officers who got too close.
+    Zara: If I do nothing, I'm just waiting my turn. At least this way, I choose the battlefield.
+    Zara: I should go. I have work to do. Thank you for the clarity, bartender.
+===
+
+title: ZaraAfterDrinkContinue
+---
+Zara: *gathering art supplies* I need to get back to my studio while this inspiration is flowing!
+Zara: Thank you, bartender. This conversation and that amazing drink have given me exactly what I needed.
+Zara: I'm going to create something that bridges the gap between commercial success and artistic integrity!
+
+-> Good luck with your project!
+    Player: Good luck with your project, Zara!
+    Zara: *beaming* With this new perspective, I know it's going to be amazing. Maybe I'll bring you a holo-sketch when it's done!
+    Zara: I should get started right away while this energy is flowing!
+    <<change_gamestate Crafting>>
+-> I'd love to see the finished piece.
+    Player: I'd love to see the finished piece when you're done.
+    Zara: *excitedly* I'll definitely bring some documentation! Art is meant to be shared, after all.
+    Zara: Let me go create something amazing!
+    <<change_gamestate Crafting>>
+===
+
+title: CodaAfterDrinkContinue
+---
+Coda: *gathering art supplies* I need to get back to my studio while this inspiration is flowing!
+Coda: Thank you, bartender. This conversation and that amazing drink have given me exactly what I needed.
+Coda: I'm going to create something that bridges the gap between commercial success and artistic integrity!
+
+-> Good luck with your project!
+    Player: Good luck with your project, Coda!
+    Coda: *beaming* With this new perspective, I know it's going to be amazing. Maybe I'll bring you a holo-sketch when it's done!
+    Coda: I should get started right away while this energy is flowing!
+    <<change_gamestate Crafting>>
+-> I'd love to see the finished piece.
+    Player: I'd love to see the finished piece when you're done.
+    Coda: *excitedly* I'll definitely bring some documentation! Art is meant to be shared, after all.
+    Coda: Let me go create something amazing!
+    <<change_gamestate Crafting>>
+===
+
+title: CodaEnhancedCreativity
+---
+Coda: *gesturing wildly* I can see it now! The corporate piece doesn't have to be gray and boring!
+Coda: I can create a holographic experience that looks like team building on the surface but actually opens minds to new possibilities!
+Coda: Subversive art hiding in plain sight! They'll think they're getting productivity enhancement, but really they're getting consciousness expansion!
+
+-> That sounds brilliant!
+    Player: That sounds absolutely brilliant!
+    Coda: *beaming* Right? I can embed hidden artistic elements that only reveal themselves over time. A Trojan horse of creativity!
+    Coda: Thank you, bartender. This drink gave me exactly the perspective shift I needed!
+    Coda: I should start working on this while the inspiration is hot!
+    <<change_gamestate Crafting>>
+-> Isn't that risky?
+    Player: Isn't that a bit risky with corporate clients?
+    Coda: *confidently* Art is always risky. But now I can see how to take calculated risks that serve both my vision and their needs.
+    Coda: I should get back to my studio while this clarity lasts. Thank you for the inspiration!
+    <<change_gamestate Crafting>>
+===
+
+title: CodaBoldVision
+---
+Coda: *standing up excitedly* I'm going to completely reimagine what corporate art can be!
+Coda: Instead of making employees more productive, I'll make them more human! More connected to their creativity!
+Coda: The installation will be a gateway to artistic awakening disguised as a team-building exercise!
+
+-> That's a powerful vision.
+    Player: That's a really powerful vision, Coda.
+    Coda: *grinning* And the best part is, it'll work better than what they originally wanted. Happy, creative employees are more productive than drones.
+    Coda: I need to start sketching while this energy is flowing. Thanks for the drink that changed everything!
+    <<change_gamestate Crafting>>
+-> Will the corporation approve of that?
+    Player: Will the corporation actually approve of that approach?
+    Coda: *determinedly* They will when they see the results. Sometimes you have to show people what they really need, not what they think they want.
+    Coda: I should go capture these ideas before they fade. This has been exactly what I needed!
+    <<change_gamestate Crafting>>
+===
+
+title: CodaDialogue
+---
+// Coda's initial dialogue - creative artist struggling with commercial work
+
+Coda: *enters the bar looking frustrated and creative*
+Coda: Hey there, bartender. I need something to help me think clearly.
+Coda: I'm working on this corporate art installation, and I'm stuck between what they want and what feels authentic.
+
+-> What kind of installation are you working on?
+    Player: What kind of installation are you working on?
+    Coda: *sighs* They want something "inspiring but not distracting" for their new office complex.
+    Coda: Corporate speak for "make it pretty but don't make anyone think too hard."
+    <<jump CodaOrder>>
+-> That sounds like a creative challenge.
+    Player: That sounds like an interesting creative challenge.
+    Coda: *brightening slightly* That's one way to look at it. Maybe there's a way to give them what they need while staying true to my vision.
+    <<jump CodaOrder>>
+-> Sometimes compromise leads to innovation.
+    Player: Sometimes creative compromise can lead to innovation.
+    Coda: *thoughtful* You know, you might be right. Maybe the constraint isn't a limitation but a catalyst.
+    <<jump CodaOrder>>
+===
+
+title: CodaOrder
+---
+Coda: I need something that'll help me see new possibilities. Something to spark my creativity.
+
+-> I'll mix you something inspiring.
+    Player: I'll mix you something inspiring.
+    <<set $coda_wants_inspiration = true>>
+    <<jump CodaWait>>
+-> What if I made you something to enhance your artistic vision?
+    Player: What if I made you something to enhance your artistic vision?
+    <<set $coda_artistic_enhancement = true>>
+    <<jump CodaWait>>
+===
+
+title: CodaWait
+---
+Coda: *sketches in a notebook while waiting* Maybe there's a way to make corporate art that actually matters...
+<<change_gamestate Crafting>>
+===
+
+title: CodaSecondVisit
+---
+Coda: *returns to the bar with paint-stained clothes and a big smile* 
+Coda: Hey bartender! I'm back! I had to show you this!
+Coda: *pulls out a small holographic projector* I made a prototype of the installation based on our conversation!
+
+-> That's amazing! Show me what you created.
+    Player: That's amazing! Show me what you created.
+    <<jump CodaShowsArt>>
+-> How did the work session go?
+    Player: How did the work session go after our last talk?
+    <<jump CodaWorkSession>>
+-> You look energized! What can I get you to drink?
+    Player: You look really energized! What can I get you to drink?
+    <<jump CodaSecondOrder>>
+===
+
+title: CodaShowsArt
+---
+Coda: *activates the projector, filling the space with swirling colors and shapes*
+Coda: Watch this - it responds to emotional states! When people feel connected and creative, it becomes more beautiful!
+Coda: The corporate executives think it's measuring "team cohesion metrics" but it's actually encouraging genuine human connection!
+
+-> That's ingenious!
+    Player: That's absolutely ingenious!
+    Coda: *grinning* And the best part? It's working! The test group showed increased empathy and creative problem-solving!
+    <<jump CodaSuccess>>
+-> The colors are beautiful.
+    Player: The colors are absolutely beautiful.
+    Coda: *proudly* Each color represents a different aspect of human creativity. It's like painting with emotions!
+    <<jump CodaArtisticJoy>>
+===
+
+title: CodaWorkSession
+---
+Coda: *eyes bright* It was incredible! I worked for twelve hours straight and it felt like minutes!
+Coda: That drink you made unlocked something in me. I could see connections I'd never noticed before!
+Coda: I solved problems I'd been struggling with for months!
+
+-> That's the power of inspiration.
+    Player: That's the power of true inspiration.
+    Coda: *nodding enthusiastically* Exactly! And now I want to capture that feeling in my art - to give others that same breakthrough!
+    <<jump CodaInspiration>>
+-> Sounds like you found your artistic voice.
+    Player: Sounds like you found your true artistic voice.
+    Coda: *emotional* I did. For the first time in years, I feel like myself again. Like the artist I always wanted to be!
+    <<jump CodaIdentity>>
+===
+
+title: CodaSecondOrder
+---
+Coda: Something celebratory! I want to toast to artistic breakthroughs and unexpected inspiration!
+Coda: Maybe something that'll help me see even more possibilities for my next piece!
+
+-> I'll make something special for the occasion.
+    Player: I'll make something special for the occasion.
+    <<set $coda_celebration = true>>
+    <<jump CodaSecondWait>>
+-> What's your next artistic project?
+    Player: What's your next artistic project going to be?
+    <<jump CodaNextProject>>
+===
+
+title: CodaSecondWait
+---
+Coda: *sketching in a notebook while waiting* I can't stop creating! Ideas are flowing like a river!
+<<change_gamestate Crafting>>
+===
+
+title: CodaSuccess
+---
+Coda: The executives are calling it "the most innovative team-building solution they've ever seen!"
+Coda: But the employees? They're calling it "life-changing." Some have started taking art classes!
+Coda: I've proven that art can be both commercially successful and transformative!
+
+-> You're changing the world one installation at a time.
+    Player: You're changing the world one installation at a time.
+    Coda: *beaming* That's exactly what I want to do! Art as a force for positive change!
+    Coda: I should get back to my studio. I have a whole series of installations to plan!
+    Coda: *As Coda leaves, the bar feels quieter. A familiar figure approaches from the shadows*
+    <<jump ZaraReturnTransition>>
+-> This could revolutionize corporate culture.
+    Player: This could revolutionize corporate culture everywhere.
+    Coda: *excited* Imagine if every workplace had art that inspired instead of decorating! That connected instead of dividing!
+    Coda: I should spread this vision to more companies. Thank you for believing in me!
+    Coda: *As Coda heads toward the door, another figure enters the bar*
+    <<jump ZaraReturnTransition>>
+===
+
+title: CodaArtisticJoy
+---
+Coda: *watching the colors dance* You know what the most beautiful part is? When people interact with it, they start smiling without realizing it.
+Coda: Art has this power to reach past our defenses and touch something deeper. Something more authentic.
+
+-> That's the magic of true art.
+    Player: That's the magic of true art.
+    Coda: *nodding* And now I get to share that magic with people who thought they didn't have time for beauty.
+    <<jump CodaMagic>>
+-> You're bringing joy to people's work lives.
+    Player: You're bringing actual joy to people's work lives.
+    Coda: *emotional* That's all I ever wanted - to use my art to make the world a little more beautiful, a little more human.
+    <<jump CodaPurpose>>
+===
+
+title: CodaImpact
+---
+Coda: *passionate* Every piece I create now, I think about its impact. Not just aesthetically, but emotionally, socially.
+Coda: Art isn't just about self-expression anymore - it's about connection and transformation.
+Coda: I want to thank you, bartender. This journey started with that conversation we had.
+
+-> Art with purpose is powerful art.
+    Player: Art with purpose is the most powerful art.
+    Coda: *nodding* And purpose doesn't have to mean compromising vision. It can mean expanding it!
+    Coda: I should get back to my studio. I have a whole series of installations to plan!
+    Coda: *As Coda leaves, the bar feels quieter. A familiar figure approaches from the shadows*
+    <<jump ZaraReturnTransition>>
+-> You've found your calling.
+    Player: You've definitely found your true calling.
+    Coda: *smiling* And I found it by staying true to myself while embracing new challenges.
+    Coda: Thank you for helping me see that compromise doesn't have to mean corruption.
+    Coda: *As Coda heads toward the door, another figure enters the bar*
+    <<jump ZaraReturnTransition>>
+===
+
+title: ZaraReturnTransition
+---
+Bartender: *notices a familiar figure in the shadows*
+Bartender: *Zara steps back into the bar, looking more determined than before*
+<<jump ZaraReturnDialogue>>
+===
+
+title: ZaraReturnDialogue
+---
+Zara: *slides into a seat at the bar with purpose* 
+Zara: I'm back, bartender. And this time, I need something stronger than before.
+Zara: I've made my decision about Krell and the conspiracy. It's time to act.
+
+-> What's your plan?
+    Player: What's your plan, Zara?
+    <<jump ZaraNewPlan>>
+-> You look different. More resolved.
+    Player: You look different. More resolved than before.
+    <<jump ZaraResolution>>
+-> Whatever you need, I'm here to help.
+    Player: Whatever you need, I'm here to help.
+    <<jump ZaraSupport>>
+===
+
+title: ZaraNewPlan
+---
+Zara: I'm going to expose everything. The data transfers, the falsified reports, the cover-ups.
+Zara: But I need to be smart about it. One drink to sharpen my mind, another to steady my nerves.
+Zara: This is bigger than just Krell now. I've uncovered an entire network.
+
+-> That sounds incredibly dangerous.
+    Player: That sounds incredibly dangerous, Zara.
+    Zara: *grimly* More dangerous than staying silent while they destroy more lives.
+    Zara: I need that drink, bartender. Something to help me think clearly about the impossible.
+    <<jump ZaraReturnOrder>>
+-> You're really going to do this.
+    Player: You're really going to go through with this.
+    Zara: *determined* I have to. I've seen what happens when good people do nothing.
+    Zara: Mix me something that'll help me see all the angles I need to consider.
+    <<jump ZaraReturnOrder>>
+===
+
+title: ZaraReturnOrder
+---
+Zara: I need something that'll enhance my strategic thinking. And maybe give me the courage to follow through.
+Zara: This might be my last night of freedom if things go wrong.
+
+-> I'll make you something perfect for the mission ahead.
+    Player: I'll make you something perfect for the mission ahead.
+    <<set $zara_final_mission = true>>
+    <<jump ZaraReturnWait>>
+-> Are you sure you want to go through with this?
+    Player: Are you sure you want to go through with this?
+    Zara: *firmly* I've never been more sure of anything in my life.
+    <<jump ZaraReturnWait>>
+===
+
+title: ZaraReturnWait
+---
+Zara: *studies data on a hidden tablet while waiting* Every detail has to be perfect. No room for mistakes.
+<<change_gamestate Crafting>>
+===
+
+title: CodaInspiration
+---
+Coda: *eyes shining* I want to create installations that give people that same feeling of breakthrough!
+Coda: Art that doesn't just decorate spaces, but transforms them into catalysts for human potential!
+
+-> That's a beautiful vision.
+    Player: That's a beautiful vision, Coda.
+    Coda: *passionate* And the corporate world needs it more than anywhere. People are starving for inspiration!
+    <<jump CodaSecondWait>>
+-> How would you implement that vision?
+    Player: How would you implement that vision practically?
+    Coda: *thinking aloud* Interactive environments that respond to creativity, collaboration, authentic connection...
+    <<jump CodaSecondWait>>
+===
+
+title: CodaIdentity
+---
+Coda: *emotional* For so long I felt like I was compromising my art for commercial viability.
+Coda: But now I see that the most powerful art comes from serving something greater than yourself.
+
+-> Art can be both authentic and impactful.
+    Player: Art can be both authentic and impactful.
+    Coda: *nodding* Exactly! The key is finding your purpose within your passion.
+    <<jump CodaSecondWait>>
+-> You've found your artistic calling.
+    Player: You've found your true artistic calling.
+    Coda: *smiling* And it's bigger and more meaningful than I ever imagined.
+    <<jump CodaSecondWait>>
+===
+
+title: CodaNextProject
+---
+Coda: I'm thinking about a series called "Hidden Humanity" - art installations that reveal the beauty in everyday corporate spaces.
+Coda: Elevators that become poetry chambers, conference rooms that transform into creativity sanctuaries!
+
+-> That sounds revolutionary.
+    Player: That sounds absolutely revolutionary.
+    Coda: *excited* Right? I want to prove that art isn't luxury - it's necessity for the human spirit!
+    <<jump CodaSecondWait>>
+-> How would you get corporations to approve that?
+    Player: How would you get corporations to approve something so radical?
+    Coda: *grinning* By showing them that happy, inspired employees are 300% more productive! Art pays for itself!
+    <<jump CodaSecondWait>>
+===
+
+title: CodaMagic
+---
+Coda: *passionate* That's what I want to achieve - art that works on a subconscious level.
+Coda: Beauty that infiltrates the everyday and reminds people they're human, not machines.
+
+-> You're healing corporate culture through art.
+    Player: You're healing corporate culture through art.
+    Coda: *moved* That's exactly it. Art as medicine for dehumanized spaces.
+    <<jump CodaSecondWait>>
+-> That's a powerful purpose for your work.
+    Player: That's a powerful purpose for your work.
+    Coda: *grateful* And it all started with that conversation we had. Thank you for helping me find my path.
+    <<jump CodaSecondWait>>
+===
+
+title: CodaPurpose
+---
+Coda: *reflective* I used to think success meant galleries and critics. Now I know it means touching lives.
+Coda: When someone tells me my art helped them through a difficult day, that's when I know I've succeeded.
+
+-> You're making a real difference.
+    Player: You're making a real difference in people's lives.
+    Coda: *emotional* That's all I ever wanted. To use my gifts to make the world a little brighter.
+    <<jump CodaSecondWait>>
+-> That's true artistic fulfillment.
+    Player: That's true artistic fulfillment.
+    Coda: *nodding* And the beautiful thing is, it's just the beginning.
+    <<jump CodaSecondWait>>
+===
+
+title: ZaraResolution
+---
+Zara: *nodding* I've spent weeks gathering evidence, planning every move. I'm not the same person who left here last time.
+Zara: I know the risks, but I also know the cost of doing nothing.
+
+-> What changed your mind?
+    Player: What finally made you decide to act?
+    Zara: *firmly* I received word that they're planning to eliminate another whistleblower. Someone with a family.
+    Zara: I can't let that happen. Not when I have the power to stop it.
+    <<jump ZaraReturnOrder>>
+-> You seem ready for this.
+    Player: You definitely seem ready for this challenge.
+    Zara: *grimly* As ready as anyone can be for a fight against an entire corporation.
+    <<jump ZaraReturnOrder>>
+===
+
+title: ZaraSupport
+---
+Zara: *grateful* Thank you. I might need someone to remember my story if things go wrong.
+Zara: But right now, I need something to help me execute this plan flawlessly.
+
+-> I'll remember everything.
+    Player: I'll remember everything, Zara. Your story won't be forgotten.
+    Zara: *touched* That means more than you know. Now, about that drink...
+    <<jump ZaraReturnOrder>>
+-> What can I do to help?
+    Player: What else can I do to help with your mission?
+    Zara: *considering* If anyone comes looking for me after tonight, tell them I went to the Outer Rim. Buy me some time.
+    <<jump ZaraReturnOrder>>
+===
+
+title: ZaraAnnoyance
+---
+Zara: *frowns* Lighter? I said I needed something strong. I'm not here for a casual drink.
+Zara: I've had a rough day and I need something that'll actually help me unwind.
+
+-> You're right, let me get you something stronger.
+    Player: You're absolutely right, let me get you something stronger.
+    Zara: *relaxes slightly* Thank you. I appreciate someone who listens.
+    <<jump ZaraWait>>
+-> What kind of day are we talking about?
+    Player: What kind of rough day are we talking about?
+    <<jump ZaraDay>>
+===
+
+title: ZaraEnergizedDialogue
+---
+Zara: *speaking rapidly* The pieces are all falling into place! I can see the connections now!
+Zara: Those security breaches, the data transfers, the mysterious meetings - it's all part of a larger plan!
+
+-> Slow down, what connections?
+    Player: Slow down, Zara. What connections are you seeing?
+    Zara: *intense* Director Krell isn't just corrupt - he's part of something bigger. A network that spans multiple corporations!
+    <<jump ZaraOrder>>
+-> This sounds dangerous.
+    Player: This sounds really dangerous, Zara.
+    Zara: *determined* Dangerous, yes. But I finally have the energy to do something about it!
+    <<jump ZaraOrder>>
+===
+
+title: ZaraTruthfulPath
+---
+Zara: *words spilling out uncontrollably* There's a conspiracy at the highest levels of Galactic Corp!
+Zara: They're selling military-grade technology to unauthorized buyers in the outer systems!
+Zara: I have proof - encrypted files, transaction records, everything!
+
+-> How did you discover this?
+    Player: How did you discover all of this?
+    Zara: *can't stop talking* I was investigating routine security breaches when I found the pattern. The timing, the access codes, the data volumes - it all pointed to inside coordination!
+    <<jump ZaraWait>>
+-> What are you going to do with this information?
+    Player: What are you going to do with this information?
+    Zara: *determined* I have to expose it. But I need to be smart. One wrong move and I'm dead.
+    <<jump ZaraWait>>
+===
+
+title: ZaraMindEnhancedPath
+---
+Zara: *with crystal clarity* I can see the entire scope of the operation now. It's not just technology theft - it's systematic infiltration.
+Zara: They've placed operatives in at least six major corporations. Each one feeding intelligence back to a central hub.
+
+-> Who's running this operation?
+    Player: Who's running this entire operation?
+    Zara: *analyzing* Someone with access to multiple corporate structures. Someone who can coordinate across different security systems...
+    Zara: *realization dawning* Director Krell isn't the mastermind. He's just a lieutenant.
+    <<jump ZaraWait>>
+-> How deep does this go?
+    Player: How deep does this conspiracy go?
+    Zara: *thoughtfully* Deeper than I initially thought. This affects trade routes, military contracts, maybe even planetary governance.
+    <<jump ZaraWait>>
+===
+
+title: ZaraEnergizedHigh
+---
+Zara: *vibrating with energy* I feel like I could take on the entire corporate security apparatus single-handedly!
+Zara: The evidence is so clear now - every piece of data tells part of the story!
+
+-> Channel that energy wisely.
+    Player: Channel that energy wisely, Zara. You'll need strategy, not just enthusiasm.
+    Zara: *nodding rapidly* You're right! I need to document everything, create multiple backup plans, establish safe communication channels!
+    <<jump ZaraDialogue>>
+-> You seem ready to take action.
+    Player: You definitely seem ready to take action now.
+    Zara: *determined* More than ready. I've been gathering evidence for months, but now I have the drive to actually use it!
+    <<jump ZaraDialogue>>
+===
+
+title: ZaraConspiracyReveal
+---
+Zara: *unable to hold back* The falsified executive orders aren't random. Someone's been systematically manipulating company policy for years!
+Zara: Every major decision that seemed questionable - the Proxima mining rights, the defense contract cancellations, the personnel transfers - they're all connected!
+
+-> Who benefits from these manipulations?
+    Player: Who benefits from all these manipulations?
+    Zara: *connecting dots* The same shell companies keep appearing in the financial records. They're all subsidiaries of a single organization.
+    Zara: Someone's been playing a very long game, using Galactic Corp as their personal resource extraction operation.
+    <<jump ZaraDialogue>>
+-> This is bigger than corporate corruption.
+    Player: This is bigger than simple corporate corruption.
+    Zara: *nodding grimly* This is economic warfare. They're not just stealing from the company - they're destabilizing entire trade sectors.
+    <<jump ZaraDialogue>>
+===
+
+title: ZaraPatternAnalysis
+---
+Zara: *eyes wide with realization* The security probes weren't testing our defenses randomly - they were mapping our entire information infrastructure!
+Zara: Someone now has a complete blueprint of how data flows through Galactic Corp. They know exactly which systems to target for maximum impact.
+
+-> What kind of impact are we talking about?
+    Player: What kind of impact could they achieve with that information?
+    Zara: *calculating* Complete system compromise. They could manipulate financial records, redirect cargo shipments, even alter personnel files to place their own people in key positions.
+    Zara: We might already be compromised and not even know it.
+    <<jump ZaraDialogue>>
+-> Can this infiltration be stopped?
+    Player: Can this infiltration be stopped?
+    Zara: *determined* If we act fast enough. But it requires exposing the entire network at once. Any partial revelation just gives them time to cover their tracks.
+    <<jump ZaraDialogue>>
+=== 
