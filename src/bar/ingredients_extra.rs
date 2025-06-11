@@ -110,7 +110,9 @@ pub fn get_other_ingredients(
 
     let fizzion_mist = Ingredient {
         name: "Fizzion Mist".to_string(),
-        description: "A bubbly, sour liquid that crackles with energy, leaving a tingling sensation.".to_string(),
+        description:
+            "A bubbly, sour liquid that crackles with energy, leaving a tingling sensation."
+                .to_string(),
         ingredient_profile: fizzion_mist_profile,
     };
 
@@ -122,7 +124,9 @@ pub fn get_other_ingredients(
 
     let citraplasm = Ingredient {
         name: "Citraplasm".to_string(),
-        description: "A vibrant, zesty plasma with a sharp citrus bite, perfect for stimulating the mind.".to_string(),
+        description:
+            "A vibrant, zesty plasma with a sharp citrus bite, perfect for stimulating the mind."
+                .to_string(),
         ingredient_profile: citraplasm_profile,
     };
 

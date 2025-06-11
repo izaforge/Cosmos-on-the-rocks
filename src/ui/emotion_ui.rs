@@ -1,7 +1,7 @@
 use crate::{
-    customers::{Customer, CustomerHappiness, CustomerSadness, CustomerAnger, OnCustomerScreen},
-    engine::GameState,
     constants::TEXT_COLOR,
+    customers::{Customer, CustomerAnger, CustomerHappiness, CustomerSadness, OnCustomerScreen},
+    engine::GameState,
 };
 use bevy::prelude::*;
 
@@ -64,52 +64,60 @@ fn setup_emotion_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
             ));
 
             // Patron name
-            parent.spawn((
-                Text::new("No customer selected"),
-                TextFont {
-                    font: font.clone(),
-                    font_size: 14.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.9, 0.9, 0.9)),
-                Node {
-                    margin: UiRect::bottom(Val::Px(5.0)),
-                    ..default()
-                },
-            )).insert(PatronNameText);
+            parent
+                .spawn((
+                    Text::new("No customer selected"),
+                    TextFont {
+                        font: font.clone(),
+                        font_size: 14.0,
+                        ..default()
+                    },
+                    TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                    Node {
+                        margin: UiRect::bottom(Val::Px(5.0)),
+                        ..default()
+                    },
+                ))
+                .insert(PatronNameText);
 
             // Happiness
-            parent.spawn((
-                Text::new("Happiness: 0%"),
-                TextFont {
-                    font: font.clone(),
-                    font_size: 12.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.2, 0.8, 0.2)),
-            )).insert(HappinessText);
+            parent
+                .spawn((
+                    Text::new("Happiness: 0%"),
+                    TextFont {
+                        font: font.clone(),
+                        font_size: 12.0,
+                        ..default()
+                    },
+                    TextColor(Color::srgb(0.2, 0.8, 0.2)),
+                ))
+                .insert(HappinessText);
 
-            // Sadness  
-            parent.spawn((
-                Text::new("Sadness: 0%"),
-                TextFont {
-                    font: font.clone(),
-                    font_size: 12.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.2, 0.2, 0.8)),
-            )).insert(SadnessText);
+            // Sadness
+            parent
+                .spawn((
+                    Text::new("Sadness: 0%"),
+                    TextFont {
+                        font: font.clone(),
+                        font_size: 12.0,
+                        ..default()
+                    },
+                    TextColor(Color::srgb(0.2, 0.2, 0.8)),
+                ))
+                .insert(SadnessText);
 
             // Anger
-            parent.spawn((
-                Text::new("Anger: 0%"),
-                TextFont {
-                    font: font.clone(),
-                    font_size: 12.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.8, 0.2, 0.2)),
-            )).insert(AngerText);
+            parent
+                .spawn((
+                    Text::new("Anger: 0%"),
+                    TextFont {
+                        font: font.clone(),
+                        font_size: 12.0,
+                        ..default()
+                    },
+                    TextColor(Color::srgb(0.8, 0.2, 0.2)),
+                ))
+                .insert(AngerText);
         });
 }
 
@@ -128,11 +136,51 @@ struct AngerText;
 
 /// System to update the emotion UI display
 fn update_emotion_ui(
-    selected_patron_query: Query<(&Customer, &CustomerHappiness, &CustomerSadness, &CustomerAnger), With<SelectedPatron>>,
-    mut name_text_query: Query<&mut Text, (With<PatronNameText>, Without<HappinessText>, Without<SadnessText>, Without<AngerText>)>,
-    mut happiness_text_query: Query<&mut Text, (With<HappinessText>, Without<PatronNameText>, Without<SadnessText>, Without<AngerText>)>,
-    mut sadness_text_query: Query<&mut Text, (With<SadnessText>, Without<PatronNameText>, Without<HappinessText>, Without<AngerText>)>,
-    mut anger_text_query: Query<&mut Text, (With<AngerText>, Without<PatronNameText>, Without<HappinessText>, Without<SadnessText>)>,
+    selected_patron_query: Query<
+        (
+            &Customer,
+            &CustomerHappiness,
+            &CustomerSadness,
+            &CustomerAnger,
+        ),
+        With<SelectedPatron>,
+    >,
+    mut name_text_query: Query<
+        &mut Text,
+        (
+            With<PatronNameText>,
+            Without<HappinessText>,
+            Without<SadnessText>,
+            Without<AngerText>,
+        ),
+    >,
+    mut happiness_text_query: Query<
+        &mut Text,
+        (
+            With<HappinessText>,
+            Without<PatronNameText>,
+            Without<SadnessText>,
+            Without<AngerText>,
+        ),
+    >,
+    mut sadness_text_query: Query<
+        &mut Text,
+        (
+            With<SadnessText>,
+            Without<PatronNameText>,
+            Without<HappinessText>,
+            Without<AngerText>,
+        ),
+    >,
+    mut anger_text_query: Query<
+        &mut Text,
+        (
+            With<AngerText>,
+            Without<PatronNameText>,
+            Without<HappinessText>,
+            Without<SadnessText>,
+        ),
+    >,
 ) {
     if let Ok((customer, happiness, sadness, anger)) = selected_patron_query.single() {
         if let Ok(mut text) = name_text_query.single_mut() {

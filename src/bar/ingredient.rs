@@ -1,17 +1,16 @@
 use bevy::{
-    picking::{
-        events::{Out, Over, Pointer, Pressed},
+    picking::
         prelude::Pickable,
-    },
     prelude::*,
 };
 
 use crate::{
     animation::sprite_animation::SpriteAnimState,
-    bar::{crafting::OnCraftingScreen, glass::Glass, ingredients_extra},
-    constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR},
+    bar::{crafting::OnCraftingScreen,ingredients_extra},
     engine::asset_loader::ImageAssets,
-    ui::ingredient_tooltip::IngredientTooltip,
+    ui::ingredient_tooltip::{
+        ingredient_hover, ingredient_hover_out, ingredient_pressed,
+    },
 };
 
 #[derive(Component, Clone, Debug)]
@@ -90,113 +89,9 @@ pub fn spawn_ingredients(
                 Pickable::default(),
                 OnCraftingScreen,
             ))
-            .observe(
-                |ev: Trigger<Pointer<Pressed>>,
-                 mut glass_query: Query<&mut Glass>,
-                 ingredient_query: Query<&Ingredient>,
-                 asset_server: Res<AssetServer>,
-                 mut commands: Commands| {
-                    let ingredient_entity = ev.target();
-                    for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste, ingredient.ingredient_profile.primary_effect),
-                            Err(_) => {
-                                warn!("Clicked entity is not an ingredient!");
-                                return;
-                            }
-                        };
-
-                        if glass.get_current_volume() + ingredient_size < glass.capacity {
-                            glass
-                                .ingredients
-                                .entry(ingredient_entity)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            info!(
-                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                                glass.ingredients, glass.capacity, glass.taste
-                            );
-                            glass
-                                .taste
-                                .entry(ingredient_taste)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            glass
-                                .effect
-                                .entry(ingredient_effect)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                        } else {
-                            info!("Glass is full, cannot add more ingredients.");
-                            commands.spawn((
-                                GlassFullIndicator,
-                                Text::new("Glass is Full!"),
-                                Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
-                                BorderColor(Color::srgb(1.0, 0.0, 0.0)),
-                                BorderRadius::ZERO,
-                                BackgroundColor(Color::srgb(0.8, 0.1, 0.1)),
-                                TextFont {
-                                    font: asset_server.load("fonts/Nasa21.ttf"),
-                                    font_size: 30.0,
-                                    ..default()
-                                },
-                                TextColor(Color::srgb(1.0, 1.0, 1.0)),
-                                Node {
-                                    position_type: PositionType::Absolute,
-                                    top: Val::Px(20.0),
-                                    left: Val::Px(20.0),
-                                    align_items: AlignItems::FlexStart,
-                                    justify_content: JustifyContent::FlexStart,
-                                    ..Default::default()
-                                },
-                                GlassFullTimer(Timer::from_seconds(2.0, TimerMode::Once)),
-                            ));
-                        }
-                    }
-                },
-            )
-            .observe(
-                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>, asset_server: Res<AssetServer>, mut commands: Commands,| {
-                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        commands.spawn((
-                            IngredientTooltip,
-        // Accepts a `String` or any type that converts into a `String`, such as `&str`
-        Text::new(format!(
-                    "{} : {}\nTaste: {:#?}\nEffects: {:#?}",
-                    ingredient.name,
-                    ingredient.description,
-                    ingredient.ingredient_profile.taste,
-                    ingredient.ingredient_profile.primary_effect
-                )),
-                Transform::from_translation(Vec3::new(400.0, 0.0, 0.0)),
-                BorderColor(BUTTON_BORDER),
-                BorderRadius::ZERO,
-                BackgroundColor(NORMAL_BUTTON),
-                TextFont {
-            font: asset_server.load("fonts/Nasa21.ttf"),
-            font_size: 20.0,
-            ..default()
-        },
-        TextColor (TEXT_COLOR),
-        // Set the style of the Node itself.
-            Node {
-                    position_type: PositionType::Absolute,
-    top: Val::Px(20.0),
-    right: Val::Px(20.0),
-    align_items: AlignItems::FlexStart,
-    justify_content: JustifyContent::FlexStart,
-    ..Default::default()
-        },
-    ));
-
-                    }
-                },
-            )
-            .observe(|_: Trigger<Pointer<Out>>, mut commands: Commands, tooltip_query: Query<Entity, With<IngredientTooltip>>| {
-                for entity in tooltip_query.iter() {
-                        commands.entity(entity).despawn();
-                    }
-            });
+            .observe(ingredient_pressed)
+            .observe(ingredient_hover)
+            .observe(ingredient_hover_out);
     }
 
     for (ingredient, sprite, transform) in other_ingredients {
@@ -208,112 +103,9 @@ pub fn spawn_ingredients(
                 Pickable::default(),
                 OnCraftingScreen,
             ))
-            .observe(
-                |ev: Trigger<Pointer<Pressed>>,
-                 mut glass_query: Query<&mut Glass>,
-                 ingredient_query: Query<&Ingredient>,
-                 asset_server: Res<AssetServer>,
-                 mut commands: Commands| {
-                    let ingredient_entity = ev.target();
-                    for mut glass in glass_query.iter_mut() {
-                        let (ingredient_size, ingredient_taste, ingredient_effect) = match ingredient_query.get(ingredient_entity) {
-                            Ok(ingredient) => (ingredient.ingredient_profile.size, ingredient.ingredient_profile.taste, ingredient.ingredient_profile.primary_effect),
-                            Err(_) => {
-                                warn!("Clicked entity is not an ingredient!");
-                                return;
-                            }
-                        };
-
-                        if glass.get_current_volume() + ingredient_size < glass.capacity {
-                            glass
-                                .ingredients
-                                .entry(ingredient_entity)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            info!(
-                                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                                glass.ingredients, glass.capacity, glass.taste
-                            );
-                            glass
-                                .taste
-                                .entry(ingredient_taste)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                            glass
-                                .effect
-                                .entry(ingredient_effect)
-                                .and_modify(|v| *v += ingredient_size)
-                                .or_insert(ingredient_size);
-                        } else {
-                            info!("Glass is full, cannot add more ingredients.");
-                            commands.spawn((
-                                GlassFullIndicator,
-                                Text::new("Glass is Full!"),
-                                Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
-                                BorderColor(Color::srgb(1.0, 0.0, 0.0)),
-                                BorderRadius::ZERO,
-                                BackgroundColor(Color::srgb(0.8, 0.1, 0.1)),
-                                TextFont {
-                                    font: asset_server.load("fonts/Nasa21.ttf"),
-                                    font_size: 30.0,
-                                    ..default()
-                                },
-                                TextColor(Color::srgb(1.0, 1.0, 1.0)),
-                                Node {
-                                    position_type: PositionType::Absolute,
-                                    top: Val::Px(20.0),
-                                    left: Val::Px(20.0),
-                                    align_items: AlignItems::FlexStart,
-                                    justify_content: JustifyContent::FlexStart,
-                                    ..Default::default()
-                                },
-                                GlassFullTimer(Timer::from_seconds(2.0, TimerMode::Once)),
-                            ));
-                        }
-                    }
-                },
-            ).observe(
-                |ev: Trigger<Pointer<Over>>, ingredient_query: Query<&Ingredient>, asset_server: Res<AssetServer>, mut commands: Commands,| {
-                    if let Ok(ingredient) = ingredient_query.get(ev.target()) {
-                        commands.spawn((
-                            IngredientTooltip,
-        // Accepts a `String` or any type that converts into a `String`, such as `&str`
-        Text::new(format!(
-                    "{} : {}\nTaste: {:#?}\nEffects: {:#?}",
-                    ingredient.name,
-                    ingredient.description,
-                    ingredient.ingredient_profile.taste,
-                    ingredient.ingredient_profile.primary_effect
-                )),
-                Transform::from_translation(Vec3::new(400.0, 0.0, 0.0)),
-                BorderColor(BUTTON_BORDER),
-                BorderRadius::ZERO,
-                BackgroundColor(NORMAL_BUTTON),
-                TextFont {
-            font: asset_server.load("fonts/Nasa21.ttf"),
-            font_size: 20.0,
-            ..default()
-        },
-        TextColor (TEXT_COLOR),
-        // Set the style of the Node itself.
-            Node {
-                    position_type: PositionType::Absolute,
-    top: Val::Px(20.0),
-    right: Val::Px(20.0),
-    align_items: AlignItems::FlexStart,
-    justify_content: JustifyContent::FlexStart,
-    ..Default::default()
-        },
-    ));
-
-                    }
-                },
-            )
-            .observe(|_: Trigger<Pointer<Out>>, mut commands: Commands, tooltip_query: Query<Entity, With<IngredientTooltip>>| {
-                for entity in tooltip_query.iter() {
-                        commands.entity(entity).despawn();
-                    }
-            });
+            .observe(ingredient_pressed)
+            .observe(ingredient_hover)
+            .observe(ingredient_hover_out);
     }
 }
 
@@ -332,7 +124,7 @@ pub fn despawn_glass_full_indicator(
 }
 
 #[derive(Component, Deref, DerefMut)]
-pub struct GlassFullTimer(Timer);
+pub struct GlassFullTimer(pub Timer);
 
 pub fn get_ice_gels(
     image_assets: &Res<ImageAssets>,

@@ -10,8 +10,13 @@ use bevy::{
 
 use crate::{
     bar::{
-        crafting::OnCraftingScreen, drinks::Drink, glass, ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect}
-    }, constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR}, engine::{asset_loader::ImageAssets, GameState}
+        crafting::OnCraftingScreen,
+        drinks::Drink,
+        glass,
+        ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect},
+    },
+    constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR},
+    engine::{GameState, asset_loader::ImageAssets},
 };
 
 #[derive(Component, Clone, Debug)]
@@ -84,4 +89,5 @@ pub fn spawn_glass(mut commands: Commands, image_assets: Res<ImageAssets>) {
                     sprite.image = new_image;
                 }
             },
-         );}
+        );
+}

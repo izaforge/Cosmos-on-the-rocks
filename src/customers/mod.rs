@@ -30,7 +30,15 @@ impl Plugin for CustomerPlugin {
                 OnEnter(GameState::Dialogues),
                 (play_customer_bg, spawn_customer, spawn_dialogue_background),
             )
-            .add_systems(Update, (animate_spite, position_dialogue_aligned_characters, handle_dialogue_state_changes).run_if(in_state(GameState::Dialogues)))
+            .add_systems(
+                Update,
+                (
+                    animate_spite,
+                    position_dialogue_aligned_characters,
+                    handle_dialogue_state_changes,
+                )
+                    .run_if(in_state(GameState::Dialogues)),
+            )
             .add_systems(OnExit(GameState::Dialogues), cleanup_customer)
             .add_event::<AnimationEvent>();
     }
@@ -253,10 +261,10 @@ fn position_dialogue_aligned_characters(
     let screen_height = 1080.0; // From camera setup - fixed vertical viewport
     let dialogue_area_height_ratio = 0.3; // Dialogue takes up bottom 30% of screen
     let dialogue_top_y = -(screen_height * 0.5) + (screen_height * dialogue_area_height_ratio);
-    
+
     // Position characters slightly above the dialogue area
     let character_y = dialogue_top_y + 100.0; // 100 pixels above dialogue area
-    
+
     for mut transform in character_query.iter_mut() {
         // Keep X position the same, just adjust Y to align with dialogue
         transform.translation.y = character_y;
@@ -279,25 +287,25 @@ fn handle_dialogue_state_changes(
         coda_dialogue_finished: dialogue_state.coda_dialogue_finished,
         coda_second_visit: dialogue_state.coda_second_visit,
     };
-    
+
     if let Some(ref last_state) = *last_dialogue_state {
         // Compare states to see if anything changed
-        if last_state.zara_dialogue_finished != current_state.zara_dialogue_finished ||
-           last_state.coda_dialogue_finished != current_state.coda_dialogue_finished ||
-           last_state.coda_second_visit != current_state.coda_second_visit {
-            
+        if last_state.zara_dialogue_finished != current_state.zara_dialogue_finished
+            || last_state.coda_dialogue_finished != current_state.coda_dialogue_finished
+            || last_state.coda_second_visit != current_state.coda_second_visit
+        {
             // Clean up existing customers (except bartender)
             for (entity, customer) in customer_query.iter() {
                 if customer.name != "Bartender" {
                     commands.entity(entity).despawn();
                 }
             }
-            
+
             // Spawn the appropriate customer for the new state
             spawn_appropriate_customer(&mut commands, &image_assets, &dialogue_state);
         }
     }
-    
+
     *last_dialogue_state = Some(current_state);
 }
 
@@ -421,10 +429,7 @@ fn spawn_appropriate_customer(
     }
 }
 
-pub fn spawn_dialogue_background(
-    mut commands: Commands,
-    image_assets: Res<ImageAssets>,
-) {
+pub fn spawn_dialogue_background(mut commands: Commands, image_assets: Res<ImageAssets>) {
     commands.spawn((
         Sprite {
             image: image_assets.talk_background.clone(),
@@ -436,7 +441,11 @@ pub fn spawn_dialogue_background(
     ));
 }
 
-pub fn cleanup_customer(mut commands: Commands, customer_query: Query<Entity, With<OnCustomerScreen>>, dialogue_bg_query: Query<Entity, With<OnDialogueScreen>>) {
+pub fn cleanup_customer(
+    mut commands: Commands,
+    customer_query: Query<Entity, With<OnCustomerScreen>>,
+    dialogue_bg_query: Query<Entity, With<OnDialogueScreen>>,
+) {
     for entity in customer_query.iter() {
         commands.entity(entity).despawn();
     }
