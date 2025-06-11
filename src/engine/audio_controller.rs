@@ -16,7 +16,6 @@ impl Plugin for AudioControllerPlugin {
 pub fn play_customer_bg(mut commands: Commands, audio_assets: Res<AudioAssets>) {
     commands.spawn((
         SamplePlayer::new(audio_assets.background.clone()).looping(),
-        sample_effects![LowPassNode { frequency: 500.0 }],
         OnCustomerScreen,
     ));
 }
