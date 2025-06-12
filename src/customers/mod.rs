@@ -5,9 +5,9 @@ use crate::{
         AnimationEvent,
         sprite_animation::{SpriteAnimState, animate_spite},
     },
-    bar::ingredient::{IngredientTaste, PrimaryEffect},
     customers::dialogue::{DialogPlugin, DialogueState},
     engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
+    ingredients::{IngredientTaste, PrimaryEffect},
 };
 
 pub mod dialogue;

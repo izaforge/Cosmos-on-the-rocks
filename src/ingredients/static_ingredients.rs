@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 
 use crate::{
-    bar::ingredient::{
+    engine::asset_loader::ImageAssets,
+    ingredients::{
         EffectCondition, Ingredient, IngredientProfile, IngredientTaste, PrimaryEffect,
         SecondaryEffect,
     },
-    engine::asset_loader::ImageAssets,
 };
 
-pub fn get_other_ingredients(
+pub fn get_static_ingredients(
     image_assets: &Res<ImageAssets>,
 ) -> Vec<(Ingredient, Sprite, Transform)> {
     let fizzion_mist_sprite = Sprite {

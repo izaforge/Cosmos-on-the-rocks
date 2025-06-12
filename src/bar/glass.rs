@@ -9,14 +9,9 @@ use bevy::{
 };
 
 use crate::{
-    bar::{
-        crafting::OnCraftingScreen,
-        drinks::Drink,
-        glass,
-        ingredient::{Ingredient, IngredientTaste, PrimaryEffect, SecondaryEffect},
-    },
-    constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR},
-    engine::{GameState, asset_loader::ImageAssets},
+    bar::crafting::OnCraftingScreen,
+    engine::asset_loader::ImageAssets,
+    ingredients::{IngredientTaste, PrimaryEffect},
 };
 
 #[derive(Component, Clone, Debug)]

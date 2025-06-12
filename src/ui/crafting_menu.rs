@@ -16,9 +16,52 @@ pub enum CraftingButtons {
     Reset,
 }
 
+#[derive(Component)]
+pub struct GlassDetailsUI;
+
+pub fn setup_crafting_ui(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    query: Query<&Glass>,
+) {
+    let menu_font = asset_server.load("fonts/Nasa21.ttf");
+    info!("Crafting Menu Font Loaded: {:?}", menu_font);
+    if let Some(glass) = query.iter().next() {
+        info!("Crafting Menu Glass: {:#?}", glass);
+        commands.spawn((
+            Text::new(format!(
+                "Volume: {:.1} / {:.1}\nTaste: {:#?}\nEffects: {:#?}",
+                glass.get_current_volume(),
+                glass.capacity,
+                glass.taste,
+                glass.effect,
+            )),
+            Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
+            BorderColor(Color::srgb(0.3, 0.2, 0.1)),
+            BorderRadius::ZERO,
+            BackgroundColor(Color::srgb(0.1, 0.1, 0.1)),
+            TextFont {
+                font: menu_font.clone(),
+                font_size: 30.0,
+                ..default()
+            },
+            TextColor(Color::srgb(1.0, 1.0, 1.0)),
+            Node {
+                position_type: PositionType::Absolute,
+                bottom: Val::Px(20.0),
+                right: Val::Px(20.0),
+                align_items: AlignItems::FlexStart,
+                justify_content: JustifyContent::FlexStart,
+                ..Default::default()
+            },
+            OnCraftingScreen,
+            GlassDetailsUI,
+        ));
+    }
+}
+
 pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu_font = asset_server.load("fonts/Nasa21.ttf");
-
     commands
         .spawn((
             Node {
@@ -87,7 +130,7 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
                     parent.spawn((
                         Text::from("Reset"),
                         TextFont {
-                            font: menu_font,
+                            font: menu_font.clone(),
                             font_size: 24.0,
                             ..default()
                         },

@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-use crate::bar::{
-    glass::{Glass, GlassShape},
-    ingredient::{IngredientTaste, PrimaryEffect, SecondaryEffect},
+use crate::{
+    bar::glass::{Glass, GlassShape},
+    ingredients::{IngredientTaste, PrimaryEffect},
 };
 
 #[derive(Component, Debug)]

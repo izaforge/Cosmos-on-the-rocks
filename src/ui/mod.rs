@@ -1,7 +1,9 @@
 use crate::{
     engine::GameState,
     ui::{
-        crafting_menu::{crafting_button_interaction_system, setup_crafting_menu},
+        crafting_menu::{
+            crafting_button_interaction_system, setup_crafting_menu, setup_crafting_ui,
+        },
         emotion_ui::EmotionUiPlugin,
         // ingredient_tooltip::{
         //     HoveredIngredient, cleanup_glass_tooltips, cleanup_ingredient_tooltips,
@@ -31,7 +33,10 @@ impl Plugin for GameUiPlugin {
                 button_interaction_system.run_if(in_state(GameState::MainMenu)),
             )
             .add_systems(OnExit(GameState::MainMenu), cleanup_menu)
-            .add_systems(OnEnter(GameState::Crafting), setup_crafting_menu)
+            .add_systems(
+                OnEnter(GameState::Crafting),
+                (setup_crafting_menu),
+            )
             .add_systems(
                 Update,
                 (
