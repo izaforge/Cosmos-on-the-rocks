@@ -3,7 +3,8 @@ use bevy::prelude::*;
 use crate::{
     bar::glass::Glass,
     constants::{BUTTON_BORDER, NORMAL_BUTTON, TEXT_COLOR},
-    ingredients::Ingredient, ui::crafting_menu::GlassDetailsUI,
+    ingredients::Ingredient,
+    ui::crafting_ui::GlassDetailsUI,
 };
 
 #[derive(Component)]

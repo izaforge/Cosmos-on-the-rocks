@@ -1,12 +1,11 @@
 use crate::{
     bar::{
         crafting::OnCraftingScreen,
-        drinks::{CreatedDrink, Drink},
+        drinks::{spawn_crafted_drink, Drink},
         glass::Glass,
     },
     constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
-    customers::OnCustomerScreen,
-    engine::{GameState, asset_loader::ImageAssets},
+    engine::{asset_loader::ImageAssets},
 };
 use bevy::prelude::*;
 
@@ -19,7 +18,10 @@ pub enum CraftingButtons {
 #[derive(Component)]
 pub struct GlassDetailsUI;
 
-pub fn setup_crafting_ui(
+#[derive(Component)]
+pub struct DrinkSprite;
+
+pub fn setup_glass_ui(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     query: Query<&Glass>,
@@ -140,7 +142,6 @@ pub fn setup_crafting_menu(mut commands: Commands, asset_server: Res<AssetServer
         });
 }
 
-// System to handle crafting button interactions
 pub fn crafting_button_interaction_system(
     mut commands: Commands,
     mut interaction_query: Query<
@@ -149,6 +150,7 @@ pub fn crafting_button_interaction_system(
     >,
     mut glass_query: Query<&mut Glass>,
     drink_query: Query<Entity, With<Drink>>,
+    drink_sprite_query: Query<Entity, With<DrinkSprite>>,
     image_assets: Res<ImageAssets>,
 ) {
     for (interaction, mut color, button) in interaction_query.iter_mut() {
@@ -161,51 +163,11 @@ pub fn crafting_button_interaction_system(
                     for glass in glass_query.iter_mut() {
                         let drink = Drink::from(glass.clone());
                         info!("Crafted {:#?}", drink);
-                        // Choose the correct image for the drink
-                        let drink_image = match drink.created_drink {
-                            CreatedDrink::ZeroPhase => image_assets.zero_phase.clone(),
-                            CreatedDrink::CryoDrop => image_assets.cryo_drop.clone(),
-                            CreatedDrink::StellarLumen => image_assets.stellar_lumen.clone(),
-                            CreatedDrink::Cosmopolitan => image_assets.cosmopolitan.clone(),
-                            CreatedDrink::SynthCascade => image_assets.synth_cascade.clone(),
-                            CreatedDrink::OldMemory => image_assets.old_memory.clone(),
-                            CreatedDrink::EchoBloom => image_assets.echo_bloom.clone(),
-                            CreatedDrink::BotanicalSurge => image_assets.botanica_surge.clone(),
-                            CreatedDrink::BinaryBarrel => image_assets.binary_barrel.clone(),
-                            CreatedDrink::EventHorizon => image_assets.event_horizon.clone(),
-                        };
-
-                        // Spawn the crafted drink as a Sprite with the Drink component
-                        commands.spawn((
-                            OnCustomerScreen,
-                            drink,
-                            Sprite {
-                                image: drink_image,
-                                custom_size: Some(Vec2::new(256., 256.)),
-                                ..Default::default()
-                            },
-                            Transform::from_xyz(0.0, 0.0, 2.0),
-                            Pickable::default(),
-                        )).observe(
-            |_: Trigger<Pointer<Click>>,
-             mut game_state: ResMut<NextState<GameState>>,
-             | {
-                game_state.set(GameState::Dialogues);
-            },
-        );
-                        commands.spawn((
-                            OnCustomerScreen,
-                            Sprite {
-                                image: image_assets.pop.clone(),
-                                custom_size: Some(Vec2::new(512., 512.)),
-                                ..Default::default()
-                            },
-                            Transform::from_xyz(0.0, 0.0, 1.9),
-                        ));
+                        spawn_crafted_drink(&mut commands, drink, &image_assets);
                     }
                 }
                 CraftingButtons::Reset => {
-                    for entity in drink_query.iter() {
+                    for entity in drink_sprite_query.iter() {
                         commands.entity(entity).despawn();
                     }
                     for mut glass in glass_query.iter_mut() {

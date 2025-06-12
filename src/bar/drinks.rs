@@ -2,8 +2,7 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 
 use crate::{
-    bar::glass::{Glass, GlassShape},
-    ingredients::{IngredientTaste, PrimaryEffect},
+    bar::glass::{Glass, GlassShape}, customers::OnCustomerScreen, engine::{asset_loader::ImageAssets, GameState}, ingredients::{IngredientTaste, PrimaryEffect}, ui::crafting_ui::DrinkSprite
 };
 
 #[derive(Component, Debug)]
@@ -111,4 +110,46 @@ pub enum HazardEffect {
     CosmicDistortion,
     MemoryLeak,
     CloneEffect,
+}
+
+pub fn spawn_crafted_drink(commands: &mut Commands, drink: Drink, image_assets: &ImageAssets) {
+    let drink_image = match drink.created_drink {
+        CreatedDrink::ZeroPhase => image_assets.zero_phase.clone(),
+        CreatedDrink::CryoDrop => image_assets.cryo_drop.clone(),
+        CreatedDrink::StellarLumen => image_assets.stellar_lumen.clone(),
+        CreatedDrink::Cosmopolitan => image_assets.cosmopolitan.clone(),
+        CreatedDrink::SynthCascade => image_assets.synth_cascade.clone(),
+        CreatedDrink::OldMemory => image_assets.old_memory.clone(),
+        CreatedDrink::EchoBloom => image_assets.echo_bloom.clone(),
+        CreatedDrink::BotanicalSurge => image_assets.botanica_surge.clone(),
+        CreatedDrink::BinaryBarrel => image_assets.binary_barrel.clone(),
+        CreatedDrink::EventHorizon => image_assets.event_horizon.clone(),
+    };
+    
+    commands
+        .spawn((
+            drink,
+            Sprite {
+                image: drink_image,
+                custom_size: Some(Vec2::new(256., 256.)),
+                ..Default::default()
+            },
+            Transform::from_xyz(0.0, 0.0, 2.0),
+            Pickable::default(),
+            DrinkSprite,
+        ))
+        .observe(
+            |_: Trigger<Pointer<Click>>, mut game_state: ResMut<NextState<GameState>>| {
+                game_state.set(GameState::Dialogues);
+            },
+        );
+    commands.spawn((
+        Sprite {
+            image: image_assets.pop.clone(),
+            custom_size: Some(Vec2::new(512., 512.)),
+            ..Default::default()
+        },
+        Transform::from_xyz(0.0, 0.0, 1.9),
+        DrinkSprite,
+    ));
 }

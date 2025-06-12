@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::{
     picking::{
-        events::{Click, Out, Over, Pointer},
+        events::{Click, Pointer},
         prelude::Pickable,
     },
     prelude::*,
