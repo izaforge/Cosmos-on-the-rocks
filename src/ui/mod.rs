@@ -2,13 +2,7 @@ use crate::{
     engine::GameState,
     ui::{
         crafting_ui::{crafting_button_interaction_system, setup_crafting_menu},
-        emotion_ui::EmotionUiPlugin,
-        // ingredient_tooltip::{
-        //     HoveredIngredient, cleanup_glass_tooltips, cleanup_ingredient_tooltips,
-        //     setup_glass_tooltips, setup_ingredient_tooltips,
-        // },
         main_menu::{button_interaction_system, cleanup_menu, setup_main_menu},
-        //mood_ui::MoodUiPlugin,
     },
 };
 use bevy::prelude::*;
@@ -23,9 +17,7 @@ pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(EmotionUiPlugin)
-            //.init_resource::<HoveredIngredient>()
-            .add_systems(OnEnter(GameState::MainMenu), setup_main_menu)
+        app.add_systems(OnEnter(GameState::MainMenu), setup_main_menu)
             .add_systems(
                 Update,
                 button_interaction_system.run_if(in_state(GameState::MainMenu)),
@@ -34,12 +26,7 @@ impl Plugin for GameUiPlugin {
             .add_systems(OnEnter(GameState::Crafting), setup_crafting_menu)
             .add_systems(
                 Update,
-                (
-                    crafting_button_interaction_system,
-                    //setup_ingredient_tooltips,
-                    //setup_glass_tooltips,
-                )
-                    .run_if(in_state(GameState::Crafting)),
+                (crafting_button_interaction_system,).run_if(in_state(GameState::Crafting)),
             );
     }
 }

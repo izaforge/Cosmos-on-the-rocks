@@ -2,7 +2,11 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 
 use crate::{
-    bar::glass::{Glass, GlassShape}, customers::OnCustomerScreen, engine::{asset_loader::ImageAssets, GameState}, ingredients::{IngredientTaste, PrimaryEffect}, ui::crafting_ui::DrinkSprite
+    bar::glass::{Glass, GlassShape},
+    customers::OnCustomerScreen,
+    engine::{GameState, asset_loader::ImageAssets},
+    ingredients::{IngredientTaste, PrimaryEffect},
+    ui::crafting_ui::DrinkSprite,
 };
 
 #[derive(Component, Debug)]
@@ -125,7 +129,7 @@ pub fn spawn_crafted_drink(commands: &mut Commands, drink: Drink, image_assets: 
         CreatedDrink::BinaryBarrel => image_assets.binary_barrel.clone(),
         CreatedDrink::EventHorizon => image_assets.event_horizon.clone(),
     };
-    
+
     commands
         .spawn((
             drink,

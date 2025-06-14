@@ -2,8 +2,10 @@ use bevy::prelude::*;
 
 use crate::{
     animation::{AnimationEvent, sprite_animation::animate_spite},
-    bar::{bar_counter::spawn_crafting_area, glass::spawn_glass},
-    customers::spawn_bartender,
+    bar::{
+        bar_counter::{spawn_bartender, spawn_crafting_area},
+        glass::spawn_glass,
+    },
     engine::{GameState, audio_controller::play_crafting_bg},
     ingredients::spawn_ingredients,
     ui::{crafting_ui::setup_glass_ui, ingredient_tooltip::despawn_glass_full_indicator},

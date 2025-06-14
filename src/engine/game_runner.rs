@@ -24,7 +24,6 @@ impl Plugin for GameRunnerPlugin {
             CustomerPlugin,
             CraftingPlugin,
         ))
-        // .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
         .add_loading_state(
             LoadingState::new(GameState::Loading)
                 .load_collection::<AudioAssets>()

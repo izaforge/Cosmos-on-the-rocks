@@ -31,6 +31,7 @@ impl Glass {
     pub fn reset(&mut self) {
         self.ingredients.clear();
         self.taste.clear();
+        self.effect.clear();
     }
 }
 

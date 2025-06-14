@@ -6,6 +6,7 @@ pub mod animation;
 pub mod bar;
 pub mod constants;
 pub mod customers;
+pub mod dialogues;
 pub mod engine;
 pub mod ingredients;
 pub mod ui;

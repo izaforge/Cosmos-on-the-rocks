@@ -4,13 +4,13 @@ use bevy_yarnspinner_example_dialogue_view::prelude::*;
 
 use crate::{customers::OnCustomerScreen, engine::GameState};
 
-#[derive(Resource, Default)]
-pub struct DialogueState {
-    pub bartender_monologue_played: bool,
-    pub bartender_drink_finished: bool,
-    pub zara_dialogue_finished: bool,
-    pub coda_dialogue_finished: bool,
-    pub coda_second_visit: bool,
+#[derive(States, Default, Debug, Hash, Eq, PartialEq, Clone)]
+pub enum DialogueState {
+    #[default]
+    BartenderMonologue,
+    CarlEnters,
+    ZaraEnters,
+    CodaEnters,
 }
 
 pub struct DialogPlugin;
@@ -21,15 +21,15 @@ impl Plugin for DialogPlugin {
             YarnSpinnerPlugin::with_yarn_source(YarnFileSource::file("dialogue/on_the_rocks.yarn")),
             ExampleYarnSpinnerDialogueViewPlugin::new(),
         ))
-        .init_resource::<DialogueState>()
+        .init_state::<DialogueState>()
         .add_systems(OnEnter(GameState::Dialogues), spawn_dialogue_runner);
     }
 }
 
-pub fn spawn_dialogue_runner(
+fn spawn_dialogue_runner(
     mut commands: Commands,
     project: Res<YarnProject>,
-    mut dialogue_state: ResMut<DialogueState>,
+    dialogue_state: Res<State<DialogueState>>,
 ) {
     let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
     dialogue_runner.commands_mut().add_command(
@@ -38,25 +38,11 @@ pub fn spawn_dialogue_runner(
     );
 
     // Choose starting node based on dialogue state
-    let starting_node = if !dialogue_state.bartender_monologue_played {
-        dialogue_state.bartender_monologue_played = true;
-        "BartenderMonologue"
-    } else if !dialogue_state.bartender_drink_finished {
-        dialogue_state.bartender_drink_finished = true;
-        "BartenderAfterDrink"
-    } else if !dialogue_state.zara_dialogue_finished {
-        dialogue_state.zara_dialogue_finished = true;
-        "ZaraDialogue"
-    } else if !dialogue_state.coda_dialogue_finished {
-        dialogue_state.coda_dialogue_finished = true;
-        "CodaDialogue"
-    } else if !dialogue_state.coda_second_visit {
-        dialogue_state.coda_second_visit = true;
-        "CodaSecondVisit"
-    } else {
-        // Loop back to Zara
-        dialogue_state.zara_dialogue_finished = false;
-        "ZaraReturnDialogue"
+    let starting_node = match dialogue_state.get() {
+        DialogueState::BartenderMonologue => "BartenderMonologue",
+        DialogueState::CarlEnters => "CarlEnters",
+        DialogueState::ZaraEnters => "ZaraEnters",
+        DialogueState::CodaEnters => "CodaEnters",
     };
 
     dialogue_runner.start_node(starting_node);

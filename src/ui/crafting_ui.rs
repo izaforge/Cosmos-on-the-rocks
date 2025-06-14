@@ -1,11 +1,11 @@
 use crate::{
     bar::{
         crafting::OnCraftingScreen,
-        drinks::{spawn_crafted_drink, Drink},
+        drinks::{Drink, spawn_crafted_drink},
         glass::Glass,
     },
     constants::{BUTTON_BORDER, HOVERED_BUTTON, NORMAL_BUTTON, TEXT_COLOR},
-    engine::{asset_loader::ImageAssets},
+    engine::asset_loader::ImageAssets,
 };
 use bevy::prelude::*;
 

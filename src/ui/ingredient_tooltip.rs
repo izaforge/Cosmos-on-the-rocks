@@ -40,8 +40,8 @@ pub fn ingredient_pressed(
                 .and_modify(|v| *v += ingredient_size)
                 .or_insert(ingredient_size);
             info!(
-                "Added ingredient {:#?} to glass with capacity {} current taste {:#?}",
-                glass.ingredients, glass.capacity, glass.taste
+                "Added ingredient {:#?} to glass with capacity {} current taste {:#?} crrent effect {:#?}",
+                glass.ingredients, glass.capacity, glass.taste, glass.effect
             );
             glass
                 .taste
