@@ -13,12 +13,6 @@ use crate::{
 #[derive(Component)]
 pub struct OnCustomerScreen;
 
-#[derive(Component)]
-pub struct DialogueAlignedCharacter;
-
-#[derive(Component)]
-pub struct OnDialogueScreen;
-
 pub struct CustomerPlugin;
 
 impl Plugin for CustomerPlugin {
@@ -85,20 +79,36 @@ pub fn spawn_customer(
             ));
         }
         DialogueState::CarlEnters => {}
-        DialogueState::ZaraEnters => {}
+        DialogueState::ZaraEnters => {
+            commands.spawn((
+                OnCustomerScreen,
+                Customer {
+                    name: "Carl".to_string(),
+                    preferred_taste: IngredientTaste::Spicy,
+                    disliked_taste: IngredientTaste::Sweet,
+                    satisfaction_score: 100.0,
+                    current_drink: None,
+                    dialogue_node: None,
+                    base_personality: Personality::Artificial,
+                },
+                Sprite {
+                    image: image_assets.carl_full.clone(),
+                    custom_size: Some(Vec2::new(192.0, 256.0)),
+                    ..default()
+                },
+                Transform::from_translation(Vec3::new(400., 0., 1.)),
+            ));
+        }
         DialogueState::CodaEnters => {}
+        DialogueState::Mystery => todo!(),
     }
 }
 
 pub fn cleanup_customer(
     mut commands: Commands,
     customer_query: Query<Entity, With<OnCustomerScreen>>,
-    dialogue_bg_query: Query<Entity, With<OnDialogueScreen>>,
 ) {
     for entity in customer_query.iter() {
-        commands.entity(entity).despawn();
-    }
-    for entity in dialogue_bg_query.iter() {
         commands.entity(entity).despawn();
     }
 }

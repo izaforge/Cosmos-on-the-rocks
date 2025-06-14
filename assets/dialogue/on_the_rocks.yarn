@@ -4,6 +4,16 @@ Bartender: Time for a pick-me-up. Something strong, for a long night.
 Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
 -> Enter Crafting State
     <<change_gamestate "Crafting">>
+Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
+===
+
+
+title: CarlEnters
+---
+Carl: Heyo B-guy how you been?
+Bartender: *looks up from the drink* Carl! Been a while. You still working that freelance gig?
+Carl: Yeah, still hustling. You know how it is. Got a new job lined up, but I need something to take the edge off first.
+Bartender: *nods* I can help with that. What are you in the mood for?
 ===
 
 title: BartenderAfterDrink

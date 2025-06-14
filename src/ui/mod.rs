@@ -8,10 +8,8 @@ use crate::{
 use bevy::prelude::*;
 
 pub mod crafting_ui;
-pub mod emotion_ui;
 pub mod ingredient_tooltip;
 pub mod main_menu;
-pub mod mood_ui;
 
 pub struct GameUiPlugin;
 

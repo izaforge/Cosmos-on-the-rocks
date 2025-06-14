@@ -11,6 +11,7 @@ pub enum DialogueState {
     CarlEnters,
     ZaraEnters,
     CodaEnters,
+    Mystery,
 }
 
 pub struct DialogPlugin;
@@ -37,12 +38,18 @@ fn spawn_dialogue_runner(
         commands.register_system(change_gamestate),
     );
 
+    dialogue_runner.commands_mut().add_command(
+        "change_dialog_state",
+        commands.register_system(change_dialog_state),
+    );
+
     // Choose starting node based on dialogue state
     let starting_node = match dialogue_state.get() {
         DialogueState::BartenderMonologue => "BartenderMonologue",
         DialogueState::CarlEnters => "CarlEnters",
         DialogueState::ZaraEnters => "ZaraEnters",
         DialogueState::CodaEnters => "CodaEnters",
+        DialogueState::Mystery => "Mystery",
     };
 
     dialogue_runner.start_node(starting_node);
@@ -55,5 +62,15 @@ fn change_gamestate(In(state): In<String>, mut game_state: ResMut<NextState<Game
         "End" => game_state.set(GameState::EndNight),
         "Menu" => game_state.set(GameState::MainMenu),
         _ => println!("Unknown game state: {}", state),
+    }
+}
+
+fn change_dialog_state(In(state): In<String>, mut dialog_state: ResMut<NextState<DialogueState>>) {
+    match state.as_str() {
+        "Carl" => dialog_state.set(DialogueState::CarlEnters),
+        "Zara" => dialog_state.set(DialogueState::ZaraEnters),
+        "Coda" => dialog_state.set(DialogueState::CodaEnters),
+        "Mystery" => dialog_state.set(DialogueState::Mystery),
+        _ => println!("Unknown dialogue state: {}", state),
     }
 }
