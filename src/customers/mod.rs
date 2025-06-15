@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 
 use crate::{
-    animation::{
-        AnimationEvent,
-        sprite_animation::{SpriteAnimState, animate_spite},
-    },
+    animation::{AnimationEvent, sprite_animation::animate_spite},
+    customers::customer_sprites::get_character_sprites,
     dialogues::{DialogPlugin, DialogueState},
     engine::{GameState, asset_loader::ImageAssets, audio_controller::play_customer_bg},
     ingredients::{IngredientTaste, PrimaryEffect},
 };
+
+pub mod customer_sprites;
 
 #[derive(Component)]
 pub struct OnCustomerScreen;
@@ -20,7 +20,7 @@ impl Plugin for CustomerPlugin {
         app.add_plugins(DialogPlugin)
             .add_systems(
                 OnEnter(GameState::Dialogues),
-                (play_customer_bg, spawn_customer),
+                (play_customer_bg, spawn_customer, spawn_bg),
             )
             .add_systems(
                 Update,
@@ -57,51 +57,23 @@ pub fn spawn_customer(
     image_assets: Res<ImageAssets>,
     dialogue_state: Res<State<DialogueState>>,
 ) {
-    match dialogue_state.get() {
-        DialogueState::BartenderMonologue => {
-            commands.spawn((
-                OnCustomerScreen,
-                Customer {
-                    name: "Bartender".to_string(),
-                    preferred_taste: IngredientTaste::Spicy,
-                    disliked_taste: IngredientTaste::Sweet,
-                    satisfaction_score: 100.0,
-                    current_drink: None,
-                    dialogue_node: None,
-                    base_personality: Personality::Artificial,
-                },
-                Sprite {
-                    image: image_assets.bartenter_full.clone(),
-                    custom_size: Some(Vec2::new(192.0, 256.0)),
-                    ..default()
-                },
-                Transform::from_translation(Vec3::new(400., 0., 1.)),
-            ));
-        }
-        DialogueState::CarlEnters => {}
-        DialogueState::ZaraEnters => {
-            commands.spawn((
-                OnCustomerScreen,
-                Customer {
-                    name: "Carl".to_string(),
-                    preferred_taste: IngredientTaste::Spicy,
-                    disliked_taste: IngredientTaste::Sweet,
-                    satisfaction_score: 100.0,
-                    current_drink: None,
-                    dialogue_node: None,
-                    base_personality: Personality::Artificial,
-                },
-                Sprite {
-                    image: image_assets.carl_full.clone(),
-                    custom_size: Some(Vec2::new(192.0, 256.0)),
-                    ..default()
-                },
-                Transform::from_translation(Vec3::new(400., 0., 1.)),
-            ));
-        }
-        DialogueState::CodaEnters => {}
-        DialogueState::Mystery => todo!(),
+    let characters: Vec<(Customer, Sprite, Transform)> =
+        get_character_sprites(dialogue_state, image_assets);
+
+    for (customer, sprite, transform) in characters {
+        commands.spawn((OnCustomerScreen, customer, sprite, transform));
     }
+}
+
+fn spawn_bg(mut commands: Commands, image_assets: Res<ImageAssets>) {
+    commands.spawn((
+        Sprite {
+            image: image_assets.background_image.clone(),
+            custom_size: Some(Vec2::new(1920.0, 1080.0)),
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, -10.0),
+    ));
 }
 
 pub fn cleanup_customer(

@@ -3,17 +3,58 @@ title: BartenderMonologue
 Bartender: Time for a pick-me-up. Something strong, for a long night.
 Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
 -> Enter Crafting State
+    <<change_dialog_state "Carl">>
     <<change_gamestate "Crafting">>
-Bartender: (clink of ice, a whirring sound) Perfect. Just like Jax taught me. Hope he's out there somewhere, sipping on something just as good.
 ===
 
 
 title: CarlEnters
 ---
+Bartender: mmmmm, yummers
+<<consume_drink>>
 Carl: Heyo B-guy how you been?
 Bartender: *looks up from the drink* Carl! Been a while. You still working that freelance gig?
 Carl: Yeah, still hustling. You know how it is. Got a new job lined up, but I need something to take the edge off first.
 Bartender: *nods* I can help with that. What are you in the mood for?
+Carl: Something to take my edge off.
+-> Enter Crafting State
+    <<change_dialog_state "Zara">>
+    <<change_gamestate "Crafting">>
+===
+
+title: ZaraEnters
+---
+Zara: Heyo B-guy how you been?
+Bartender: *looks up from the drink* Zara! Been a while. You still working that freelance gig?
+Zara: Yeah, still hustling. You know how it is. Got a new job lined up, but I need something to take the edge off first.
+Bartender: *nods* I can help with that. What are you in the mood for?
+Zara: Something to take my edge off.
+-> Enter Crafting State
+    <<change_dialog_state "Coda">>
+    <<change_gamestate "Crafting">>
+===
+
+title: CodaEnters
+---
+Coda: Heyo B-guy how you been?
+Bartender: *looks up from the drink* Coda! Been a while. You still working that freelance gig?
+Coda: Yeah, still hustling. You know how it is. Got a new job lined up, but I need something to take the edge off first.
+Bartender: *nods* I can help with that. What are you in the mood for?
+Coda: Something to take my edge off.
+-> Enter Crafting State
+    <<change_dialog_state "Mystery">>
+    <<change_gamestate "Crafting">>
+===
+
+title: MysteryEnters
+---
+???: Heyo B-guy how you been?
+Bartender: *looks up from the drink* Mystery! Been a while. You still working that freelance gig?
+???: Yeah, still hustling. You know how it is. Got a new job lined up, but I need something to take the edge off first.
+Bartender: *nods* I can help with that. What are you in the mood for?
+???: Something to take my edge off.
+-> Enter Crafting State
+    <<change_gamestate "Crafting">>
 ===
 
 title: BartenderAfterDrink
